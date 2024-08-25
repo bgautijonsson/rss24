@@ -13,7 +13,7 @@ format:
       flat: true
       barhtml:
         header: "<div class='menubar mb-10'><ul class='menu'></ul><div>"
-        footer: "<div class='footer footer-default' style='display: block;'> <a href='https://bggj.is/rss24/presentation' target='_blank'>bggj.is/exeter</a>  <img src='images/hi-audkenni_28-raunsvisd.png' class='slide-logo r-stretch'></div>"
+        footer: "<div class='footer footer-default' style='display: block;'> <a href='https://bggj.is/rss24' target='_blank'>bggj.is/rss24</a>  <img src='images/hi-audkenni_28-raunsvisd.png' class='slide-logo r-stretch'></div>"
       scale: 0.67
 
 

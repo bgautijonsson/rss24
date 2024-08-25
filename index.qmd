@@ -8,6 +8,7 @@ format:
     toc: true
     toc-depth: 3
     theme: cosmo
+engine: knitr
 ---
 
 ## Welcome
@@ -40,6 +41,7 @@ We construct copulas based on GMRFs to model data-level dependence in multivaria
 
 - [Presentation Slides](/presentation/)
 - [GitHub Repository](https://github.com/yourusername/your-repo-name)
+- [Manuscript Covering the Methodology](https://bggj.is/materneigenpaper/)
 
 ## Contact
 
@@ -52,4 +54,4 @@ Email: [brynjolfur@hi.is](mailto:brynjolfur@hi.is)
 
 ---
 
-Last updated: {`r Sys.Date()`}
+Last updated: `{r} Sys.Date()`
