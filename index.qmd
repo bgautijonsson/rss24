@@ -1,0 +1,55 @@
+---
+title: "Gaussian Copulas for Large Spatial Fields"
+subtitle: "Modeling Data-Level Spatial Dependence in Multivariate Generalized Extreme Value Distributions"
+author: "Brynjólfur Gauti Guðrúnar Jónsson"
+date: last-modified
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    theme: cosmo
+---
+
+## Welcome
+
+This is the landing page for the GitHub repository on my RSSConf24 talk. Here, I explore the application of Gaussian Markov Random Field (GMRF) copulas to model data-level spatial dependence in multivariate Generalized Extreme Value (GEV) distributions.
+
+## Project Overview
+
+Our research focuses on:
+
+1. Modeling spatial dependence in extreme values
+2. Combining GEV distributions with GMRF copulas
+3. Efficient computational techniques for large spatial fields
+
+## Key Components
+
+### Generalized Extreme Value (GEV) Distributions
+
+We use GEV distributions to model extreme events, particularly in the context of spatial data.
+
+### Gaussian Markov Random Fields (GMRFs)
+
+GMRFs provide a powerful framework for capturing spatial dependence, offering both modeling flexibility and computational efficiency.
+
+### GMRF Copulas
+
+We construct copulas based on GMRFs to model data-level dependence in multivariate GEV distributions.
+
+## Resources
+
+- [Presentation Slides](/presentation/)
+- [GitHub Repository](https://github.com/yourusername/your-repo-name)
+
+## Contact
+
+For more information, please contact:
+
+Brynjólfur Gauti Guðrúnar Jónsson  
+PhD Student in Statistics  
+University of Iceland  
+Email: [brynjolfur@hi.is](mailto:brynjolfur@hi.is)
+
+---
+
+Last updated: {`r Sys.Date()`}
