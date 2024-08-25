@@ -1,0 +1,78 @@
+---
+title: "Gaussian Copulas for Large Spatial Fields"
+subtitle: "Modeling Data-Level Spatial Dependence in Multivariate Generalized Extreme Value Distributions with Copulas Based on Gaussian Markov Random Fields"
+author: "Brynjólfur Gauti Guðrúnar Jónsson"
+institute: "Statistics PhD student at University of Iceland"
+
+format: 
+  revealjs:
+    theme: theme.scss
+    auto-stretch: true
+    view-distance: 5
+    simplemenu:
+      flat: true
+      barhtml:
+        header: "<div class='menubar mb-10'><ul class='menu'></ul><div>"
+        footer: "<div class='footer footer-default' style='display: block;'> <a href='https://bggj.is/rss24/presentation' target='_blank'>bggj.is/exeter</a>  <img src='images/hi-audkenni_28-raunsvisd.png' class='slide-logo r-stretch'></div>"
+      scale: 0.67
+
+
+revealjs-plugins:
+  - simplemenu
+---
+
+## Introduction
+
+- Importance of modeling spatial dependence in extreme values
+- Challenge: modeling both parameter-level and data-level dependence
+- Our contribution: GMRF copulas for data-level dependence
+
+## Background: GEV and Spatial Dependence
+
+- Generalized Extreme Value (GEV) distributions
+  - Application to extreme events
+- Spatial dependence in parameters
+  - Introduction to GMRFs and Besag-York-Mollié model
+- Need for modeling data-level dependence
+
+## Gaussian Markov Random Fields (GMRFs)
+
+- Introduction to GMRFs
+- Advantages of GMRFs in spatial modeling
+- Computational benefits
+
+## GMRF Copulas for Data-Level Dependence
+
+- Constructing copulas from GMRFs
+- How GMRFs capture spatial dependence
+- Computational efficiency of GMRF copulas
+
+## Methodology: Combining GEV and GMRF Copulas
+
+- GEV margins with GMRF copula structure
+- Key computational techniques
+- Handling large datasets efficiently
+
+## Simulation Study
+
+- Setup of the simulation study
+- Key results demonstrating feasibility
+- Challenges and limitations identified
+
+## Results and Discussion
+
+- Performance of GMRF copulas in capturing spatial dependence
+- Comparison with other methods (if applicable)
+- Implications for modeling extreme precipitation
+
+## Conclusion and Future Work
+
+- Summary of main advantages
+- Potential applications to real extreme precipitation datasets
+- Future research directions
+
+## Thank You
+
+- Contact information
+- References
+- Q&A
