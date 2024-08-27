@@ -591,123 +591,6 @@ Brynjólfur Gauti Guðrúnar Jónsson
 \]</span></p>
 </div>
 </section>
-<section id="the-precision-matrix" class="slide level2">
-<h2>The Precision Matrix</h2>
-<p><span class="math display">\[
-\mathbf{Q} = \left( \mathbf{Q}_{\color{red}\rho_1} \otimes \mathbf{I_{\color{blue}n_2}} + \mathbf{I_{\color{red}n_1}} \otimes \mathbf{Q}_{\color{blue}\rho_2} \right)^{\nu + 1}, \quad \nu \in \{0, 1, 2\}
-\]</span></p>
-<div class="columns" style="font-size:52%">
-<div class="column" style="width:50%;">
-<p><span class="math display">\[
-\mathbf{Q}_{\color{red}\rho_{1}} = \frac{1}{1-{\color{red}\rho_{1}}^2}
-\begin{bmatrix}
-1 &amp; -{\color{red}\rho_{1}} &amp; 0 &amp; \cdots &amp; 0 \\
--{\color{red}\rho_{1}} &amp; 1+{\color{red}\rho_{1}}^2 &amp; -{\color{red}\rho_{1}} &amp; \cdots &amp; 0 \\
-0 &amp; -{\color{red}\rho_{1}} &amp; 1+{\color{red}\rho_{1}}^2 &amp; \cdots &amp; 0 \\
-\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
-0 &amp; 0 &amp; 0 &amp; \cdots &amp; 1
-\end{bmatrix}
-\]</span></p>
-</div><div class="column" style="width:50%;">
-<p><span class="math display">\[
-\mathbf{Q}_{\color{blue}\rho_{2}} = \frac{1}{1-{\color{blue}\rho_{2}}^2}
-\begin{bmatrix}
-1 &amp; -{\color{blue}\rho_{2}} &amp; 0 &amp; \cdots &amp; 0 \\
--{\color{blue}\rho_{2}} &amp; 1+{\color{blue}\rho_{2}}^2 &amp; -{\color{blue}\rho_{2}} &amp; \cdots &amp; 0 \\
-0 &amp; -{\color{blue}\rho_{2}} &amp; 1+{\color{blue}\rho_{2}}^2 &amp; \cdots &amp; 0 \\
-\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
-0 &amp; 0 &amp; 0 &amp; \cdots &amp; 1
-\end{bmatrix}
-\]</span></p>
-</div></div>
-</section>
-<section id="the-precision-matrix-1" class="slide level2">
-<h2>The Precision Matrix</h2>
-<p><span class="math display">\[
-\mathbf{Q} = \left( \mathbf{Q}_{\color{red}\rho_1} \otimes \mathbf{I_{\color{blue}n_2}} + \mathbf{I_{\color{red}n_1}} \otimes \mathbf{Q}_{\color{blue}\rho_2} \right)^{\nu + 1}, \quad \nu \in \{0, 1, 2\}
-\]</span></p>
-<div class="columns" style="font-size:40%">
-<div class="column" style="width:70%;">
-<p><span class="math display">\[
-\mathbf{Q_{{\color{red}\rho_1}}} \otimes \mathbf{I_{{\color{blue}n_2}}} = \frac{1}{1-{\color{red}\rho_1}^2}
-\begin{pmatrix}
-(1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} &amp; -{\color{red}\rho_1}\mathbf{I_{{\color{blue}n_2}}} &amp; \dots &amp; \cdots &amp; \dots \\
--{\color{red}\rho_1}\mathbf{I_{{\color{blue}n_2}}} &amp; (1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} &amp; -{\color{red}\rho_1} \mathbf{I_{{\color{blue}n_2}}} &amp; \cdots &amp; \vdots  \\
-\vdots &amp; \ddots &amp; \ddots &amp; \ddots &amp; \vdots \\
-\dots &amp; \dots &amp; \cdots &amp; -{\color{red}\rho_1} \mathbf{I_{{\color{blue}n_2}}} &amp; (1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}}
-\end{pmatrix}
-\]</span></p>
-</div><div class="column" style="width:30%;">
-<p><span class="math display">\[
-\mathbf{I_{\color{red}n_1}} \otimes \mathbf{Q_{\color{blue}\rho_2}} =
-\begin{pmatrix}
-\mathbf{Q_{\color{blue}\rho_2}} &amp; \mathbf{0} &amp; \cdots &amp; \mathbf{0} \\
-\mathbf{0} &amp; \mathbf{\color{blue}Q_{\rho_2}} &amp; \cdots &amp; \mathbf{0} \\
-\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
-\mathbf{0} &amp; \mathbf{0} &amp; \cdots &amp; \mathbf{\color{blue}Q_{\rho_2}}
-\end{pmatrix}
-\]</span></p>
-</div></div>
-<div style="font-size:50%">
-<p><span class="math display">\[
-\mathbf Q = \begin{pmatrix}
-(1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} + \mathbf{Q_{\color{blue}\rho_2}} &amp; -{\color{red}\rho_1}\mathbf{I_{{\color{blue}n_2}}} &amp; \dots &amp; \cdots &amp; \dots \\
--{\color{red}\rho_1}\mathbf{I_{{\color{blue}n_2}}} &amp; (1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} + \mathbf{q_{\color{blue}\rho_2}} &amp; -{\color{red}\rho_1} \mathbf{I_{{\color{blue}n_2}}} &amp; \cdots &amp; \vdots  \\
-\vdots &amp; \ddots &amp; \ddots &amp; \ddots &amp; \vdots \\
-\dots &amp; \dots &amp; \cdots &amp; -{\color{red}\rho_1} \mathbf{I_{{\color{blue}n_2}}} &amp; (1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} + \mathbf{Q_{\color{blue}\rho_2}}
-\end{pmatrix}^{\nu + 1}
-\]</span></p>
-</div>
-</section>
-<section id="the-precision-matrix-2" class="slide level2">
-<h2>The Precision Matrix</h2>
-<div class="columns" style="font-size:70%">
-<div class="column" style="width:50%;">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a><span class="fu">make_AR_prec_matrix</span>(<span class="at">dim =</span> <span class="dv">3</span>, <span class="at">rho =</span> <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>3 x 3 sparse Matrix of class "dgCMatrix"
-                                     
-[1,]  1.3333333 -0.6666667  .        
-[2,] -0.6666667  1.6666667 -0.6666667
-[3,]  .         -0.6666667  1.3333333</code></pre>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href=""></a><span class="fu">make_AR_prec_matrix</span>(<span class="at">dim =</span> <span class="dv">4</span>, <span class="at">rho =</span> <span class="fl">0.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>4 x 4 sparse Matrix of class "dgCMatrix"
-                                                
-[1,]  1.0989011 -0.3296703  .          .        
-[2,] -0.3296703  1.1978022 -0.3296703  .        
-[3,]  .         -0.3296703  1.1978022 -0.3296703
-[4,]  .          .         -0.3296703  1.0989011</code></pre>
-</div>
-</div>
-</div></div>
-<div class="r-fit-text" style="font-size:50%">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href=""></a><span class="fu">make_matern_prec_matrix</span>(<span class="at">dim_x =</span> <span class="dv">3</span>, <span class="at">dim_y =</span> <span class="dv">4</span>, <span class="at">rho1 =</span> <span class="fl">0.5</span>, <span class="at">rho2 =</span> <span class="fl">0.3</span>, <span class="at">nu =</span> <span class="dv">0</span>) <span class="sc">|&gt;</span> <span class="fu">round</span>(<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>12 x 12 sparse Matrix of class "dgCMatrix"
-                                                                                                     
- [1,]  2.4322 -0.3297  0.0000  0.0000 -0.6667  .       .       .       0.0000  .       .       .     
- [2,] -0.3297  2.5311 -0.3297  0.0000  .      -0.6667  .       .       .       0.0000  .       .     
- [3,]  0.0000 -0.3297  2.5311 -0.3297  .       .      -0.6667  .       .       .       0.0000  .     
- [4,]  0.0000  0.0000 -0.3297  2.4322  .       .       .      -0.6667  .       .       .       0.0000
- [5,] -0.6667  .       .       .       2.7656 -0.3297  0.0000  0.0000 -0.6667  .       .       .     
- [6,]  .      -0.6667  .       .      -0.3297  2.8645 -0.3297  0.0000  .      -0.6667  .       .     
- [7,]  .       .      -0.6667  .       0.0000 -0.3297  2.8645 -0.3297  .       .      -0.6667  .     
- [8,]  .       .       .      -0.6667  0.0000  0.0000 -0.3297  2.7656  .       .       .      -0.6667
- [9,]  0.0000  .       .       .      -0.6667  .       .       .       2.4322 -0.3297  0.0000  0.0000
-[10,]  .       0.0000  .       .       .      -0.6667  .       .      -0.3297  2.5311 -0.3297  0.0000
-[11,]  .       .       0.0000  .       .       .      -0.6667  .       0.0000 -0.3297  2.5311 -0.3297
-[12,]  .       .       .       0.0000  .       .       .      -0.6667  0.0000  0.0000 -0.3297  2.4322</code></pre>
-</div>
-</div>
-</div>
-</section>
 <section id="results-and-discussion" class="slide level2" data-name="Results">
 <h2>Results and Discussion</h2>
 <ul>
@@ -721,50 +604,50 @@ Brynjólfur Gauti Guðrúnar Jónsson
 <h2>Data Generation</h2>
 <div class="columns r-fit-text" style="font-size:70%">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">tic</span>()</span>
-<span id="cb11-2"><a href=""></a>X <span class="ot">&lt;-</span> <span class="fu">rmatern_copula_folded_full</span>(<span class="at">n =</span> <span class="dv">100</span>, <span class="at">dim1 =</span> <span class="dv">160</span>, <span class="at">dim2 =</span> <span class="dv">90</span>, <span class="at">rho1 =</span> <span class="fl">0.8</span>, <span class="at">rho2 =</span> <span class="fl">0.9</span>, <span class="at">nu =</span> <span class="dv">2</span>)</span>
-<span id="cb11-3"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">tic</span>()</span>
+<span id="cb5-2"><a href=""></a>X <span class="ot">&lt;-</span> <span class="fu">rmatern_copula_folded_full</span>(<span class="at">n =</span> <span class="dv">100</span>, <span class="at">dim1 =</span> <span class="dv">160</span>, <span class="at">dim2 =</span> <span class="dv">90</span>, <span class="at">rho1 =</span> <span class="fl">0.8</span>, <span class="at">rho2 =</span> <span class="fl">0.9</span>, <span class="at">nu =</span> <span class="dv">2</span>)</span>
+<span id="cb5-3"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>0.193 sec elapsed</code></pre>
+<pre><code>0.327 sec elapsed</code></pre>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href=""></a><span class="fu">plot_matern</span>(X[, <span class="dv">1</span>], <span class="dv">160</span>, <span class="dv">90</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href=""></a><span class="fu">plot_matern</span>(X[, <span class="dv">1</span>], <span class="dv">160</span>, <span class="dv">90</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/unnamed-chunk-5-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href=""></a><span class="fu">plot_matern</span>(X[, <span class="dv">2</span>], <span class="dv">160</span>, <span class="dv">90</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/unnamed-chunk-6-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href=""></a><span class="fu">apply</span>(X, <span class="dv">1</span>, var) <span class="sc">|&gt;</span> <span class="fu">hist</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/unnamed-chunk-7-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href=""></a><span class="fu">apply</span>(X, <span class="dv">1</span>, mean) <span class="sc">|&gt;</span> <span class="fu">hist</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure>
 <p><img data-src="index_files/figure-revealjs/unnamed-chunk-8-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href=""></a><span class="fu">plot_matern</span>(X[, <span class="dv">2</span>], <span class="dv">160</span>, <span class="dv">90</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/unnamed-chunk-9-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href=""></a><span class="fu">apply</span>(X, <span class="dv">1</span>, var) <span class="sc">|&gt;</span> <span class="fu">hist</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/unnamed-chunk-10-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href=""></a><span class="fu">apply</span>(X, <span class="dv">1</span>, mean) <span class="sc">|&gt;</span> <span class="fu">hist</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/unnamed-chunk-11-1.png" width="960"></p>
 </figure>
 </div>
 </div>
