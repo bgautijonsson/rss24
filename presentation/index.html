@@ -581,13 +581,29 @@ Brynjólfur Gauti Guðrúnar Jónsson
 \]</span></p>
 <p>Without scaling of <span class="math inline">\(\mathbf Q\)</span> we get</p>
 <p><span class="math display">\[
-\log|\mathbf{Q}| = \sum_{k=1}^{n_1n_2}\log\lambda_k = \sum_{i=1}^{n_1}\sum_{i=2}^{n_2} \log\left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)
+\log|\mathbf{Q}| = \sum_{k=1}^{n_1n_2}\log\lambda_k = \sum_{i=1}^{n_1}\sum_{j=2}^{n_2} \log\left[\left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)^{\nu + 1}\right]
 \]</span></p>
 <p><span class="math display">\[
 \mathbf{z}^T\mathbf{Q}\mathbf{z} = \sum_{k=1}^{n_1n_2}\lambda_k v_k^T\mathbf z =
-\sum_{i=1}^{n_1}\sum_{i=2}^{n_2}
+\sum_{i=1}^{n_1}\sum_{j=2}^{n_2}
 \left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)
 \left[\left(\left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j\right)^T\mathbf z\right]^2
+\]</span></p>
+</div>
+</section>
+<section id="calculating-the-copula-density" class="slide level2">
+<h2>Calculating the copula density</h2>
+<div style="font-size:70%">
+<p>Let <span class="math inline">\(\mathbf D_{ii} = \sigma_i\)</span>, <span class="math inline">\(\mathbf v = \left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j\)</span> and <span class="math inline">\(\lambda = \left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)^{\nu + 1}\)</span>. Normalise <span class="math inline">\(\mathbf v\)</span> and <span class="math inline">\(\lambda\)</span> with</p>
+<p><span class="math display">\[
+\begin{gathered}
+\widetilde{v} = \frac{Dv}{\vert\vert Dv\vert\vert_2}, \qquad
+\widetilde{\lambda} = \vert\vert Dv\vert\vert_2^2 \cdot \lambda
+\end{gathered}
+\]</span></p>
+<p>Then <span class="math inline">\(\widetilde{v}\)</span> and <span class="math inline">\(\widetilde{\lambda}\)</span> are an eigenvector/value pair of the scaled precision matrix <span class="math inline">\(\mathbf{\widetilde{Q}}\)</span>. Iterate over <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> to calculate</p>
+<p><span class="math display">\[
+\log c(\mathbf{u}) = \frac{1}{2}\log|\mathbf{\widetilde Q}| - \frac{1}{2}\mathbf{z}^T\mathbf{\widetilde Q}\mathbf{z} + \frac{1}{2}\mathbf{z}^T\mathbf{z}
 \]</span></p>
 </div>
 </section>
@@ -608,7 +624,7 @@ Brynjólfur Gauti Guðrúnar Jónsson
 <span id="cb5-2"><a href=""></a>X <span class="ot">&lt;-</span> <span class="fu">rmatern_copula_folded_full</span>(<span class="at">n =</span> <span class="dv">100</span>, <span class="at">dim1 =</span> <span class="dv">160</span>, <span class="at">dim2 =</span> <span class="dv">90</span>, <span class="at">rho1 =</span> <span class="fl">0.8</span>, <span class="at">rho2 =</span> <span class="fl">0.9</span>, <span class="at">nu =</span> <span class="dv">2</span>)</span>
 <span id="cb5-3"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>0.327 sec elapsed</code></pre>
+<pre><code>0.209 sec elapsed</code></pre>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">

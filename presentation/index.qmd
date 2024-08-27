@@ -240,21 +240,38 @@ $$
 Without scaling of $\mathbf Q$ we get
 
 $$
-\log|\mathbf{Q}| = \sum_{k=1}^{n_1n_2}\log\lambda_k = \sum_{i=1}^{n_1}\sum_{i=2}^{n_2} \log\left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)
+\log|\mathbf{Q}| = \sum_{k=1}^{n_1n_2}\log\lambda_k = \sum_{i=1}^{n_1}\sum_{j=2}^{n_2} \log\left[\left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)^{\nu + 1}\right]
 $$
 
 $$
 \mathbf{z}^T\mathbf{Q}\mathbf{z} = \sum_{k=1}^{n_1n_2}\lambda_k v_k^T\mathbf z = 
-\sum_{i=1}^{n_1}\sum_{i=2}^{n_2} 
+\sum_{i=1}^{n_1}\sum_{j=2}^{n_2} 
 \left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)
 \left[\left(\left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j\right)^T\mathbf z\right]^2
 $$
 
 :::
 
+## Calculating the copula density
 
+::: {style="font-size:70%"}
 
+Let $\mathbf D_{ii} = \sigma_i$, $\mathbf v = \left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j$ and $\lambda = \left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)^{\nu + 1}$. Normalise $\mathbf v$ and $\lambda$ with
 
+$$
+\begin{gathered}
+\widetilde{v} = \frac{Dv}{\vert\vert Dv\vert\vert_2}, \qquad
+\widetilde{\lambda} = \vert\vert Dv\vert\vert_2^2 \cdot \lambda
+\end{gathered}
+$$
+
+Then $\widetilde{v}$ and $\widetilde{\lambda}$ are an eigenvector/value pair of the scaled precision matrix $\mathbf{\widetilde{Q}}$. Iterate over $i$ and $j$ to calculate
+
+$$
+\log c(\mathbf{u}) = \frac{1}{2}\log|\mathbf{\widetilde Q}| - \frac{1}{2}\mathbf{z}^T\mathbf{\widetilde Q}\mathbf{z} + \frac{1}{2}\mathbf{z}^T\mathbf{z}
+$$
+
+:::
 
 ## Results and Discussion {data-name="Results"}
 
