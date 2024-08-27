@@ -584,7 +584,7 @@ Brynjólfur Gauti Guðrúnar Jónsson
 \log|\mathbf{Q}| = \sum_{k=1}^{n_1n_2}\log\lambda_k = \sum_{i=1}^{n_1}\sum_{j=2}^{n_2} \log\left[\left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)^{\nu + 1}\right]
 \]</span></p>
 <p><span class="math display">\[
-\mathbf{z}^T\mathbf{Q}\mathbf{z} = \sum_{k=1}^{n_1n_2}\lambda_k v_k^T\mathbf z =
+\mathbf{z}^T\mathbf{Q}\mathbf{z} = \sum_{k=1}^{n_1n_2}\lambda_k \left(v_k^T\mathbf z\right)^2 =
 \sum_{i=1}^{n_1}\sum_{j=2}^{n_2}
 \left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)
 \left[\left(\left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j\right)^T\mathbf z\right]^2
@@ -597,14 +597,69 @@ Brynjólfur Gauti Guðrúnar Jónsson
 <p>Let <span class="math inline">\(\mathbf D_{ii} = \sigma_i\)</span>, <span class="math inline">\(\mathbf v = \left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j\)</span> and <span class="math inline">\(\lambda = \left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)^{\nu + 1}\)</span>. Normalise <span class="math inline">\(\mathbf v\)</span> and <span class="math inline">\(\lambda\)</span> with</p>
 <p><span class="math display">\[
 \begin{gathered}
-\widetilde{v} = \frac{Dv}{\vert\vert Dv\vert\vert_2}, \qquad
-\widetilde{\lambda} = \vert\vert Dv\vert\vert_2^2 \cdot \lambda
+\widetilde{\mathbf{v}} = \frac{D\mathbf{v}}{\vert\vert D\mathbf{v}\vert\vert_2}, \qquad
+\widetilde{\lambda} = \vert\vert D\mathbf{v}\vert\vert_2^2 \cdot \lambda
 \end{gathered}
 \]</span></p>
 <p>Then <span class="math inline">\(\widetilde{v}\)</span> and <span class="math inline">\(\widetilde{\lambda}\)</span> are an eigenvector/value pair of the scaled precision matrix <span class="math inline">\(\mathbf{\widetilde{Q}}\)</span>. Iterate over <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> to calculate</p>
 <p><span class="math display">\[
 \log c(\mathbf{u}) = \frac{1}{2}\log|\mathbf{\widetilde Q}| - \frac{1}{2}\mathbf{z}^T\mathbf{\widetilde Q}\mathbf{z} + \frac{1}{2}\mathbf{z}^T\mathbf{z}
 \]</span></p>
+</div>
+</section>
+<section id="folded-circulant-approximation" class="slide level2">
+<h2>Folded Circulant Approximation</h2>
+<div style="font-size:40%">
+<div class="columns">
+<div class="column" style="width:40%;">
+<h3 id="ar1-precision">AR(1) precision</h3>
+<p>The exact form of <span class="math inline">\(Q_{\rho}\)</span>, the precision matrix of a one-dimensional AR(1) process with correlation <span class="math inline">\(\rho\)</span> is</p>
+</div><div class="column" style="width:60%;">
+<p><span class="math display">\[
+\mathbf{Q}_\rho = \frac{1}{1-\rho^2}
+\begin{bmatrix}
+1 &amp; -\rho &amp; 0 &amp; \cdots &amp; 0 \\
+-\rho &amp; 1+\rho^2 &amp; -\rho &amp; \cdots &amp; 0 \\
+0 &amp; -\rho &amp; 1+\rho^2 &amp; \cdots &amp; 0 \\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+0 &amp; 0 &amp; 0 &amp; \cdots &amp; 1
+\end{bmatrix}
+\]</span></p>
+</div></div>
+<hr>
+<div class="columns">
+<div class="column" style="width:40%;">
+<h3 id="circulant-approximation">Circulant Approximation</h3>
+<p>This approximation treats the first and last observations as neighbors, effectively wrapping the data around a circle.</p>
+</div><div class="column" style="width:60%;">
+<p><span class="math display">\[
+\mathbf{Q}_\rho^{(circ)} = \frac{1}{1-\rho^2}
+\begin{bmatrix}
+1+\rho^2 &amp; -\rho &amp; 0 &amp; \cdots &amp; 0 &amp; -\rho \\
+-\rho &amp; 1+\rho^2 &amp; -\rho &amp; \cdots &amp; 0 &amp; 0 \\
+0 &amp; -\rho &amp; 1+\rho^2 &amp; \cdots &amp; 0 &amp; 0 \\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots \\
+-\rho &amp; 0 &amp; 0 &amp; \cdots &amp; -\rho &amp; 1+\rho^2
+\end{bmatrix}
+\]</span></p>
+</div></div>
+<hr>
+<div class="columns">
+<div class="column" style="width:40%;">
+<h3 id="folded-circulant-approximation-1">Folded Circulant Approximation</h3>
+<p>We double the data by reflecting it, giving us the data <span class="math inline">\(x_1,  \dots, x_n, x_n, \dots, x_1\)</span>. We then model this doubled data with a <span class="math inline">\(2n \times 2n\)</span> circulant matrix. If written out as an <span class="math inline">\(n \times n\)</span> matrix, it takes the form:</p>
+</div><div class="column" style="width:60%;">
+<p><span class="math display">\[
+\mathbf{Q}_\rho^{(fold)} = \frac{1}{1-\rho^2}
+\begin{bmatrix}
+1-\rho+\rho^2 &amp; -\rho &amp; 0 &amp; \cdots &amp; 0 &amp; 0 \\
+-\rho &amp; 1+\rho^2 &amp; -\rho &amp; \cdots &amp; 0 &amp; 0 \\
+0 &amp; -\rho &amp; 1+\rho^2 &amp; \cdots &amp; 0 &amp; 0 \\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots \\
+0 &amp; 0 &amp; 0 &amp; \cdots &amp; -\rho &amp; 1-\rho+\rho^2
+\end{bmatrix}
+\]</span></p>
+</div></div>
 </div>
 </section>
 <section id="results-and-discussion" class="slide level2" data-name="Results">
@@ -624,7 +679,7 @@ Brynjólfur Gauti Guðrúnar Jónsson
 <span id="cb5-2"><a href=""></a>X <span class="ot">&lt;-</span> <span class="fu">rmatern_copula_folded_full</span>(<span class="at">n =</span> <span class="dv">100</span>, <span class="at">dim1 =</span> <span class="dv">160</span>, <span class="at">dim2 =</span> <span class="dv">90</span>, <span class="at">rho1 =</span> <span class="fl">0.8</span>, <span class="at">rho2 =</span> <span class="fl">0.9</span>, <span class="at">nu =</span> <span class="dv">2</span>)</span>
 <span id="cb5-3"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>0.209 sec elapsed</code></pre>
+<pre><code>0.239 sec elapsed</code></pre>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">

@@ -244,7 +244,7 @@ $$
 $$
 
 $$
-\mathbf{z}^T\mathbf{Q}\mathbf{z} = \sum_{k=1}^{n_1n_2}\lambda_k v_k^T\mathbf z = 
+\mathbf{z}^T\mathbf{Q}\mathbf{z} = \sum_{k=1}^{n_1n_2}\lambda_k \left(v_k^T\mathbf z\right)^2 = 
 \sum_{i=1}^{n_1}\sum_{j=2}^{n_2} 
 \left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)
 \left[\left(\left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j\right)^T\mathbf z\right]^2
@@ -260,8 +260,8 @@ Let $\mathbf D_{ii} = \sigma_i$, $\mathbf v = \left\{\mathbf{v}_{\rho_1}\right\}
 
 $$
 \begin{gathered}
-\widetilde{v} = \frac{Dv}{\vert\vert Dv\vert\vert_2}, \qquad
-\widetilde{\lambda} = \vert\vert Dv\vert\vert_2^2 \cdot \lambda
+\widetilde{\mathbf{v}} = \frac{D\mathbf{v}}{\vert\vert D\mathbf{v}\vert\vert_2}, \qquad
+\widetilde{\lambda} = \vert\vert D\mathbf{v}\vert\vert_2^2 \cdot \lambda
 \end{gathered}
 $$
 
@@ -270,6 +270,84 @@ Then $\widetilde{v}$ and $\widetilde{\lambda}$ are an eigenvector/value pair of 
 $$
 \log c(\mathbf{u}) = \frac{1}{2}\log|\mathbf{\widetilde Q}| - \frac{1}{2}\mathbf{z}^T\mathbf{\widetilde Q}\mathbf{z} + \frac{1}{2}\mathbf{z}^T\mathbf{z}
 $$
+
+:::
+
+## Folded Circulant Approximation
+
+::: {style="font-size:40%"}
+
+::: {.columns}
+::: {.column width="40%"}
+### AR(1) precision
+
+The exact form of $Q_{\rho}$, the precision matrix of a one-dimensional AR(1) process with correlation $\rho$ is
+
+:::
+::: {.column width="60%"}
+$$
+\mathbf{Q}_\rho = \frac{1}{1-\rho^2}
+\begin{bmatrix}
+1 & -\rho & 0 & \cdots & 0 \\
+-\rho & 1+\rho^2 & -\rho & \cdots & 0 \\
+0 & -\rho & 1+\rho^2 & \cdots & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & 0 & \cdots & 1
+\end{bmatrix}
+$$
+:::
+::: 
+
+----------
+
+
+
+
+::: {.columns}
+::: {.column width="40%"}
+### Circulant Approximation
+
+This approximation treats the first and last observations as neighbors, effectively wrapping the data around a circle.
+
+:::
+::: {.column width="60%"}
+$$
+\mathbf{Q}_\rho^{(circ)} = \frac{1}{1-\rho^2}
+\begin{bmatrix}
+1+\rho^2 & -\rho & 0 & \cdots & 0 & -\rho \\
+-\rho & 1+\rho^2 & -\rho & \cdots & 0 & 0 \\
+0 & -\rho & 1+\rho^2 & \cdots & 0 & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+-\rho & 0 & 0 & \cdots & -\rho & 1+\rho^2
+\end{bmatrix}
+$$
+:::
+::: 
+
+----------
+
+
+::: {.columns}
+::: {.column width="40%"}
+### Folded Circulant Approximation
+
+We double the data by reflecting it, giving us the data $x_1,  \dots, x_n, x_n, \dots, x_1$. We then model this doubled data with a $2n \times 2n$ circulant matrix. If written out as an $n \times n$ matrix, it takes the form:
+
+:::
+::: {.column width="60%"}
+$$
+\mathbf{Q}_\rho^{(fold)} = \frac{1}{1-\rho^2}
+\begin{bmatrix}
+1-\rho+\rho^2 & -\rho & 0 & \cdots & 0 & 0 \\
+-\rho & 1+\rho^2 & -\rho & \cdots & 0 & 0 \\
+0 & -\rho & 1+\rho^2 & \cdots & 0 & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+0 & 0 & 0 & \cdots & -\rho & 1-\rho+\rho^2
+\end{bmatrix}
+$$
+:::
+::: 
+
 
 :::
 
