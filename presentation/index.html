@@ -29,6 +29,71 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="index_files/libs/revealjs/dist/theme/quarto.css">
   <link href="index_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
@@ -328,7 +393,7 @@
 
 <section id="title-slide" class="quarto-title-block center">
   <h1 class="title">Gaussian Copulas for Large Spatial Fields</h1>
-  <p class="subtitle">Modeling Data-Level Spatial Dependence in Multivariate Generalized Extreme Value Distributions with Copulas Based on Gaussian Markov Random Fields</p>
+  <p class="subtitle">Modeling Data-Level Spatial Dependence in Multivariate Generalized Extreme Value Distributions</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -336,87 +401,389 @@
 Brynjólfur Gauti Guðrúnar Jónsson 
 </div>
         <p class="quarto-title-affiliation">
-            Statistics PhD student at University of Iceland
+            University of Iceland
           </p>
     </div>
 </div>
 
 </section>
-<section id="introduction" class="slide level2">
+<section id="introduction" class="slide level2" data-name="Background">
 <h2>Introduction</h2>
 <ul>
 <li>Importance of modeling spatial dependence in extreme values</li>
-<li>Challenge: modeling both parameter-level and data-level dependence</li>
-<li>Our contribution: GMRF copulas for data-level dependence</li>
+<li>Brief overview of traditional approaches (BYM model)</li>
+<li>Challenges in large-scale spatial modeling</li>
 </ul>
 </section>
-<section id="background-gev-and-spatial-dependence" class="slide level2">
-<h2>Background: GEV and Spatial Dependence</h2>
+<section id="background-spatial-models-in-disease-mapping" class="slide level2">
+<h2>Background: Spatial Models in Disease Mapping</h2>
 <ul>
-<li>Generalized Extreme Value (GEV) distributions
+<li>The Besag-York-Mollié (BYM) model
 <ul>
-<li>Application to extreme events</li>
+<li>Structure and benefits</li>
+<li>Computational advantages (sparse precision matrices)</li>
 </ul></li>
-<li>Spatial dependence in parameters
+<li>Limitations of BYM, particularly in scaling and interpretation</li>
+</ul>
+</section>
+<section id="the-bym2-model-addressing-scaling-issues" class="slide level2">
+<h2>The BYM2 Model: Addressing Scaling Issues</h2>
 <ul>
-<li>Introduction to GMRFs and Besag-York-Mollié model</li>
+<li>Introduction to BYM2 (Riebler et al., 2016)</li>
+<li>Importance of proper scaling in spatial models</li>
+<li>Interpretable parameterization in BYM2</li>
+</ul>
+</section>
+<section id="the-need-for-copulas-in-spatial-extreme-value-modeling" class="slide level2">
+<h2>The Need for Copulas in Spatial Extreme Value Modeling</h2>
+<ul>
+<li>Limitations of traditional approaches for extreme values</li>
+<li>Why extreme values require special treatment</li>
+<li>Benefits of copulas for modeling dependencies in extremes
+<ul>
+<li>Flexibility in capturing complex dependence structures</li>
+<li>Ability to separate marginal distributions from dependence structure</li>
 </ul></li>
-<li>Need for modeling data-level dependence</li>
+<li>Specific advantages for spatially distributed extreme values</li>
 </ul>
 </section>
-<section id="gaussian-markov-random-fields-gmrfs" class="slide level2">
-<h2>Gaussian Markov Random Fields (GMRFs)</h2>
+<section id="our-approach-gmrf-copulas-for-gev-distributions" class="slide level2">
+<h2>Our Approach: GMRF Copulas for GEV Distributions</h2>
 <ul>
-<li>Introduction to GMRFs</li>
-<li>Advantages of GMRFs in spatial modeling</li>
-<li>Computational benefits</li>
+<li>Combining GEV distributions with GMRF copulas</li>
+<li>Ensuring unit marginal variance: challenges and solutions</li>
+<li>Why unit marginal variance is crucial for copula modeling</li>
+<li>How this approach addresses the specific needs of spatial extreme value modeling</li>
 </ul>
 </section>
-<section id="gmrf-copulas-for-data-level-dependence" class="slide level2">
-<h2>GMRF Copulas for Data-Level Dependence</h2>
-<ul>
-<li>Constructing copulas from GMRFs</li>
-<li>How GMRFs capture spatial dependence</li>
-<li>Computational efficiency of GMRF copulas</li>
-</ul>
+<section id="computational-methods" class="slide level2" data-name="Methods">
+<h2>Computational Methods</h2>
+<p><span class="math display">\[
+\mathbf{Q} = \left( \mathbf{Q}_{\rho_1} \otimes \mathbf{I_{n_2}} + \mathbf{I_{n_1}} \otimes \mathbf{Q}_{\rho_2}\right)^{\nu+1}
+\]</span></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>What we want</p>
+<p><span class="math display">\[
+\boldsymbol \Sigma_{ii} = \left(\mathbf Q^{-1} \right)_{ii} =  1
+\]</span></p>
+</div><div class="column" style="width:50%;">
+<p>What we get</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathbf{\widetilde  Q} &amp;= \mathbf{D}\mathbf{Q}\mathbf{D} \\
+\mathbf D_{ii} &amp;= \sqrt{\boldsymbol \Sigma_{ii}}
+\end{aligned}
+\]</span></p>
+</div></div>
 </section>
-<section id="methodology-combining-gev-and-gmrf-copulas" class="slide level2">
-<h2>Methodology: Combining GEV and GMRF Copulas</h2>
-<ul>
-<li>GEV margins with GMRF copula structure</li>
-<li>Key computational techniques</li>
-<li>Handling large datasets efficiently</li>
-</ul>
+<section id="eigendecomposition" class="slide level2">
+<h2>Eigendecomposition</h2>
+<div class="columns" style="font-size:80%">
+<p>We know that</p><div class="column" style="width:50%;">
+<p><span class="math display">\[
+\mathbf{Q}_{\rho_1} = \mathbf{V_{\rho_1}}\boldsymbol \Lambda_{\rho_1}\mathbf{V_{\rho_1}}^T
+\]</span></p>
+</div><div class="column" style="width:50%;">
+<p><span class="math display">\[
+\mathbf{Q}_{\rho_2} = \mathbf{V_{\rho_2}}\boldsymbol \Lambda_{\rho_2}\mathbf{V_{\rho_2}}^T
+\]</span></p>
+</div><p>Which gives us</p><p><span class="math display">\[
+\mathbf{Q} = (\mathbf{V_{\rho_1}} \otimes \mathbf{V_{\rho_2}})(\boldsymbol \Lambda_{\rho_1} \otimes \mathbf{I} + \mathbf{I} \otimes \boldsymbol \Lambda_{\rho_2})^{\nu + 1}(\mathbf{V_{\rho_1}} \otimes \mathbf{V_{\rho_2}})^T
+\]</span></p>
+</div>
+<div class="columns" style="font-size:80%">
+<p>Efficiently loop over value/vector pairs of smaller matrices</p><div class="column" style="width:50%;">
+<p><span class="math display">\[
+\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j
+\]</span></p>
+</div><div class="column" data-widht="50%">
+<p><span class="math display">\[
+\left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j
+\]</span></p>
+</div></div>
 </section>
-<section id="simulation-study" class="slide level2">
-<h2>Simulation Study</h2>
-<ul>
-<li>Setup of the simulation study</li>
-<li>Key results demonstrating feasibility</li>
-<li>Challenges and limitations identified</li>
-</ul>
+<section id="marginal-standard-deviations" class="slide level2">
+<h2>Marginal Standard Deviations</h2>
+<div style="font-size:70%">
+<p><span class="math display">\[
+\boldsymbol \Sigma = \mathbf Q^{-1} = (\mathbf{V}\boldsymbol\Lambda\mathbf{V}^T)^{-1} = \mathbf{V}\boldsymbol \Lambda^{-1}\mathbf{V}
+\]</span></p>
+<p>We know that if <span class="math inline">\(A = BC\)</span> then <span class="math inline">\(A_{ii} = B_{i, .} C_{., i}\)</span>, so</p>
+<p><span class="math display">\[
+\boldsymbol \Sigma_{ii} = \sum_{k=1}^{n} v_{ik} \frac{1}{\lambda_k} (v^T)_{ki} = \sum_{k=1}^{n} v_{ik} \frac{1}{\lambda_k} v_{ik} = \sum_{k=1}^{n} v_{ik}^2 \frac{1}{\lambda_k}
+\]</span></p>
+<p>Compute vector <span class="math inline">\(\sigma^2\)</span> containing all marginal variances</p>
+<p><span class="math display">\[
+\sigma^2 = \sum_{i = 1}^{n_1} \sum_{j=1}^{n_2} \frac{\left(\left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j\right)^{2}}{\quad\left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)^{\nu+1}}
+\]</span></p>
+</div>
 </section>
-<section id="results-and-discussion" class="slide level2">
+<section id="marginal-standard-deviations-1" class="slide level2">
+<h2>Marginal Standard Deviations</h2>
+<div class="columns" style="font-size:75%">
+<div class="column" style="width:58%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a>dim1 <span class="ot">&lt;-</span> <span class="dv">50</span>; dim2 <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb1-2"><a href=""></a>rho1 <span class="ot">&lt;-</span> <span class="fl">0.5</span>; rho2 <span class="ot">&lt;-</span> <span class="fl">0.3</span></span>
+<span id="cb1-3"><a href=""></a>nu <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb1-4"><a href=""></a></span>
+<span id="cb1-5"><a href=""></a>Q1 <span class="ot">&lt;-</span> <span class="fu">make_AR_prec_matrix</span>(dim1, rho1)</span>
+<span id="cb1-6"><a href=""></a>Q2 <span class="ot">&lt;-</span> <span class="fu">make_AR_prec_matrix</span>(dim2, rho2)</span>
+<span id="cb1-7"><a href=""></a></span>
+<span id="cb1-8"><a href=""></a>I1 <span class="ot">&lt;-</span> Matrix<span class="sc">::</span><span class="fu">Diagonal</span>(dim1)</span>
+<span id="cb1-9"><a href=""></a>I2 <span class="ot">&lt;-</span> Matrix<span class="sc">::</span><span class="fu">Diagonal</span>(dim2)</span>
+<span id="cb1-10"><a href=""></a></span>
+<span id="cb1-11"><a href=""></a>Q <span class="ot">&lt;-</span> temp <span class="ot">&lt;-</span> <span class="fu">kronecker</span>(Q1, I2) <span class="sc">+</span> <span class="fu">kronecker</span>(I1, Q2)</span>
+<span id="cb1-12"><a href=""></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(nu)) Q <span class="ot">&lt;-</span> Q <span class="sc">%*%</span> temp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:42%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>msd <span class="ot">&lt;-</span> <span class="cf">function</span>(Q1, Q2) {</span>
+<span id="cb2-2"><a href=""></a></span>
+<span id="cb2-3"><a href=""></a>  E1 <span class="ot">&lt;-</span> <span class="fu">eigen</span>(Q1)</span>
+<span id="cb2-4"><a href=""></a>  E2 <span class="ot">&lt;-</span> <span class="fu">eigen</span>(Q2)</span>
+<span id="cb2-5"><a href=""></a></span>
+<span id="cb2-6"><a href=""></a>  <span class="fu">marginal_sd_eigen</span>(</span>
+<span id="cb2-7"><a href=""></a>    E1<span class="sc">$</span>values, E1<span class="sc">$</span>vectors, dim1,</span>
+<span id="cb2-8"><a href=""></a>    E2<span class="sc">$</span>values, E2<span class="sc">$</span>vectors, dim2,</span>
+<span id="cb2-9"><a href=""></a>    nu</span>
+<span id="cb2-10"><a href=""></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb2-11"><a href=""></a>  <span class="fu">sort</span>()</span>
+<span id="cb2-12"><a href=""></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div></div>
+<div style="font-size:75%">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a>bench<span class="sc">::</span><span class="fu">mark</span>(</span>
+<span id="cb3-2"><a href=""></a>  <span class="st">"solve"</span> <span class="ot">=</span> <span class="fu">solve</span>(Q) <span class="sc">|&gt;</span> <span class="fu">diag</span>() <span class="sc">|&gt;</span> <span class="fu">sqrt</span>() <span class="sc">|&gt;</span> <span class="fu">sort</span>(),</span>
+<span id="cb3-3"><a href=""></a>  <span class="st">"inla.qinv"</span> <span class="ot">=</span> <span class="fu">inla.qinv</span>(Q) <span class="sc">|&gt;</span> <span class="fu">diag</span>() <span class="sc">|&gt;</span> <span class="fu">sqrt</span>() <span class="sc">|&gt;</span> <span class="fu">sort</span>(),</span>
+<span id="cb3-4"><a href=""></a>  <span class="st">"marginal_sd_eigen"</span> <span class="ot">=</span> <span class="fu">msd</span>(Q1, Q2),</span>
+<span id="cb3-5"><a href=""></a>  <span class="at">iterations =</span> <span class="dv">10</span>,</span>
+<span id="cb3-6"><a href=""></a>  <span class="at">filter_gc =</span> <span class="cn">FALSE</span></span>
+<span id="cb3-7"><a href=""></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 6
+  expression             min   median `itr/sec` mem_alloc `gc/sec`
+  &lt;bch:expr&gt;        &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
+1 solve                1.27s    1.31s     0.751   78.17MB    0.751
+2 inla.qinv         370.05ms 390.87ms     2.54     4.37MB    0    
+3 marginal_sd_eigen   3.29ms   3.33ms   286.     648.97KB    0    </code></pre>
+</div>
+</div>
+</div>
+</section>
+<section id="calculating-the-unscaled-density" class="slide level2">
+<h2>Calculating the (unscaled) density</h2>
+<div style="font-size:70%">
+<p>The Gaussian copula log pdf is <span class="math display">\[
+\log c(\mathbf{u}) = \frac{1}{2}\log|\mathbf{Q}| - \frac{1}{2}\mathbf{z}^T\mathbf{Q}\mathbf{z} + \frac{1}{2}\mathbf{z}^T\mathbf{z}
+\]</span></p>
+<p>Without scaling of <span class="math inline">\(\mathbf Q\)</span> we get</p>
+<p><span class="math display">\[
+\log|\mathbf{Q}| = \sum_{k=1}^{n_1n_2}\log\lambda_k = \sum_{i=1}^{n_1}\sum_{i=2}^{n_2} \log\left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)
+\]</span></p>
+<p><span class="math display">\[
+\mathbf{z}^T\mathbf{Q}\mathbf{z} = \sum_{k=1}^{n_1n_2}\lambda_k v_k^T\mathbf z =
+\sum_{i=1}^{n_1}\sum_{i=2}^{n_2}
+\left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)
+\left[\left(\left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j\right)^T\mathbf z\right]^2
+\]</span></p>
+</div>
+</section>
+<section id="the-precision-matrix" class="slide level2">
+<h2>The Precision Matrix</h2>
+<p><span class="math display">\[
+\mathbf{Q} = \left( \mathbf{Q}_{\color{red}\rho_1} \otimes \mathbf{I_{\color{blue}n_2}} + \mathbf{I_{\color{red}n_1}} \otimes \mathbf{Q}_{\color{blue}\rho_2} \right)^{\nu + 1}, \quad \nu \in \{0, 1, 2\}
+\]</span></p>
+<div class="columns" style="font-size:52%">
+<div class="column" style="width:50%;">
+<p><span class="math display">\[
+\mathbf{Q}_{\color{red}\rho_{1}} = \frac{1}{1-{\color{red}\rho_{1}}^2}
+\begin{bmatrix}
+1 &amp; -{\color{red}\rho_{1}} &amp; 0 &amp; \cdots &amp; 0 \\
+-{\color{red}\rho_{1}} &amp; 1+{\color{red}\rho_{1}}^2 &amp; -{\color{red}\rho_{1}} &amp; \cdots &amp; 0 \\
+0 &amp; -{\color{red}\rho_{1}} &amp; 1+{\color{red}\rho_{1}}^2 &amp; \cdots &amp; 0 \\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+0 &amp; 0 &amp; 0 &amp; \cdots &amp; 1
+\end{bmatrix}
+\]</span></p>
+</div><div class="column" style="width:50%;">
+<p><span class="math display">\[
+\mathbf{Q}_{\color{blue}\rho_{2}} = \frac{1}{1-{\color{blue}\rho_{2}}^2}
+\begin{bmatrix}
+1 &amp; -{\color{blue}\rho_{2}} &amp; 0 &amp; \cdots &amp; 0 \\
+-{\color{blue}\rho_{2}} &amp; 1+{\color{blue}\rho_{2}}^2 &amp; -{\color{blue}\rho_{2}} &amp; \cdots &amp; 0 \\
+0 &amp; -{\color{blue}\rho_{2}} &amp; 1+{\color{blue}\rho_{2}}^2 &amp; \cdots &amp; 0 \\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+0 &amp; 0 &amp; 0 &amp; \cdots &amp; 1
+\end{bmatrix}
+\]</span></p>
+</div></div>
+</section>
+<section id="the-precision-matrix-1" class="slide level2">
+<h2>The Precision Matrix</h2>
+<p><span class="math display">\[
+\mathbf{Q} = \left( \mathbf{Q}_{\color{red}\rho_1} \otimes \mathbf{I_{\color{blue}n_2}} + \mathbf{I_{\color{red}n_1}} \otimes \mathbf{Q}_{\color{blue}\rho_2} \right)^{\nu + 1}, \quad \nu \in \{0, 1, 2\}
+\]</span></p>
+<div class="columns" style="font-size:40%">
+<div class="column" style="width:70%;">
+<p><span class="math display">\[
+\mathbf{Q_{{\color{red}\rho_1}}} \otimes \mathbf{I_{{\color{blue}n_2}}} = \frac{1}{1-{\color{red}\rho_1}^2}
+\begin{pmatrix}
+(1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} &amp; -{\color{red}\rho_1}\mathbf{I_{{\color{blue}n_2}}} &amp; \dots &amp; \cdots &amp; \dots \\
+-{\color{red}\rho_1}\mathbf{I_{{\color{blue}n_2}}} &amp; (1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} &amp; -{\color{red}\rho_1} \mathbf{I_{{\color{blue}n_2}}} &amp; \cdots &amp; \vdots  \\
+\vdots &amp; \ddots &amp; \ddots &amp; \ddots &amp; \vdots \\
+\dots &amp; \dots &amp; \cdots &amp; -{\color{red}\rho_1} \mathbf{I_{{\color{blue}n_2}}} &amp; (1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}}
+\end{pmatrix}
+\]</span></p>
+</div><div class="column" style="width:30%;">
+<p><span class="math display">\[
+\mathbf{I_{\color{red}n_1}} \otimes \mathbf{Q_{\color{blue}\rho_2}} =
+\begin{pmatrix}
+\mathbf{Q_{\color{blue}\rho_2}} &amp; \mathbf{0} &amp; \cdots &amp; \mathbf{0} \\
+\mathbf{0} &amp; \mathbf{\color{blue}Q_{\rho_2}} &amp; \cdots &amp; \mathbf{0} \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+\mathbf{0} &amp; \mathbf{0} &amp; \cdots &amp; \mathbf{\color{blue}Q_{\rho_2}}
+\end{pmatrix}
+\]</span></p>
+</div></div>
+<div style="font-size:50%">
+<p><span class="math display">\[
+\mathbf Q = \begin{pmatrix}
+(1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} + \mathbf{Q_{\color{blue}\rho_2}} &amp; -{\color{red}\rho_1}\mathbf{I_{{\color{blue}n_2}}} &amp; \dots &amp; \cdots &amp; \dots \\
+-{\color{red}\rho_1}\mathbf{I_{{\color{blue}n_2}}} &amp; (1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} + \mathbf{q_{\color{blue}\rho_2}} &amp; -{\color{red}\rho_1} \mathbf{I_{{\color{blue}n_2}}} &amp; \cdots &amp; \vdots  \\
+\vdots &amp; \ddots &amp; \ddots &amp; \ddots &amp; \vdots \\
+\dots &amp; \dots &amp; \cdots &amp; -{\color{red}\rho_1} \mathbf{I_{{\color{blue}n_2}}} &amp; (1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} + \mathbf{Q_{\color{blue}\rho_2}}
+\end{pmatrix}^{\nu + 1}
+\]</span></p>
+</div>
+</section>
+<section id="the-precision-matrix-2" class="slide level2">
+<h2>The Precision Matrix</h2>
+<div class="columns" style="font-size:70%">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a><span class="fu">make_AR_prec_matrix</span>(<span class="at">dim =</span> <span class="dv">3</span>, <span class="at">rho =</span> <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>3 x 3 sparse Matrix of class "dgCMatrix"
+                                     
+[1,]  1.3333333 -0.6666667  .        
+[2,] -0.6666667  1.6666667 -0.6666667
+[3,]  .         -0.6666667  1.3333333</code></pre>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href=""></a><span class="fu">make_AR_prec_matrix</span>(<span class="at">dim =</span> <span class="dv">4</span>, <span class="at">rho =</span> <span class="fl">0.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>4 x 4 sparse Matrix of class "dgCMatrix"
+                                                
+[1,]  1.0989011 -0.3296703  .          .        
+[2,] -0.3296703  1.1978022 -0.3296703  .        
+[3,]  .         -0.3296703  1.1978022 -0.3296703
+[4,]  .          .         -0.3296703  1.0989011</code></pre>
+</div>
+</div>
+</div></div>
+<div class="r-fit-text" style="font-size:50%">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href=""></a><span class="fu">make_matern_prec_matrix</span>(<span class="at">dim_x =</span> <span class="dv">3</span>, <span class="at">dim_y =</span> <span class="dv">4</span>, <span class="at">rho1 =</span> <span class="fl">0.5</span>, <span class="at">rho2 =</span> <span class="fl">0.3</span>, <span class="at">nu =</span> <span class="dv">0</span>) <span class="sc">|&gt;</span> <span class="fu">round</span>(<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>12 x 12 sparse Matrix of class "dgCMatrix"
+                                                                                                     
+ [1,]  2.4322 -0.3297  0.0000  0.0000 -0.6667  .       .       .       0.0000  .       .       .     
+ [2,] -0.3297  2.5311 -0.3297  0.0000  .      -0.6667  .       .       .       0.0000  .       .     
+ [3,]  0.0000 -0.3297  2.5311 -0.3297  .       .      -0.6667  .       .       .       0.0000  .     
+ [4,]  0.0000  0.0000 -0.3297  2.4322  .       .       .      -0.6667  .       .       .       0.0000
+ [5,] -0.6667  .       .       .       2.7656 -0.3297  0.0000  0.0000 -0.6667  .       .       .     
+ [6,]  .      -0.6667  .       .      -0.3297  2.8645 -0.3297  0.0000  .      -0.6667  .       .     
+ [7,]  .       .      -0.6667  .       0.0000 -0.3297  2.8645 -0.3297  .       .      -0.6667  .     
+ [8,]  .       .       .      -0.6667  0.0000  0.0000 -0.3297  2.7656  .       .       .      -0.6667
+ [9,]  0.0000  .       .       .      -0.6667  .       .       .       2.4322 -0.3297  0.0000  0.0000
+[10,]  .       0.0000  .       .       .      -0.6667  .       .      -0.3297  2.5311 -0.3297  0.0000
+[11,]  .       .       0.0000  .       .       .      -0.6667  .       0.0000 -0.3297  2.5311 -0.3297
+[12,]  .       .       .       0.0000  .       .       .      -0.6667  0.0000  0.0000 -0.3297  2.4322</code></pre>
+</div>
+</div>
+</div>
+</section>
+<section id="results-and-discussion" class="slide level2" data-name="Results">
 <h2>Results and Discussion</h2>
 <ul>
-<li>Performance of GMRF copulas in capturing spatial dependence</li>
-<li>Comparison with other methods (if applicable)</li>
-<li>Implications for modeling extreme precipitation</li>
+<li>Performance on simulated and real datasets</li>
+<li>Comparison with traditional methods (including BYM2)</li>
+<li>Advantages in interpretability and scalability</li>
+<li>Improved modeling of spatial dependencies in extreme values</li>
 </ul>
 </section>
-<section id="conclusion-and-future-work" class="slide level2">
+<section id="data-generation" class="slide level2">
+<h2>Data Generation</h2>
+<div class="columns r-fit-text" style="font-size:70%">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">tic</span>()</span>
+<span id="cb11-2"><a href=""></a>X <span class="ot">&lt;-</span> <span class="fu">rmatern_copula_folded_full</span>(<span class="at">n =</span> <span class="dv">100</span>, <span class="at">dim1 =</span> <span class="dv">160</span>, <span class="at">dim2 =</span> <span class="dv">90</span>, <span class="at">rho1 =</span> <span class="fl">0.8</span>, <span class="at">rho2 =</span> <span class="fl">0.9</span>, <span class="at">nu =</span> <span class="dv">2</span>)</span>
+<span id="cb11-3"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.193 sec elapsed</code></pre>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href=""></a><span class="fu">plot_matern</span>(X[, <span class="dv">1</span>], <span class="dv">160</span>, <span class="dv">90</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/unnamed-chunk-8-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href=""></a><span class="fu">plot_matern</span>(X[, <span class="dv">2</span>], <span class="dv">160</span>, <span class="dv">90</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/unnamed-chunk-9-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href=""></a><span class="fu">apply</span>(X, <span class="dv">1</span>, var) <span class="sc">|&gt;</span> <span class="fu">hist</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/unnamed-chunk-10-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href=""></a><span class="fu">apply</span>(X, <span class="dv">1</span>, mean) <span class="sc">|&gt;</span> <span class="fu">hist</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/unnamed-chunk-11-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="conclusion-and-future-work" class="slide level2" data-name="Conclusion">
 <h2>Conclusion and Future Work</h2>
 <ul>
-<li>Summary of main advantages</li>
-<li>Potential applications to real extreme precipitation datasets</li>
+<li>Key contributions of our approach</li>
+<li>Potential applications in various fields (e.g., climate science, hydrology)</li>
 <li>Future research directions</li>
 </ul>
 </section>
 <section id="thank-you" class="slide level2">
 <h2>Thank You</h2>
 <ul>
-<li>Contact information</li>
-<li>References</li>
+<li>Contact information: brynjolfur@hi.is</li>
+<li>Website: bggj.is</li>
 <li>Q&amp;A</li>
 </ul>
 <div class="quarto-auto-generated-content">
@@ -457,7 +824,7 @@ Brynjólfur Gauti Guðrúnar Jónsson
 'autoAnimateDuration': 1,
 'autoAnimateUnmatched': true,
 'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
-'simplemenu': {"menubarclass":"menubar","menuclass":"menu","activeclass":"active","activeelement":"li","flat":true,"barhtml":{"header":"<div class='menubar mb-10'><ul class='menu'></ul><div>","footer":"<div class='footer footer-default' style='display: block;'> <a href='https://bggj.is/rss24' target='_blank'>bggj.is/rss24</a>  <img src='images/hi-audkenni_28-raunsvisd.png' class='slide-logo r-stretch'></div>"},"scale":0.67},
+'simplemenu': {"menubarclass":"menubar","menuclass":"menu","activeclass":"active","activeelement":"li","flat":true,"barhtml":{"header":"<div class='menubar mb-10'><ul class='menu'></ul><div>","footer":"<div class='footer footer-default' style='display: block;'> <a href='https://bggj.is/exeter' target='_blank'>bggj.is/exeter</a>  <img src='images/hi-audkenni_28-raunsvisd.png' class='slide-logo r-stretch'></div>"},"scale":0.6,"width":1600,"height":900},
 'smaller': false,
  
         // Display controls in the bottom right corner
@@ -611,7 +978,7 @@ Brynjólfur Gauti Guðrúnar Jónsson
         margin: 0.1,
 
         math: {
-          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js',
           config: 'TeX-AMS_HTML-full',
           tex2jax: {
             inlineMath: [['\\(','\\)']],
@@ -637,6 +1004,44 @@ Brynjólfur Gauti Guðrúnar Jónsson
         ]
       });
     </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const toggleBodyColorMode = (bsSheetEl) => {

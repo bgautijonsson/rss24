@@ -1,9 +1,8 @@
 ---
 title: "Gaussian Copulas for Large Spatial Fields"
-subtitle: "Modeling Data-Level Spatial Dependence in Multivariate Generalized Extreme Value Distributions with Copulas Based on Gaussian Markov Random Fields"
+subtitle: "Modeling Data-Level Spatial Dependence in Multivariate Generalized Extreme Value Distributions"
 author: "Brynjólfur Gauti Guðrúnar Jónsson"
-institute: "Statistics PhD student at University of Iceland"
-
+institute: "University of Iceland"
 format: 
   revealjs:
     theme: theme.scss
@@ -13,66 +12,418 @@ format:
       flat: true
       barhtml:
         header: "<div class='menubar mb-10'><ul class='menu'></ul><div>"
-        footer: "<div class='footer footer-default' style='display: block;'> <a href='https://bggj.is/rss24' target='_blank'>bggj.is/rss24</a>  <img src='images/hi-audkenni_28-raunsvisd.png' class='slide-logo r-stretch'></div>"
-      scale: 0.67
-
-
+        footer: "<div class='footer footer-default' style='display: block;'> <a href='https://bggj.is/exeter' target='_blank'>bggj.is/exeter</a>  <img src='images/hi-audkenni_28-raunsvisd.png' class='slide-logo r-stretch'></div>"
+      scale: 0.6
+      width: 1600
+      height: 900
+html-math-method:
+  method: mathjax
+  url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
 revealjs-plugins:
   - simplemenu
 ---
 
-## Introduction
+```{r setup}
+library(stdmatern)
+library(INLA)
+library(gt)
+options(width = 648)
+```
+
+## Introduction {data-name="Background"}
 
 - Importance of modeling spatial dependence in extreme values
-- Challenge: modeling both parameter-level and data-level dependence
-- Our contribution: GMRF copulas for data-level dependence
+- Brief overview of traditional approaches (BYM model)
+- Challenges in large-scale spatial modeling
 
-## Background: GEV and Spatial Dependence
+## Background: Spatial Models in Disease Mapping
 
-- Generalized Extreme Value (GEV) distributions
-  - Application to extreme events
-- Spatial dependence in parameters
-  - Introduction to GMRFs and Besag-York-Mollié model
-- Need for modeling data-level dependence
+- The Besag-York-Mollié (BYM) model
+  - Structure and benefits
+  - Computational advantages (sparse precision matrices)
+- Limitations of BYM, particularly in scaling and interpretation
 
-## Gaussian Markov Random Fields (GMRFs)
+## The BYM2 Model: Addressing Scaling Issues
 
-- Introduction to GMRFs
-- Advantages of GMRFs in spatial modeling
-- Computational benefits
+- Introduction to BYM2 (Riebler et al., 2016)
+- Importance of proper scaling in spatial models
+- Interpretable parameterization in BYM2
 
-## GMRF Copulas for Data-Level Dependence
+## The Need for Copulas in Spatial Extreme Value Modeling
 
-- Constructing copulas from GMRFs
-- How GMRFs capture spatial dependence
-- Computational efficiency of GMRF copulas
+- Limitations of traditional approaches for extreme values
+- Why extreme values require special treatment
+- Benefits of copulas for modeling dependencies in extremes
+  - Flexibility in capturing complex dependence structures
+  - Ability to separate marginal distributions from dependence structure
+- Specific advantages for spatially distributed extreme values
 
-## Methodology: Combining GEV and GMRF Copulas
+## Our Approach: GMRF Copulas for GEV Distributions
 
-- GEV margins with GMRF copula structure
-- Key computational techniques
-- Handling large datasets efficiently
+- Combining GEV distributions with GMRF copulas
+- Ensuring unit marginal variance: challenges and solutions
+- Why unit marginal variance is crucial for copula modeling
+- How this approach addresses the specific needs of spatial extreme value modeling
 
-## Simulation Study
+## Computational Methods {data-name="Methods"}
 
-- Setup of the simulation study
-- Key results demonstrating feasibility
-- Challenges and limitations identified
+$$
+\mathbf{Q} = \left( \mathbf{Q}_{\rho_1} \otimes \mathbf{I_{n_2}} + \mathbf{I_{n_1}} \otimes \mathbf{Q}_{\rho_2}\right)^{\nu+1}
+$$
 
-## Results and Discussion
+::: {.columns}
+::: {.column width="50%"}
+What we want
 
-- Performance of GMRF copulas in capturing spatial dependence
-- Comparison with other methods (if applicable)
-- Implications for modeling extreme precipitation
+$$
+\boldsymbol \Sigma_{ii} = \left(\mathbf Q^{-1} \right)_{ii} =  1
+$$
 
-## Conclusion and Future Work
+:::
 
-- Summary of main advantages
-- Potential applications to real extreme precipitation datasets
+::: {.column width="50%"}
+
+What we get
+
+$$
+\begin{aligned}
+\mathbf{\widetilde  Q} &= \mathbf{D}\mathbf{Q}\mathbf{D} \\
+\mathbf D_{ii} &= \sqrt{\boldsymbol \Sigma_{ii}}
+\end{aligned}
+$$
+
+:::
+
+::: 
+
+
+
+
+
+## Eigendecomposition
+
+:::: {.columns style="font-size:80%"}
+We know that
+
+::: {.column width="50%"}
+
+
+$$
+\mathbf{Q}_{\rho_1} = \mathbf{V_{\rho_1}}\boldsymbol \Lambda_{\rho_1}\mathbf{V_{\rho_1}}^T
+$$
+
+:::
+
+::: {.column width="50%"}
+
+
+$$
+\mathbf{Q}_{\rho_2} = \mathbf{V_{\rho_2}}\boldsymbol \Lambda_{\rho_2}\mathbf{V_{\rho_2}}^T
+$$
+
+:::
+
+Which gives us
+
+$$
+\mathbf{Q} = (\mathbf{V_{\rho_1}} \otimes \mathbf{V_{\rho_2}})(\boldsymbol \Lambda_{\rho_1} \otimes \mathbf{I} + \mathbf{I} \otimes \boldsymbol \Lambda_{\rho_2})^{\nu + 1}(\mathbf{V_{\rho_1}} \otimes \mathbf{V_{\rho_2}})^T
+$$
+
+::::
+
+
+::: {.columns style="font-size:80%"}
+
+Efficiently loop over value/vector pairs of smaller matrices
+
+::: {.column width="50%"}
+
+$$
+\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j
+$$
+
+:::
+::: {.column widht="50%"}
+
+$$
+\left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j
+$$
+
+:::
+:::
+
+## Marginal Standard Deviations
+
+::: {style="font-size:70%"}
+
+$$
+\boldsymbol \Sigma = \mathbf Q^{-1} = (\mathbf{V}\boldsymbol\Lambda\mathbf{V}^T)^{-1} = \mathbf{V}\boldsymbol \Lambda^{-1}\mathbf{V}
+$$
+
+We know that if $A = BC$ then $A_{ii} = B_{i, .} C_{., i}$, so
+
+$$
+\boldsymbol \Sigma_{ii} = \sum_{k=1}^{n} v_{ik} \frac{1}{\lambda_k} (v^T)_{ki} = \sum_{k=1}^{n} v_{ik} \frac{1}{\lambda_k} v_{ik} = \sum_{k=1}^{n} v_{ik}^2 \frac{1}{\lambda_k}
+$$
+
+Compute vector $\sigma^2$ containing all marginal variances
+
+$$ 
+\sigma^2 = \sum_{i = 1}^{n_1} \sum_{j=1}^{n_2} \frac{\left(\left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j\right)^{2}}{\quad\left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)^{\nu+1}}
+$$
+
+:::
+
+## Marginal Standard Deviations
+
+:::: {.columns style="font-size:75%"}
+::: {.column width="58%"}
+```{r}
+#| echo: true
+dim1 <- 50; dim2 <- 50
+rho1 <- 0.5; rho2 <- 0.3
+nu <- 2
+
+Q1 <- make_AR_prec_matrix(dim1, rho1)
+Q2 <- make_AR_prec_matrix(dim2, rho2)
+
+I1 <- Matrix::Diagonal(dim1)
+I2 <- Matrix::Diagonal(dim2)
+
+Q <- temp <- kronecker(Q1, I2) + kronecker(I1, Q2)
+for (i in seq_len(nu)) Q <- Q %*% temp
+```
+:::
+
+::: {.column width="42%"}
+```{r}
+#| echo: true
+msd <- function(Q1, Q2) {
+
+  E1 <- eigen(Q1)
+  E2 <- eigen(Q2)
+
+  marginal_sd_eigen(
+    E1$values, E1$vectors, dim1,
+    E2$values, E2$vectors, dim2,
+    nu
+  ) |> 
+  sort()
+}
+```
+:::
+:::: 
+
+::: {style="font-size:75%"}
+```{r}
+#| echo: true
+#| cache: true
+bench::mark(
+  "solve" = solve(Q) |> diag() |> sqrt() |> sort(),
+  "inla.qinv" = inla.qinv(Q) |> diag() |> sqrt() |> sort(),
+  "marginal_sd_eigen" = msd(Q1, Q2),
+  iterations = 10,
+  filter_gc = FALSE
+)
+```
+:::
+
+## Calculating the (unscaled) density
+
+::: {style="font-size:70%"}
+
+The Gaussian copula log pdf is
+$$
+\log c(\mathbf{u}) = \frac{1}{2}\log|\mathbf{Q}| - \frac{1}{2}\mathbf{z}^T\mathbf{Q}\mathbf{z} + \frac{1}{2}\mathbf{z}^T\mathbf{z}
+$$
+
+Without scaling of $\mathbf Q$ we get
+
+$$
+\log|\mathbf{Q}| = \sum_{k=1}^{n_1n_2}\log\lambda_k = \sum_{i=1}^{n_1}\sum_{i=2}^{n_2} \log\left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)
+$$
+
+$$
+\mathbf{z}^T\mathbf{Q}\mathbf{z} = \sum_{k=1}^{n_1n_2}\lambda_k v_k^T\mathbf z = 
+\sum_{i=1}^{n_1}\sum_{i=2}^{n_2} 
+\left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)
+\left[\left(\left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j\right)^T\mathbf z\right]^2
+$$
+
+:::
+
+## The Precision Matrix
+
+$$
+\mathbf{Q} = \left( \mathbf{Q}_{\color{red}\rho_1} \otimes \mathbf{I_{\color{blue}n_2}} + \mathbf{I_{\color{red}n_1}} \otimes \mathbf{Q}_{\color{blue}\rho_2} \right)^{\nu + 1}, \quad \nu \in \{0, 1, 2\}
+$$
+
+:::: {.columns style="font-size:52%"}
+
+::: {.column width="50%"}
+$$
+\mathbf{Q}_{\color{red}\rho_{1}} = \frac{1}{1-{\color{red}\rho_{1}}^2}
+\begin{bmatrix}
+1 & -{\color{red}\rho_{1}} & 0 & \cdots & 0 \\
+-{\color{red}\rho_{1}} & 1+{\color{red}\rho_{1}}^2 & -{\color{red}\rho_{1}} & \cdots & 0 \\
+0 & -{\color{red}\rho_{1}} & 1+{\color{red}\rho_{1}}^2 & \cdots & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & 0 & \cdots & 1
+\end{bmatrix}
+$$
+
+:::
+
+::: {.column width="50%"}
+$$
+\mathbf{Q}_{\color{blue}\rho_{2}} = \frac{1}{1-{\color{blue}\rho_{2}}^2}
+\begin{bmatrix}
+1 & -{\color{blue}\rho_{2}} & 0 & \cdots & 0 \\
+-{\color{blue}\rho_{2}} & 1+{\color{blue}\rho_{2}}^2 & -{\color{blue}\rho_{2}} & \cdots & 0 \\
+0 & -{\color{blue}\rho_{2}} & 1+{\color{blue}\rho_{2}}^2 & \cdots & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & 0 & \cdots & 1
+\end{bmatrix}
+$$
+
+:::
+::::
+
+## The Precision Matrix
+
+$$
+\mathbf{Q} = \left( \mathbf{Q}_{\color{red}\rho_1} \otimes \mathbf{I_{\color{blue}n_2}} + \mathbf{I_{\color{red}n_1}} \otimes \mathbf{Q}_{\color{blue}\rho_2} \right)^{\nu + 1}, \quad \nu \in \{0, 1, 2\}
+$$
+
+:::: {.columns style="font-size:40%"}
+
+::: {.column width="70%"}
+
+$$
+\mathbf{Q_{{\color{red}\rho_1}}} \otimes \mathbf{I_{{\color{blue}n_2}}} = \frac{1}{1-{\color{red}\rho_1}^2}
+\begin{pmatrix}
+(1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} & -{\color{red}\rho_1}\mathbf{I_{{\color{blue}n_2}}} & \dots & \cdots & \dots \\
+-{\color{red}\rho_1}\mathbf{I_{{\color{blue}n_2}}} & (1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} & -{\color{red}\rho_1} \mathbf{I_{{\color{blue}n_2}}} & \cdots & \vdots  \\
+\vdots & \ddots & \ddots & \ddots & \vdots \\
+\dots & \dots & \cdots & -{\color{red}\rho_1} \mathbf{I_{{\color{blue}n_2}}} & (1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}}
+\end{pmatrix}
+$$
+
+:::
+
+::: {.column width="30%"}
+
+$$
+\mathbf{I_{\color{red}n_1}} \otimes \mathbf{Q_{\color{blue}\rho_2}} = 
+\begin{pmatrix}
+\mathbf{Q_{\color{blue}\rho_2}} & \mathbf{0} & \cdots & \mathbf{0} \\
+\mathbf{0} & \mathbf{\color{blue}Q_{\rho_2}} & \cdots & \mathbf{0} \\
+\vdots & \vdots & \ddots & \vdots \\
+\mathbf{0} & \mathbf{0} & \cdots & \mathbf{\color{blue}Q_{\rho_2}}
+\end{pmatrix}
+$$
+
+:::
+::::
+
+
+::: {style="font-size:50%"}
+
+$$
+\mathbf Q = \begin{pmatrix}
+(1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} + \mathbf{Q_{\color{blue}\rho_2}} & -{\color{red}\rho_1}\mathbf{I_{{\color{blue}n_2}}} & \dots & \cdots & \dots \\
+-{\color{red}\rho_1}\mathbf{I_{{\color{blue}n_2}}} & (1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} + \mathbf{q_{\color{blue}\rho_2}} & -{\color{red}\rho_1} \mathbf{I_{{\color{blue}n_2}}} & \cdots & \vdots  \\
+\vdots & \ddots & \ddots & \ddots & \vdots \\
+\dots & \dots & \cdots & -{\color{red}\rho_1} \mathbf{I_{{\color{blue}n_2}}} & (1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} + \mathbf{Q_{\color{blue}\rho_2}}
+\end{pmatrix}^{\nu + 1}
+$$
+
+:::
+
+## The Precision Matrix
+
+::: {.columns style="font-size:70%"}
+::: {.column width="50%"}
+```{r}
+#| echo: true
+make_AR_prec_matrix(dim = 3, rho = 0.5)
+```
+:::
+::: {.column width="50%"}
+```{r}
+#| echo: true
+make_AR_prec_matrix(dim = 4, rho = 0.3)
+```
+:::
+::: 
+
+::: {.r-fit-text style="font-size:50%"}
+
+```{r}
+#| echo: true
+make_matern_prec_matrix(dim_x = 3, dim_y = 4, rho1 = 0.5, rho2 = 0.3, nu = 0) |> round(4)
+```
+
+:::
+
+
+
+## Results and Discussion {data-name="Results"}
+
+- Performance on simulated and real datasets
+- Comparison with traditional methods (including BYM2)
+- Advantages in interpretability and scalability
+- Improved modeling of spatial dependencies in extreme values
+
+## Data Generation
+
+
+:::: {.columns .r-fit-text style="font-size:70%"}
+
+```{r}
+#| echo: true
+
+tictoc::tic()
+X <- rmatern_copula_folded_full(n = 100, dim1 = 160, dim2 = 90, rho1 = 0.8, rho2 = 0.9, nu = 2)
+tictoc::toc()
+```
+
+::: {.column width="50%"}
+
+```{r}
+#| echo: true
+plot_matern(X[, 1], 160, 90)
+```
+
+```{r}
+#| echo: true
+plot_matern(X[, 2], 160, 90)
+```
+:::
+
+::: {.column width="50%"}
+
+```{r}
+#| echo: true
+apply(X, 1, var) |> hist()
+```
+
+```{r}
+#| echo: true
+apply(X, 1, mean) |> hist()
+```
+:::
+
+::::
+
+## Conclusion and Future Work {data-name="Conclusion"}
+
+- Key contributions of our approach
+- Potential applications in various fields (e.g., climate science, hydrology)
 - Future research directions
 
 ## Thank You
 
-- Contact information
-- References
+- Contact information: brynjolfur@hi.is
+- Website: bggj.is
 - Q&A
