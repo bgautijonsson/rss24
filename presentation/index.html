@@ -425,6 +425,47 @@ Brynjólfur Gauti Guðrúnar Jónsson
 </ul>
 </div>
 </section>
+<section id="calculating-multivariate-normal-densities" class="slide level2">
+<h2>Calculating Multivariate Normal Densities</h2>
+<div class="columns" style="font-size:50%">
+<div class="column" style="width:50%;">
+<h3 id="log-density-formula">Log Density Formula</h3>
+<p><span class="math display">\[
+\log f(\mathbf{x}) \propto \frac{1}{2}\left(\log |\mathbf{Q}| - \mathbf{x}^T\mathbf{Q}\mathbf{x}\right)
+\]</span></p>
+<h3 id="key-components">Key Components</h3>
+<ol type="1">
+<li><strong>Log Determinant</strong>: <span class="math inline">\(\log |\mathbf{Q}|\)</span>
+<ul>
+<li>Constant for a given precision matrix</li>
+</ul></li>
+<li><strong>Quadratic Form</strong>: <span class="math inline">\(\mathbf{x}^T\mathbf{Q}\mathbf{x}\)</span>
+<ul>
+<li>Needs calculation for each density evaluation</li>
+<li>Represents Mahalanobis distance</li>
+</ul></li>
+</ol>
+</div><div class="column" style="width:50%;">
+<h3 id="computational-challenges">Computational Challenges</h3>
+<ul>
+<li>Log determinant calculation
+<ul>
+<li>Time complexity: <span class="math inline">\(O(n^3)\)</span> for naive methods</li>
+<li>Memory complexity: <span class="math inline">\(O(n^2)\)</span></li>
+</ul></li>
+<li>Quadratic form calculation
+<ul>
+<li>Time complexity: <span class="math inline">\(O(n^2)\)</span></li>
+<li>Critical for performance in large spatial fields</li>
+</ul></li>
+</ul>
+<h3 id="spatial-model-considerations">Spatial Model Considerations</h3>
+<ul>
+<li>Some models (e.g., ICAR) avoid log determinant calculation</li>
+<li>Efficient computation crucial for large-scale applications</li>
+</ul>
+</div></div>
+</section>
 <section id="spatial-models" class="slide level2">
 <h2>Spatial Models</h2>
 <div style="font-size:40%">
@@ -499,49 +540,33 @@ Brynjólfur Gauti Guðrúnar Jónsson
 </div></div>
 </div>
 </section>
-<section id="the-normal-distribution" class="slide level2">
-<h2>The Normal Distribution</h2>
-<div style="font-size:50%">
-<p>Log density of multivariate normal distribution</p>
-<p><span class="math display">\[
-\log f(\mathbf{x}) \propto \frac{1}{2}\left(\log |\mathbf{Q}| - \mathbf{x}^T\mathbf{Q}\mathbf{x}\right)
-\]</span></p>
-<div class="columns">
-<div class="column">
-<p><span class="math display">\[
-\log |\mathbf{Q}|
-\]</span></p>
-</div><div class="column">
-<p><span class="math display">\[
-\mathbf{x}^T\mathbf{Q}\mathbf{x}
-\]</span></p>
+<section id="spatial-modeling-on-parameter-level" class="slide level2">
+<h2>Spatial Modeling on Parameter-level</h2>
+<div class="columns" style="font-size:50%">
+<h3 id="generalized-extreme-value-gev-distribution">Generalized Extreme Value (GEV) Distribution</h3>
+<div class="column" style="width:50%;">
+<ul>
+<li>Parameters:
+<ul>
+<li><span class="math inline">\(\mu\)</span>: location parameter
+<ul>
+<li><span class="math inline">\(\mu = \mu_0 \left(1 + \Delta \left(t - t_0\right)\right)\)</span></li>
+<li>Model <span class="math inline">\(\mu_0\)</span> and trend <span class="math inline">\(\Delta\)</span></li>
+</ul></li>
+<li><span class="math inline">\(\sigma\)</span>: scale parameter</li>
+<li><span class="math inline">\(\xi\)</span>: shape parameter <span class="math display">\[
+\begin{aligned}
+\log(\mu_0) = \psi &amp;\sim \mathrm{BYM2}(\mu_{\mu_0}, \rho_{\mu_0}, \sigma_{\mu_0}) \\
+\log(\mu_0) - \log(\sigma) = \tau &amp;\sim \mathrm{BYM2}(\mu_\sigma, \rho_\sigma, \sigma_\sigma) \\
+f_\xi(\xi) = \phi &amp;\sim \mathrm{BYM2}(\mu_\xi, \rho_\xi, \sigma_\xi) \\
+f_\Delta(\Delta) = \gamma &amp;\sim \mathrm{BYM2}(\mu_\Delta, \rho_\Delta, \sigma_\Delta)
+\end{aligned}
+\]</span></li>
+</ul></li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><img data-src="images/facet_constrained.png"></p>
 </div></div>
-</div>
-</section>
-<section id="evolution-of-spatial-models-in-disease-mapping" class="slide level2">
-<h2>Evolution of Spatial Models in Disease Mapping</h2>
-<ul>
-<li>Besag model: Pioneering work in spatial statistics</li>
-<li>CAR (Conditional Autoregressive) models</li>
-<li>BYM (Besag-York-Mollié) model: Combining structured and unstructured spatial effects</li>
-<li>BYM2: Addressing scaling and interpretability issues
-<ul>
-<li>Proper scaling of spatial component</li>
-<li>Interpretable parameterization</li>
-</ul></li>
-</ul>
-</section>
-<section id="the-bym2-model-a-step-forward" class="slide level2">
-<h2>The BYM2 Model: A Step Forward</h2>
-<ul>
-<li>Structure and benefits of BYM2
-<ul>
-<li>Improved interpretability</li>
-<li>Proper scaling of spatial effects</li>
-</ul></li>
-<li>Computational advantages (sparse precision matrices)</li>
-<li>Applications in disease mapping and spatial statistics</li>
-</ul>
 </section>
 <section id="from-parameter-level-to-data-level-dependence" class="slide level2">
 <h2>From Parameter-level to Data-level Dependence</h2>
@@ -797,7 +822,7 @@ Brynjólfur Gauti Guðrúnar Jónsson
 <span id="cb5-2"><a href=""></a>X <span class="ot">&lt;-</span> <span class="fu">rmatern_copula_folded_full</span>(<span class="at">n =</span> <span class="dv">100</span>, <span class="at">dim1 =</span> <span class="dv">160</span>, <span class="at">dim2 =</span> <span class="dv">90</span>, <span class="at">rho1 =</span> <span class="fl">0.8</span>, <span class="at">rho2 =</span> <span class="fl">0.9</span>, <span class="at">nu =</span> <span class="dv">2</span>)</span>
 <span id="cb5-3"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>0.204 sec elapsed</code></pre>
+<pre><code>0.206 sec elapsed</code></pre>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">

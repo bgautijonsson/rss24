@@ -39,6 +39,45 @@ options(width = 648)
 - Two aspects of spatial dependence:
   1. GEV parameters (GMRF models)
   2. Data-level dependence (Copulas)
+
+:::
+
+## Calculating Multivariate Normal Densities
+
+::: {.columns style="font-size:50%"}
+
+::: {.column width="50%"}
+### Log Density Formula
+
+$$
+\log f(\mathbf{x}) \propto \frac{1}{2}\left(\log |\mathbf{Q}| - \mathbf{x}^T\mathbf{Q}\mathbf{x}\right)
+$$
+
+### Key Components
+
+1. **Log Determinant**: $\log |\mathbf{Q}|$
+   - Constant for a given precision matrix
+2. **Quadratic Form**: $\mathbf{x}^T\mathbf{Q}\mathbf{x}$
+   - Needs calculation for each density evaluation
+   - Represents Mahalanobis distance
+:::
+
+::: {.column width="50%"}
+### Computational Challenges
+
+- Log determinant calculation
+  - Time complexity: $O(n^3)$ for naive methods
+  - Memory complexity: $O(n^2)$
+- Quadratic form calculation
+  - Time complexity: $O(n^2)$
+  - Critical for performance in large spatial fields
+
+### Spatial Model Considerations
+
+- Some models (e.g., ICAR) avoid log determinant calculation
+- Efficient computation crucial for large-scale applications
+:::
+
 :::
 
 ## Spatial Models
@@ -125,57 +164,37 @@ $$
 :::
 :::
 
+:::
 
+## Spatial Modeling on Parameter-level
 
+::: {.columns style="font-size:50%"}
+### Generalized Extreme Value (GEV) Distribution
+
+::: {.column width="50%"}
+
+* Parameters: 
+  - $\mu$: location parameter
+    - $\mu = \mu_0 \left(1 + \Delta \left(t - t_0\right)\right)$
+    - Model $\mu_0$ and trend $\Delta$
+  - $\sigma$: scale parameter
+  - $\xi$: shape parameter
+$$
+\begin{aligned}
+\log(\mu_0) = \psi &\sim \mathrm{BYM2}(\mu_{\mu_0}, \rho_{\mu_0}, \sigma_{\mu_0}) \\
+\log(\mu_0) - \log(\sigma) = \tau &\sim \mathrm{BYM2}(\mu_\sigma, \rho_\sigma, \sigma_\sigma) \\
+f_\xi(\xi) = \phi &\sim \mathrm{BYM2}(\mu_\xi, \rho_\xi, \sigma_\xi) \\
+f_\Delta(\Delta) = \gamma &\sim \mathrm{BYM2}(\mu_\Delta, \rho_\Delta, \sigma_\Delta)
+\end{aligned}
+$$
 
 :::
 
-
-
-## The Normal Distribution
-
-::: {style="font-size:50%"}
-
-
-Log density of multivariate normal distribution
-
-$$
-\log f(\mathbf{x}) \propto \frac{1}{2}\left(\log |\mathbf{Q}| - \mathbf{x}^T\mathbf{Q}\mathbf{x}\right)
-$$
-
-
-
-::: {.columns}
-::: {.column}
-$$
-\log |\mathbf{Q}|
-$$
-:::
-::: {.column}
-$$
-\mathbf{x}^T\mathbf{Q}\mathbf{x}
-$$
-:::
-::: 
+::: {.column width="50%"}
+![](images/facet_constrained.png)
 :::
 
-
-## Evolution of Spatial Models in Disease Mapping
-
-- Besag model: Pioneering work in spatial statistics
-- CAR (Conditional Autoregressive) models
-- BYM (Besag-York-Mollié) model: Combining structured and unstructured spatial effects
-- BYM2: Addressing scaling and interpretability issues
-  - Proper scaling of spatial component
-  - Interpretable parameterization
-
-## The BYM2 Model: A Step Forward
-
-- Structure and benefits of BYM2
-  - Improved interpretability
-  - Proper scaling of spatial effects
-- Computational advantages (sparse precision matrices)
-- Applications in disease mapping and spatial statistics
+:::
 
 ## From Parameter-level to Data-level Dependence
 
