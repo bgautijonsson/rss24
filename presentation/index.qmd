@@ -12,7 +12,7 @@ format:
       flat: true
       barhtml:
         header: "<div class='menubar mb-10'><ul class='menu'></ul><div>"
-        footer: "<div class='footer footer-default' style='display: block;'> <a href='https://bggj.is/exeter' target='_blank'>bggj.is/exeter</a>  <img src='images/hi-audkenni_28-raunsvisd.png' class='slide-logo r-stretch'></div>"
+        footer: "<div class='footer footer-default' style='display: block;'> <a href='https://bggj.is/rss24' target='_blank'>bggj.is/rss24</a>  <img src='images/hi-audkenni_28-raunsvisd.png' class='slide-logo r-stretch'></div>"
       scale: 0.6
       width: 1600
       height: 900
@@ -31,23 +31,158 @@ options(width = 648)
 ```
 
 ## Introduction {data-name="Background"}
+::: {style="font-size:70%"}
+- Case study: UKCP Local Projections on a 5km grid over the UK (1980-2080)
+- Challenge: Modeling maximum daily precipitation in yearly blocks
+  - 43,920 spatial locations on a 180 x 244 grid
+- Computational complexity: Fitting GEV distributions to all locations
+- Two aspects of spatial dependence:
+  1. GEV parameters (GMRF models)
+  2. Data-level dependence (Copulas)
+:::
 
-- Importance of modeling spatial dependence in extreme values
-- Brief overview of traditional approaches (BYM model)
-- Challenges in large-scale spatial modeling
+## Spatial Models
 
-## Background: Spatial Models in Disease Mapping
+::: {style="font-size:40%"}
 
-- The Besag-York-Mollié (BYM) model
-  - Structure and benefits
-  - Computational advantages (sparse precision matrices)
-- Limitations of BYM, particularly in scaling and interpretation
+::: {.columns}
+#### Conditional Autoregression (CAR)
+::: {.column width="50%"}
 
-## The BYM2 Model: Addressing Scaling Issues
+* $\mathbf{D}$ is a diagonal matrix with $D_{ii} = n_i$, the number of neighbours of $i$
+* $\mathbf{A}$ is the adjacency matrix with $A_{ij} = A_{ji} = 1$ if $i \sim j$
+* $\tau$ models overall precision
+:::
+::: {.column width="50%"}
+$$
+\begin{aligned}
+\mathbf{x} &\sim N(\mathbf{0}, \tau \mathbf{Q}) \\
+\mathbf{Q} &= \mathbf{D}\left(\mathbf{I} - \alpha \mathbf{A} \right)
+\end{aligned}
+$$
+:::
+::: 
 
-- Introduction to BYM2 (Riebler et al., 2016)
-- Importance of proper scaling in spatial models
-- Interpretable parameterization in BYM2
+----------
+
+::: {.columns}
+#### Besag's Intrinsic Conditional Autoregression (ICAR)
+::: {.column width="50%"}
+
+* $\alpha = 1$, so $\mathbf Q$ is singular, but constant
+* Don't have to calculate $\log |\mathbf{Q}|$
+* $\tau$ is a precision parameter
+:::
+::: {.column width="50%"}
+$$
+\begin{aligned}
+\mathbf{x} &\sim N(\mathbf{0}, \tau \mathbf{Q}) \\
+\mathbf{Q} &= \mathbf{D} - \mathbf{W}
+\end{aligned}
+$$
+:::
+:::
+
+----------
+
+::: {.columns}
+#### BYM (Besag-York-Mollié) Model
+::: {.column width="50%"}
+
+* $\mathbf{u}$ is the structured spatial component (Besag model)
+* $\mathbf{v}$ is the unstructured component (i.i.d. normal)
+* $\tau_u$ and $\tau_v$ are precision parameters for each component
+:::
+::: {.column width="50%"}
+$$
+\begin{aligned}
+\mathbf{x} &= \mathbf{u} + \mathbf{v} \\
+\mathbf{u} &\sim \mathrm{ICAR}(\tau_u) \\
+\mathbf{v} &\sim N(\mathbf{0}, \tau_v^{-1})
+\end{aligned}
+$$
+:::
+:::
+
+----------
+
+::: {.columns}
+#### BYM2  Model
+::: {.column width="50%"}
+
+* Rewrite the combination to get proper scaling
+* $\rho$ models how much of variance is spatial
+* $s$ is a scaling factor chosen to make $\mathrm{Var}(\mathbf u_i) \approx 1$
+:::
+::: {.column width="50%"}
+$$
+\begin{aligned}
+\mathbf{x} &= \left(\left(\sqrt{\rho/s}\right)\mathbf{u} + \left(\sqrt{1 - \rho}\right) \mathbf{v} \right)\sigma \\
+\mathbf{u} &\sim \mathrm{ICAR}(1) \\
+\mathbf{v} &\sim N(\mathbf{0}, n)
+\end{aligned}
+$$
+:::
+:::
+
+
+
+
+:::
+
+
+
+## The Normal Distribution
+
+::: {style="font-size:50%"}
+
+
+Log density of multivariate normal distribution
+
+$$
+\log f(\mathbf{x}) \propto \frac{1}{2}\left(\log |\mathbf{Q}| - \mathbf{x}^T\mathbf{Q}\mathbf{x}\right)
+$$
+
+
+
+::: {.columns}
+::: {.column}
+$$
+\log |\mathbf{Q}|
+$$
+:::
+::: {.column}
+$$
+\mathbf{x}^T\mathbf{Q}\mathbf{x}
+$$
+:::
+::: 
+:::
+
+
+## Evolution of Spatial Models in Disease Mapping
+
+- Besag model: Pioneering work in spatial statistics
+- CAR (Conditional Autoregressive) models
+- BYM (Besag-York-Mollié) model: Combining structured and unstructured spatial effects
+- BYM2: Addressing scaling and interpretability issues
+  - Proper scaling of spatial component
+  - Interpretable parameterization
+
+## The BYM2 Model: A Step Forward
+
+- Structure and benefits of BYM2
+  - Improved interpretability
+  - Proper scaling of spatial effects
+- Computational advantages (sparse precision matrices)
+- Applications in disease mapping and spatial statistics
+
+## From Parameter-level to Data-level Dependence
+
+- Limitations of GMRF models for data-level spatial dependence
+- Need for new approaches in modeling extreme values
+- Introduction to GMRF copulas for data-level dependence
+- Our research: Combining GEV distributions with GMRF copulas
 
 ## The Need for Copulas in Spatial Extreme Value Modeling
 

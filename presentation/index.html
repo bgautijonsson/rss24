@@ -409,29 +409,147 @@ Brynjólfur Gauti Guðrúnar Jónsson
 </section>
 <section id="introduction" class="slide level2" data-name="Background">
 <h2>Introduction</h2>
+<div style="font-size:70%">
 <ul>
-<li>Importance of modeling spatial dependence in extreme values</li>
-<li>Brief overview of traditional approaches (BYM model)</li>
-<li>Challenges in large-scale spatial modeling</li>
-</ul>
-</section>
-<section id="background-spatial-models-in-disease-mapping" class="slide level2">
-<h2>Background: Spatial Models in Disease Mapping</h2>
+<li>Case study: UKCP Local Projections on a 5km grid over the UK (1980-2080)</li>
+<li>Challenge: Modeling maximum daily precipitation in yearly blocks
 <ul>
-<li>The Besag-York-Mollié (BYM) model
-<ul>
-<li>Structure and benefits</li>
-<li>Computational advantages (sparse precision matrices)</li>
+<li>43,920 spatial locations on a 180 x 244 grid</li>
 </ul></li>
-<li>Limitations of BYM, particularly in scaling and interpretation</li>
+<li>Computational complexity: Fitting GEV distributions to all locations</li>
+<li>Two aspects of spatial dependence:
+<ol type="1">
+<li>GEV parameters (GMRF models)</li>
+<li>Data-level dependence (Copulas)</li>
+</ol></li>
+</ul>
+</div>
+</section>
+<section id="spatial-models" class="slide level2">
+<h2>Spatial Models</h2>
+<div style="font-size:40%">
+<div class="columns">
+<h4 id="conditional-autoregression-car">Conditional Autoregression (CAR)</h4>
+<div class="column" style="width:50%;">
+<ul>
+<li><span class="math inline">\(\mathbf{D}\)</span> is a diagonal matrix with <span class="math inline">\(D_{ii} = n_i\)</span>, the number of neighbours of <span class="math inline">\(i\)</span></li>
+<li><span class="math inline">\(\mathbf{A}\)</span> is the adjacency matrix with <span class="math inline">\(A_{ij} = A_{ji} = 1\)</span> if <span class="math inline">\(i \sim j\)</span></li>
+<li><span class="math inline">\(\tau\)</span> models overall precision</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><span class="math display">\[
+\begin{aligned}
+\mathbf{x} &amp;\sim N(\mathbf{0}, \tau \mathbf{Q}) \\
+\mathbf{Q} &amp;= \mathbf{D}\left(\mathbf{I} - \alpha \mathbf{A} \right)
+\end{aligned}
+\]</span></p>
+</div></div>
+<hr>
+<div class="columns">
+<h4 id="besags-intrinsic-conditional-autoregression-icar">Besag’s Intrinsic Conditional Autoregression (ICAR)</h4>
+<div class="column" style="width:50%;">
+<ul>
+<li><span class="math inline">\(\alpha = 1\)</span>, so <span class="math inline">\(\mathbf Q\)</span> is singular, but constant</li>
+<li>Don’t have to calculate <span class="math inline">\(\log |\mathbf{Q}|\)</span></li>
+<li><span class="math inline">\(\tau\)</span> is a precision parameter</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><span class="math display">\[
+\begin{aligned}
+\mathbf{x} &amp;\sim N(\mathbf{0}, \tau \mathbf{Q}) \\
+\mathbf{Q} &amp;= \mathbf{D} - \mathbf{W}
+\end{aligned}
+\]</span></p>
+</div></div>
+<hr>
+<div class="columns">
+<h4 id="bym-besag-york-mollié-model">BYM (Besag-York-Mollié) Model</h4>
+<div class="column" style="width:50%;">
+<ul>
+<li><span class="math inline">\(\mathbf{u}\)</span> is the structured spatial component (Besag model)</li>
+<li><span class="math inline">\(\mathbf{v}\)</span> is the unstructured component (i.i.d. normal)</li>
+<li><span class="math inline">\(\tau_u\)</span> and <span class="math inline">\(\tau_v\)</span> are precision parameters for each component</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><span class="math display">\[
+\begin{aligned}
+\mathbf{x} &amp;= \mathbf{u} + \mathbf{v} \\
+\mathbf{u} &amp;\sim \mathrm{ICAR}(\tau_u) \\
+\mathbf{v} &amp;\sim N(\mathbf{0}, \tau_v^{-1})
+\end{aligned}
+\]</span></p>
+</div></div>
+<hr>
+<div class="columns">
+<h4 id="bym2-model">BYM2 Model</h4>
+<div class="column" style="width:50%;">
+<ul>
+<li>Rewrite the combination to get proper scaling</li>
+<li><span class="math inline">\(\rho\)</span> models how much of variance is spatial</li>
+<li><span class="math inline">\(s\)</span> is a scaling factor chosen to make <span class="math inline">\(\mathrm{Var}(\mathbf u_i) \approx 1\)</span></li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><span class="math display">\[
+\begin{aligned}
+\mathbf{x} &amp;= \left(\left(\sqrt{\rho/s}\right)\mathbf{u} + \left(\sqrt{1 - \rho}\right) \mathbf{v} \right)\sigma \\
+\mathbf{u} &amp;\sim \mathrm{ICAR}(1) \\
+\mathbf{v} &amp;\sim N(\mathbf{0}, n)
+\end{aligned}
+\]</span></p>
+</div></div>
+</div>
+</section>
+<section id="the-normal-distribution" class="slide level2">
+<h2>The Normal Distribution</h2>
+<div style="font-size:50%">
+<p>Log density of multivariate normal distribution</p>
+<p><span class="math display">\[
+\log f(\mathbf{x}) \propto \frac{1}{2}\left(\log |\mathbf{Q}| - \mathbf{x}^T\mathbf{Q}\mathbf{x}\right)
+\]</span></p>
+<div class="columns">
+<div class="column">
+<p><span class="math display">\[
+\log |\mathbf{Q}|
+\]</span></p>
+</div><div class="column">
+<p><span class="math display">\[
+\mathbf{x}^T\mathbf{Q}\mathbf{x}
+\]</span></p>
+</div></div>
+</div>
+</section>
+<section id="evolution-of-spatial-models-in-disease-mapping" class="slide level2">
+<h2>Evolution of Spatial Models in Disease Mapping</h2>
+<ul>
+<li>Besag model: Pioneering work in spatial statistics</li>
+<li>CAR (Conditional Autoregressive) models</li>
+<li>BYM (Besag-York-Mollié) model: Combining structured and unstructured spatial effects</li>
+<li>BYM2: Addressing scaling and interpretability issues
+<ul>
+<li>Proper scaling of spatial component</li>
+<li>Interpretable parameterization</li>
+</ul></li>
 </ul>
 </section>
-<section id="the-bym2-model-addressing-scaling-issues" class="slide level2">
-<h2>The BYM2 Model: Addressing Scaling Issues</h2>
+<section id="the-bym2-model-a-step-forward" class="slide level2">
+<h2>The BYM2 Model: A Step Forward</h2>
 <ul>
-<li>Introduction to BYM2 (Riebler et al., 2016)</li>
-<li>Importance of proper scaling in spatial models</li>
-<li>Interpretable parameterization in BYM2</li>
+<li>Structure and benefits of BYM2
+<ul>
+<li>Improved interpretability</li>
+<li>Proper scaling of spatial effects</li>
+</ul></li>
+<li>Computational advantages (sparse precision matrices)</li>
+<li>Applications in disease mapping and spatial statistics</li>
+</ul>
+</section>
+<section id="from-parameter-level-to-data-level-dependence" class="slide level2">
+<h2>From Parameter-level to Data-level Dependence</h2>
+<ul>
+<li>Limitations of GMRF models for data-level spatial dependence</li>
+<li>Need for new approaches in modeling extreme values</li>
+<li>Introduction to GMRF copulas for data-level dependence</li>
+<li>Our research: Combining GEV distributions with GMRF copulas</li>
 </ul>
 </section>
 <section id="the-need-for-copulas-in-spatial-extreme-value-modeling" class="slide level2">
@@ -679,7 +797,7 @@ Brynjólfur Gauti Guðrúnar Jónsson
 <span id="cb5-2"><a href=""></a>X <span class="ot">&lt;-</span> <span class="fu">rmatern_copula_folded_full</span>(<span class="at">n =</span> <span class="dv">100</span>, <span class="at">dim1 =</span> <span class="dv">160</span>, <span class="at">dim2 =</span> <span class="dv">90</span>, <span class="at">rho1 =</span> <span class="fl">0.8</span>, <span class="at">rho2 =</span> <span class="fl">0.9</span>, <span class="at">nu =</span> <span class="dv">2</span>)</span>
 <span id="cb5-3"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>0.239 sec elapsed</code></pre>
+<pre><code>0.204 sec elapsed</code></pre>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
@@ -778,7 +896,7 @@ Brynjólfur Gauti Guðrúnar Jónsson
 'autoAnimateDuration': 1,
 'autoAnimateUnmatched': true,
 'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
-'simplemenu': {"menubarclass":"menubar","menuclass":"menu","activeclass":"active","activeelement":"li","flat":true,"barhtml":{"header":"<div class='menubar mb-10'><ul class='menu'></ul><div>","footer":"<div class='footer footer-default' style='display: block;'> <a href='https://bggj.is/exeter' target='_blank'>bggj.is/exeter</a>  <img src='images/hi-audkenni_28-raunsvisd.png' class='slide-logo r-stretch'></div>"},"scale":0.6,"width":1600,"height":900},
+'simplemenu': {"menubarclass":"menubar","menuclass":"menu","activeclass":"active","activeelement":"li","flat":true,"barhtml":{"header":"<div class='menubar mb-10'><ul class='menu'></ul><div>","footer":"<div class='footer footer-default' style='display: block;'> <a href='https://bggj.is/rss24' target='_blank'>bggj.is/rss24</a>  <img src='images/hi-audkenni_28-raunsvisd.png' class='slide-logo r-stretch'></div>"},"scale":0.6,"width":1600,"height":900},
 'smaller': false,
  
         // Display controls in the bottom right corner
