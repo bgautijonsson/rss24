@@ -569,24 +569,26 @@ f_\Delta(\Delta) = \gamma &amp;\sim \mathrm{BYM2}(\mu_\gamma, \rho_\gamma, \sigm
 <h2>From Parameter-level to Data-level Dependence</h2>
 <div class="columns" style="font-size:60%">
 <div class="column" style="width:50%;">
-<h3 id="limitations-of-parameter-level-modeling">Limitations of Parameter-level Modeling</h3>
+<h3 id="parameter-level-modeling">Parameter-level Modeling</h3>
 <ul>
-<li>Assumes independence of observations given parameters</li>
-<li>Can lead to biased estimates of joint probabilities</li>
-<li>Variance in parameter estimates biased downwards</li>
+<li>Assumes conditional independence</li>
+<li>Biased joint probability estimates</li>
+<li>Underestimates parameter variance</li>
 </ul>
 </div><div class="column" style="width:50%;">
-<h3 id="benefits-of-copula-approach">Benefits of Copula Approach</h3>
+<h3 id="copula-approach">Copula Approach</h3>
 <ul>
-<li>Improves estimation of joint probabilities and return periods</li>
-<li>Enhances risk assessment for spatially correlated extreme events</li>
-<li>Less biased variance in parameter estimates</li>
+<li>Improves joint probabilities</li>
+<li>Enhances spatial risk assessment</li>
+<li>Better variance estimates</li>
 </ul>
-</div><p><strong>Sklar’s Theorem</strong> states that there exists a unique copula C on <span class="math inline">\([0, 1]^d\)</span>, such that</p><p><span class="math display">\[
-\begin{aligned}
-H(\mathbf x) &amp;= C\left(F_1(x_1), \dots, F_d(x_d)\right) \\
-h(\mathbf x) &amp;= c\left(F_1(x_1), \dots, F_d(x_d)\right) \prod_{i=1}^d f_i(x_i)
-\end{aligned}
+</div></div>
+<div style="font-size:65%; margin-top:20px;">
+<p><strong>Sklar’s Theorem</strong>: For any multivariate distribution <span class="math inline">\(H\)</span>, there exists a unique copula <span class="math inline">\(C\)</span> such that:</p>
+<p><span class="math display">\[H(\mathbf x) = C(F_1(x_1), \dots, F_d(x_d))\]</span></p>
+<p>where <span class="math inline">\(F_i\)</span> are marginal distributions. We can also write this as a density</p>
+<p><span class="math display">\[
+h(x) = c(F_1(x_1), \dots, F_d(x_d)) \prod_{i=1}^d f_i(x_i)
 \]</span></p>
 </div>
 </section>
@@ -622,6 +624,7 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 <li>Matérn-like precision matrix <span class="math inline">\(\mathbf{Q}\)</span></li>
 <li>Scaled so <span class="math inline">\(\boldsymbol{\Sigma} = \mathbf{Q}^{-1}\)</span> is correlation matrix</li>
 <li>If <span class="math inline">\(\mathbf{Q} = \mathbf{I}\)</span> simplifies to independent margins</li>
+<li>How to generate, scale and compute with <span class="math inline">\(\mathbf{Q}\)</span> quickly (for MCMC)?</li>
 </ul>
 </div><div class="column" style="width:50%;">
 <p><span class="math display">\[
@@ -856,7 +859,7 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 <span id="cb5-2"><a href=""></a>X <span class="ot">&lt;-</span> <span class="fu">rmatern_copula_folded_full</span>(<span class="at">n =</span> <span class="dv">100</span>, <span class="at">dim1 =</span> <span class="dv">160</span>, <span class="at">dim2 =</span> <span class="dv">90</span>, <span class="at">rho1 =</span> <span class="fl">0.8</span>, <span class="at">rho2 =</span> <span class="fl">0.9</span>, <span class="at">nu =</span> <span class="dv">2</span>)</span>
 <span id="cb5-3"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>0.212 sec elapsed</code></pre>
+<pre><code>0.211 sec elapsed</code></pre>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
