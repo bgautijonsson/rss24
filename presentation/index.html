@@ -438,6 +438,7 @@ Brynjólfur Gauti Guðrúnar Jónsson
 <li><strong>Log Determinant</strong>: <span class="math inline">\(\log |\mathbf{Q}|\)</span>
 <ul>
 <li>Constant for a given precision matrix</li>
+<li>Reevaluated in every iteration of optimizer/MCMC</li>
 </ul></li>
 <li><strong>Quadratic Form</strong>: <span class="math inline">\(\mathbf{x}^T\mathbf{Q}\mathbf{x}\)</span>
 <ul>
@@ -543,10 +544,7 @@ Brynjólfur Gauti Guðrúnar Jónsson
 <section id="spatial-modeling-on-parameter-level" class="slide level2">
 <h2>Spatial Modeling on Parameter-level</h2>
 <div class="columns" style="font-size:50%">
-<h3 id="generalized-extreme-value-gev-distribution">Generalized Extreme Value (GEV) Distribution</h3>
 <div class="column" style="width:50%;">
-<ul>
-<li>Parameters:
 <ul>
 <li><span class="math inline">\(\mu\)</span>: location parameter
 <ul>
@@ -556,13 +554,12 @@ Brynjólfur Gauti Guðrúnar Jónsson
 <li><span class="math inline">\(\sigma\)</span>: scale parameter</li>
 <li><span class="math inline">\(\xi\)</span>: shape parameter <span class="math display">\[
 \begin{aligned}
-\log(\mu_0) = \psi &amp;\sim \mathrm{BYM2}(\mu_{\mu_0}, \rho_{\mu_0}, \sigma_{\mu_0}) \\
-\log(\mu_0) - \log(\sigma) = \tau &amp;\sim \mathrm{BYM2}(\mu_\sigma, \rho_\sigma, \sigma_\sigma) \\
-f_\xi(\xi) = \phi &amp;\sim \mathrm{BYM2}(\mu_\xi, \rho_\xi, \sigma_\xi) \\
-f_\Delta(\Delta) = \gamma &amp;\sim \mathrm{BYM2}(\mu_\Delta, \rho_\Delta, \sigma_\Delta)
+\log(\mu_0) = \psi &amp;\sim \mathrm{BYM2}(\mu_\psi, \rho_\psi, \sigma_\psi) \\
+\log(\mu_0) - \log(\sigma) = \tau &amp;\sim \mathrm{BYM2}(\mu_\tau, \rho_\tau, \sigma_\tau) \\
+f_\xi(\xi) = \phi &amp;\sim \mathrm{BYM2}(\mu_\phi, \rho_\phi, \sigma_\phi) \\
+f_\Delta(\Delta) = \gamma &amp;\sim \mathrm{BYM2}(\mu_\gamma, \rho_\gamma, \sigma_\gamma)
 \end{aligned}
-\]</span></li>
-</ul></li>
+\]</span> <img data-src="images/bym_table.png"></li>
 </ul>
 </div><div class="column" style="width:50%;">
 <p><img data-src="images/facet_constrained.png"></p>
@@ -570,34 +567,71 @@ f_\Delta(\Delta) = \gamma &amp;\sim \mathrm{BYM2}(\mu_\Delta, \rho_\Delta, \sigm
 </section>
 <section id="from-parameter-level-to-data-level-dependence" class="slide level2">
 <h2>From Parameter-level to Data-level Dependence</h2>
+<div class="columns" style="font-size:60%">
+<div class="column" style="width:50%;">
+<h3 id="limitations-of-parameter-level-modeling">Limitations of Parameter-level Modeling</h3>
 <ul>
-<li>Limitations of GMRF models for data-level spatial dependence</li>
-<li>Need for new approaches in modeling extreme values</li>
-<li>Introduction to GMRF copulas for data-level dependence</li>
-<li>Our research: Combining GEV distributions with GMRF copulas</li>
+<li>Assumes independence of observations given parameters</li>
+<li>Can lead to biased estimates of joint probabilities</li>
+<li>Variance in parameter estimates biased downwards</li>
 </ul>
+</div><div class="column" style="width:50%;">
+<h3 id="benefits-of-copula-approach">Benefits of Copula Approach</h3>
+<ul>
+<li>Improves estimation of joint probabilities and return periods</li>
+<li>Enhances risk assessment for spatially correlated extreme events</li>
+<li>Less biased variance in parameter estimates</li>
+</ul>
+</div><p><strong>Sklar’s Theorem</strong> states that there exists a unique copula C on <span class="math inline">\([0, 1]^d\)</span>, such that</p><p><span class="math display">\[
+\begin{aligned}
+H(\mathbf x) &amp;= C\left(F_1(x_1), \dots, F_d(x_d)\right) \\
+h(\mathbf x) &amp;= c\left(F_1(x_1), \dots, F_d(x_d)\right) \prod_{i=1}^d f_i(x_i)
+\end{aligned}
+\]</span></p>
+</div>
 </section>
-<section id="the-need-for-copulas-in-spatial-extreme-value-modeling" class="slide level2">
-<h2>The Need for Copulas in Spatial Extreme Value Modeling</h2>
+<section id="our-approach-matérn-like-gaussian-copula" class="slide level2">
+<h2>Our Approach: Matérn-like Gaussian Copula</h2>
+<div style="font-size:55%">
+<p><span class="math display">\[
+\begin{gathered}
+\log h(\mathbf x) = \log c\left(F_1(x_1), \dots, F_d(x_d)\right) + \sum_{i=1}^d \log f_i(x_i)
+\end{gathered}
+\]</span></p>
+<hr>
+<div class="columns">
+<h3 id="marginal-cdfs">Marginal CDFs</h3>
+<div class="column" style="width:50%;">
 <ul>
-<li>Limitations of traditional approaches for extreme values</li>
-<li>Why extreme values require special treatment</li>
-<li>Benefits of copulas for modeling dependencies in extremes
-<ul>
-<li>Flexibility in capturing complex dependence structures</li>
-<li>Ability to separate marginal distributions from dependence structure</li>
-</ul></li>
-<li>Specific advantages for spatially distributed extreme values</li>
+<li><span class="math inline">\(F_i(x_i)\)</span> is <span class="math inline">\(\mathrm{GEV}(\mu_i, \sigma_i, \xi_i)\)</span></li>
+<li>Can model parameter dependence with BYM2</li>
 </ul>
-</section>
-<section id="our-approach-gmrf-copulas-for-gev-distributions" class="slide level2">
-<h2>Our Approach: GMRF Copulas for GEV Distributions</h2>
+</div><div class="column" style="width:50%;">
+<p><span class="math display">\[
+\begin{aligned}
+\log h(\mathbf x) &amp;= \log c(u_1, \dots, u_d) + \sum_{i=1}^d f_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i) \\
+u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
+\end{aligned}
+\]</span></p>
+</div></div>
+<hr>
+<div class="columns">
+<h3 id="gaussian-copula">Gaussian Copula</h3>
+<div class="column" style="width:50%;">
 <ul>
-<li>Combining GEV distributions with GMRF copulas</li>
-<li>Ensuring unit marginal variance: challenges and solutions</li>
-<li>Why unit marginal variance is crucial for copula modeling</li>
-<li>How this approach addresses the specific needs of spatial extreme value modeling</li>
+<li>Matérn-like precision matrix <span class="math inline">\(\mathbf{Q}\)</span></li>
+<li>Scaled so <span class="math inline">\(\boldsymbol{\Sigma} = \mathbf{Q}^{-1}\)</span> is correlation matrix</li>
+<li>If <span class="math inline">\(\mathbf{Q} = \mathbf{I}\)</span> simplifies to independent margins</li>
 </ul>
+</div><div class="column" style="width:50%;">
+<p><span class="math display">\[
+\begin{aligned}
+\log c(\mathbf u) &amp;\propto \frac{1}{2}\left(\log |\mathbf{Q}| - \mathbf{z}^T\mathbf{Q}\mathbf{z} + \mathbf{z}^T\mathbf{z}\right) \\
+\mathbf{z} &amp;= \Phi^{-1}(\mathbf u)
+\end{aligned}
+\]</span></p>
+</div></div>
+</div>
 </section>
 <section id="computational-methods" class="slide level2" data-name="Methods">
 <h2>Computational Methods</h2>
@@ -822,7 +856,7 @@ f_\Delta(\Delta) = \gamma &amp;\sim \mathrm{BYM2}(\mu_\Delta, \rho_\Delta, \sigm
 <span id="cb5-2"><a href=""></a>X <span class="ot">&lt;-</span> <span class="fu">rmatern_copula_folded_full</span>(<span class="at">n =</span> <span class="dv">100</span>, <span class="at">dim1 =</span> <span class="dv">160</span>, <span class="at">dim2 =</span> <span class="dv">90</span>, <span class="at">rho1 =</span> <span class="fl">0.8</span>, <span class="at">rho2 =</span> <span class="fl">0.9</span>, <span class="at">nu =</span> <span class="dv">2</span>)</span>
 <span id="cb5-3"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>0.206 sec elapsed</code></pre>
+<pre><code>0.212 sec elapsed</code></pre>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">

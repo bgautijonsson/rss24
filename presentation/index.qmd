@@ -57,6 +57,7 @@ $$
 
 1. **Log Determinant**: $\log |\mathbf{Q}|$
    - Constant for a given precision matrix
+   - Reevaluated in every iteration of optimizer/MCMC
 2. **Quadratic Form**: $\mathbf{x}^T\mathbf{Q}\mathbf{x}$
    - Needs calculation for each density evaluation
    - Represents Mahalanobis distance
@@ -169,24 +170,23 @@ $$
 ## Spatial Modeling on Parameter-level
 
 ::: {.columns style="font-size:50%"}
-### Generalized Extreme Value (GEV) Distribution
 
 ::: {.column width="50%"}
 
-* Parameters: 
-  - $\mu$: location parameter
-    - $\mu = \mu_0 \left(1 + \Delta \left(t - t_0\right)\right)$
-    - Model $\mu_0$ and trend $\Delta$
-  - $\sigma$: scale parameter
-  - $\xi$: shape parameter
+- $\mu$: location parameter
+  - $\mu = \mu_0 \left(1 + \Delta \left(t - t_0\right)\right)$
+  - Model $\mu_0$ and trend $\Delta$
+- $\sigma$: scale parameter
+- $\xi$: shape parameter
 $$
 \begin{aligned}
-\log(\mu_0) = \psi &\sim \mathrm{BYM2}(\mu_{\mu_0}, \rho_{\mu_0}, \sigma_{\mu_0}) \\
-\log(\mu_0) - \log(\sigma) = \tau &\sim \mathrm{BYM2}(\mu_\sigma, \rho_\sigma, \sigma_\sigma) \\
-f_\xi(\xi) = \phi &\sim \mathrm{BYM2}(\mu_\xi, \rho_\xi, \sigma_\xi) \\
-f_\Delta(\Delta) = \gamma &\sim \mathrm{BYM2}(\mu_\Delta, \rho_\Delta, \sigma_\Delta)
+\log(\mu_0) = \psi &\sim \mathrm{BYM2}(\mu_\psi, \rho_\psi, \sigma_\psi) \\
+\log(\mu_0) - \log(\sigma) = \tau &\sim \mathrm{BYM2}(\mu_\tau, \rho_\tau, \sigma_\tau) \\
+f_\xi(\xi) = \phi &\sim \mathrm{BYM2}(\mu_\phi, \rho_\phi, \sigma_\phi) \\
+f_\Delta(\Delta) = \gamma &\sim \mathrm{BYM2}(\mu_\gamma, \rho_\gamma, \sigma_\gamma)
 \end{aligned}
 $$
+![](images/bym_table.png)
 
 :::
 
@@ -198,26 +198,101 @@ $$
 
 ## From Parameter-level to Data-level Dependence
 
-- Limitations of GMRF models for data-level spatial dependence
-- Need for new approaches in modeling extreme values
-- Introduction to GMRF copulas for data-level dependence
-- Our research: Combining GEV distributions with GMRF copulas
+::: {.columns style="font-size:60%"}
 
-## The Need for Copulas in Spatial Extreme Value Modeling
+::: {.column width="50%"}
+### Limitations of Parameter-level Modeling
 
-- Limitations of traditional approaches for extreme values
-- Why extreme values require special treatment
-- Benefits of copulas for modeling dependencies in extremes
-  - Flexibility in capturing complex dependence structures
-  - Ability to separate marginal distributions from dependence structure
-- Specific advantages for spatially distributed extreme values
+- Assumes independence of observations given parameters
+- Can lead to biased estimates of joint probabilities
+- Variance in parameter estimates biased downwards
+:::
 
-## Our Approach: GMRF Copulas for GEV Distributions
+::: {.column width="50%"}
+### Benefits of Copula Approach
 
-- Combining GEV distributions with GMRF copulas
-- Ensuring unit marginal variance: challenges and solutions
-- Why unit marginal variance is crucial for copula modeling
-- How this approach addresses the specific needs of spatial extreme value modeling
+- Improves estimation of joint probabilities and return periods
+- Enhances risk assessment for spatially correlated extreme events
+- Less biased variance in parameter estimates
+:::
+
+
+**Sklar's Theorem** states that there exists a unique copula C on $[0, 1]^d$, such that
+
+$$
+\begin{aligned}
+H(\mathbf x) &= C\left(F_1(x_1), \dots, F_d(x_d)\right) \\
+h(\mathbf x) &= c\left(F_1(x_1), \dots, F_d(x_d)\right) \prod_{i=1}^d f_i(x_i)
+\end{aligned}
+$$
+
+:::
+
+## Our Approach: Matérn-like Gaussian Copula
+
+
+::: {style="font-size:55%"}
+
+$$
+\begin{gathered}
+\log h(\mathbf x) = \log c\left(F_1(x_1), \dots, F_d(x_d)\right) + \sum_{i=1}^d \log f_i(x_i)
+\end{gathered}
+$$
+
+----------
+
+::: {.columns}
+
+### Marginal CDFs
+::: {.column width="50%"}
+
+* $F_i(x_i)$ is $\mathrm{GEV}(\mu_i, \sigma_i, \xi_i)$
+* Can model parameter dependence with BYM2
+
+
+:::
+
+::: {.column width="50%"}
+
+$$
+\begin{aligned}
+\log h(\mathbf x) &= \log c(u_1, \dots, u_d) + \sum_{i=1}^d f_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i) \\
+u_i &= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
+\end{aligned}
+$$
+
+:::
+
+:::
+
+----------
+
+
+::: {.columns}
+
+### Gaussian Copula
+::: {.column width="50%"}
+
+* Matérn-like precision matrix $\mathbf{Q}$
+* Scaled so $\boldsymbol{\Sigma} = \mathbf{Q}^{-1}$ is correlation matrix
+* If $\mathbf{Q} = \mathbf{I}$ simplifies to independent margins
+
+:::
+
+::: {.column width="50%"}
+
+$$
+\begin{aligned}
+\log c(\mathbf u) &\propto \frac{1}{2}\left(\log |\mathbf{Q}| - \mathbf{z}^T\mathbf{Q}\mathbf{z} + \mathbf{z}^T\mathbf{z}\right) \\
+\mathbf{z} &= \Phi^{-1}(\mathbf u)
+\end{aligned}
+$$
+
+:::
+
+:::
+
+:::
 
 ## Computational Methods {data-name="Methods"}
 
