@@ -1,0 +1,18 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Home"
+  navbar:
+    left:
+      - href: presentation/index.qmd
+        text: Presentation Slides
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+
+execute:
+  freeze: true
