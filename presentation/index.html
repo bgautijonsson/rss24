@@ -437,15 +437,17 @@ Brynjólfur Gauti Guðrúnar Jónsson
 \]</span></p>
 <h3 id="key-components">Key Components</h3>
 <ol type="1">
-<li><strong>Log Determinant</strong>: <span class="math inline">\(\log |\mathbf{Q}|\)</span>
+<li><strong>Log Determinant</strong>: <span class="math inline">\(\log |\mathbf{Q}|\)</span></li>
+</ol>
 <ul>
 <li>Constant for a given precision matrix</li>
-</ul></li>
-<li><strong>Quadratic Form</strong>: <span class="math inline">\(\mathbf{x}^T\mathbf{Q}\mathbf{x}\)</span>
+</ul>
+<ol start="2" type="1">
+<li><strong>Quadratic Form</strong>: <span class="math inline">\(\mathbf{x}^T\mathbf{Q}\mathbf{x}\)</span></li>
+</ol>
 <ul>
 <li>Needs calculation for each density evaluation</li>
-</ul></li>
-</ol>
+</ul>
 </div><div class="column" style="width:50%;">
 <h3 id="computational-challenges">Computational Challenges</h3>
 <ul>
@@ -470,8 +472,8 @@ Brynjólfur Gauti Guðrúnar Jónsson
 <section id="spatial-models" class="slide level2">
 <h2>Spatial Models</h2>
 <div style="font-size:40%">
-<div class="columns">
 <h4 id="conditional-autoregression-car">Conditional Autoregression (CAR)</h4>
+<div class="columns">
 <div class="column" style="width:50%;">
 <ul>
 <li><span class="math inline">\(\mathbf{D}\)</span> is a diagonal matrix with <span class="math inline">\(D_{ii} = n_i\)</span>, the number of neighbours of <span class="math inline">\(i\)</span></li>
@@ -487,8 +489,8 @@ Brynjólfur Gauti Guðrúnar Jónsson
 \]</span></p>
 </div></div>
 <hr>
+<h4 id="intrinsic-conditional-autoregression-icar">Intrinsic Conditional Autoregression (ICAR)</h4>
 <div class="columns">
-<h4 id="besags-intrinsic-conditional-autoregression-icar">Besag’s Intrinsic Conditional Autoregression (ICAR)</h4>
 <div class="column" style="width:50%;">
 <ul>
 <li><span class="math inline">\(\alpha = 1\)</span>, so <span class="math inline">\(\mathbf Q\)</span> is singular, but constant</li>
@@ -504,8 +506,8 @@ Brynjólfur Gauti Guðrúnar Jónsson
 \]</span></p>
 </div></div>
 <hr>
-<div class="columns">
 <h4 id="bym-besag-york-mollié-model">BYM (Besag-York-Mollié) Model</h4>
+<div class="columns">
 <div class="column" style="width:50%;">
 <ul>
 <li><span class="math inline">\(\mathbf{u}\)</span> is the structured spatial component (Besag model)</li>
@@ -522,8 +524,8 @@ Brynjólfur Gauti Guðrúnar Jónsson
 \]</span></p>
 </div></div>
 <hr>
-<div class="columns">
 <h4 id="bym2-model">BYM2 Model</h4>
+<div class="columns">
 <div class="column" style="width:50%;">
 <ul>
 <li>Rewrite the combination to get proper scaling</li>
@@ -2013,7 +2015,7 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 <span id="cb5-2"><a href=""></a>X <span class="ot">&lt;-</span> <span class="fu">rmatern_copula_folded_full</span>(<span class="at">n =</span> <span class="dv">100</span>, <span class="at">dim1 =</span> <span class="dv">200</span>, <span class="at">dim2 =</span> <span class="dv">90</span>, <span class="at">rho1 =</span> <span class="fl">0.8</span>, <span class="at">rho2 =</span> <span class="fl">0.9</span>, <span class="at">nu =</span> <span class="dv">2</span>)</span>
 <span id="cb5-3"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>0.252 sec elapsed</code></pre>
+<pre><code>0.273 sec elapsed</code></pre>
 </div>
 </div><div class="column" style="width:50%;text-align:center;">
 <div class="cell">
@@ -2078,7 +2080,7 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 <li><a href="https://www.bggj.is/materneigenpaper">Finish drafting paper</a></li>
 <li><a href="https://www.github.com/bgautijonsson/stdmatern">R package</a></li>
 </ul>
-</div><h3 id="phd-committee">PhD Committee</h3>
+</div><hr><h3 id="phd-committee">PhD Committee</h3>
 <p>My thanks to my advisor and committee</p>
 <ul>
 <li>Birgir Hrafnkelsson (PI)</li>
@@ -2124,7 +2126,7 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 'autoAnimateDuration': 1,
 'autoAnimateUnmatched': true,
 'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
-'simplemenu': {"menubarclass":"menubar","menuclass":"menu","activeclass":"active","activeelement":"li","flat":true,"barhtml":{"header":"<div class='menubar mb-10'><ul class='menu'></ul><div>","footer":"<div class='footer footer-default' style='display: block;'> <a href='https://bggj.is/rss24' target='_blank'>bggj.is/rss24</a>  <img src='images/hi-audkenni_28-raunsvisd.png' class='slide-logo r-stretch'></div>"},"scale":0.6,"width":1600,"height":900},
+'simplemenu': {"menubarclass":"menubar","menuclass":"menu","activeclass":"active","activeelement":"li","flat":false,"barhtml":{"header":"<div class='menubar mb-10'><ul class='menu'></ul><div>","footer":"<div class='footer footer-default' style='display: block;'> <a href='https://bggj.is/rss24' target='_blank'>bggj.is/rss24</a>  <img src='images/hi-audkenni_28-raunsvisd.png' class='slide-logo r-stretch'></div>"},"scale":0.67},
 'smaller': false,
  
         // Display controls in the bottom right corner
@@ -2260,7 +2262,7 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
         backgroundTransition: 'none',
 
         // Number of slides away from the current that are visible
-        viewDistance: 5,
+        viewDistance: 3,
 
         // Number of slides away from the current that are visible on mobile
         // devices. It is advisable to set this to a lower number than

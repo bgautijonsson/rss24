@@ -7,15 +7,11 @@ format:
   revealjs:
     theme: theme.scss
     auto-stretch: true
-    view-distance: 5
     simplemenu:
-      flat: true
+      flat: false
       barhtml:
         header: "<div class='menubar mb-10'><ul class='menu'></ul><div>"
         footer: "<div class='footer footer-default' style='display: block;'> <a href='https://bggj.is/rss24' target='_blank'>bggj.is/rss24</a>  <img src='images/hi-audkenni_28-raunsvisd.png' class='slide-logo r-stretch'></div>"
-      scale: 0.6
-      width: 1600
-      height: 900
 html-math-method:
   method: mathjax
   url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
@@ -34,18 +30,18 @@ options(width = 648)
 ## Introduction {data-name="Background"}
 ::: {.columns style="font-size:70%"}
 
-::: {.column width="70%"}
+:::: {.column width="70%"}
 - UKCP Local Projections on a 5km grid over the UK (1980-2080)
 - Challenge: Modeling maximum daily precipitation in yearly blocks
   - 43,920 spatial locations on a 180 x 244 grid
 - Two aspects of spatial dependence:
   1. GEV parameters (ICAR models)
   2. Data-level dependence (Copulas)
-:::
+::::
 
-::: {.column width="30%"}
+:::: {.column width="30%"}
 ![](images/ukcp_data.png){width="100%"}
-:::
+::::
 
 :::
 
@@ -53,7 +49,7 @@ options(width = 648)
 
 ::: {.columns style="font-size:50%"}
 
-::: {.column width="50%"}
+:::: {.column width="50%"}
 ### Log Density Formula
 
 $$
@@ -63,12 +59,12 @@ $$
 ### Key Components
 
 1. **Log Determinant**: $\log |\mathbf{Q}|$
-   - Constant for a given precision matrix
+  - Constant for a given precision matrix
 2. **Quadratic Form**: $\mathbf{x}^T\mathbf{Q}\mathbf{x}$
-   - Needs calculation for each density evaluation
-:::
+  - Needs calculation for each density evaluation
+::::
 
-::: {.column width="50%"}
+:::: {.column width="50%"}
 ### Computational Challenges
 
 - Log determinant calculation
@@ -82,7 +78,7 @@ $$
 
 - Some models (e.g., ICAR) avoid log determinant calculation
 - Efficient computation crucial for large-scale applications
-:::
+::::
 
 :::
 
@@ -90,55 +86,52 @@ $$
 
 ::: {style="font-size:40%"}
 
-::: {.columns}
 #### Conditional Autoregression (CAR)
-::: {.column width="50%"}
-
+:::: {.columns}
+::::: {.column width="50%"}
 * $\mathbf{D}$ is a diagonal matrix with $D_{ii} = n_i$, the number of neighbours of $i$
 * $\mathbf{A}$ is the adjacency matrix with $A_{ij} = A_{ji} = 1$ if $i \sim j$
 * $\tau$ models overall precision
-:::
-::: {.column width="50%"}
+:::::
+::::: {.column width="50%"}
 $$
 \begin{aligned}
 \mathbf{x} &\sim N(\mathbf{0}, \tau \mathbf{Q}) \\
 \mathbf{Q} &= \mathbf{D}\left(\mathbf{I} - \alpha \mathbf{A} \right)
 \end{aligned}
 $$
-:::
-::: 
+:::::
+::::
 
 ----------
 
-::: {.columns}
-#### Besag's Intrinsic Conditional Autoregression (ICAR)
-::: {.column width="50%"}
-
+#### Intrinsic Conditional Autoregression (ICAR)
+:::: {.columns}
+::::: {.column width="50%"}
 * $\alpha = 1$, so $\mathbf Q$ is singular, but constant
 * Don't have to calculate $\log |\mathbf{Q}|$
 * $\tau$ is a precision parameter
-:::
-::: {.column width="50%"}
+:::::
+::::: {.column width="50%"}
 $$
 \begin{aligned}
 \mathbf{x} &\sim N(\mathbf{0}, \tau \mathbf{Q}) \\
 \mathbf{Q} &= \mathbf{D} - \mathbf{W}
 \end{aligned}
 $$
-:::
-:::
+:::::
+::::
 
 ----------
 
-::: {.columns}
 #### BYM (Besag-York-Mollié) Model
-::: {.column width="50%"}
-
+:::: {.columns}
+::::: {.column width="50%"}
 * $\mathbf{u}$ is the structured spatial component (Besag model)
 * $\mathbf{v}$ is the unstructured component (i.i.d. normal)
 * $\tau_u$ and $\tau_v$ are precision parameters for each component
-:::
-::: {.column width="50%"}
+:::::
+::::: {.column width="50%"}
 $$
 \begin{aligned}
 \mathbf{x} &= \mathbf{u} + \mathbf{v} \\
@@ -146,20 +139,19 @@ $$
 \mathbf{v} &\sim N(\mathbf{0}, \tau_v^{-1})
 \end{aligned}
 $$
-:::
-:::
+:::::
+::::
 
 ----------
 
-::: {.columns}
 #### BYM2  Model
-::: {.column width="50%"}
-
+:::: {.columns}
+::::: {.column width="50%"}
 * Rewrite the combination to get proper scaling
 * $\rho$ models how much of variance is spatial
 * $s$ is a scaling factor chosen to make $\mathrm{Var}(\mathbf u_i) \approx 1$
-:::
-::: {.column width="50%"}
+:::::
+::::: {.column width="50%"}
 $$
 \begin{aligned}
 \mathbf{x} &= \left(\left(\sqrt{\rho/s}\right)\mathbf{u} + \left(\sqrt{1 - \rho}\right) \mathbf{v} \right)\sigma \\
@@ -167,8 +159,8 @@ $$
 \mathbf{v} &\sim N(\mathbf{0}, n)
 \end{aligned}
 $$
-:::
-:::
+:::::
+::::
 
 :::
 
@@ -176,7 +168,7 @@ $$
 
 ::: {.columns style="font-size:50%"}
 
-::: {.column width="50%"}
+:::: {.column width="50%"}
 
 - $\mu$: location parameter
   - $\mu = \mu_0 \left(1 + \Delta \left(t - t_0\right)\right)$
@@ -193,11 +185,11 @@ f_\Delta(\Delta) = \gamma &\sim \mathrm{BYM2}(\mu_\gamma, \rho_\gamma, \sigma_\g
 $$
 ![](images/bym_table.png)
 
-:::
+::::
 
-::: {.column width="50%"}
+:::: {.column width="50%"}
 ![](images/facet_constrained.png)
-:::
+::::
 
 :::
 
@@ -205,19 +197,19 @@ $$
 
 ::: {.columns style="font-size:60%"}
 
-::: {.column width="50%"}
+:::: {.column width="50%"}
 ### Parameter-level Dependence
 - Assumes conditional independence
 - Biased joint probability estimates
 - Underestimates parameter variance
-:::
+::::
 
-::: {.column width="50%"}
+:::: {.column width="50%"}
 ### Copula
 - Improves joint probabilities
 - Enhances spatial risk assessment
 - Better variance estimates
-:::
+::::
 
 :::
 
@@ -249,18 +241,18 @@ $$
 
 ----------
 
-::: {.columns}
+:::: {.columns}
 
 ### Marginal CDFs
-::: {.column width="50%"}
+::::: {.column width="50%"}
 
 * $F_i(x_i)$ is $\mathrm{GEV}(\mu_i, \sigma_i, \xi_i)$
 * Can model parameter dependence with BYM2
 
 
-:::
+:::::
 
-::: {.column width="50%"}
+::::: {.column width="50%"}
 
 $$
 \begin{aligned}
@@ -269,26 +261,26 @@ u_i &= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 \end{aligned}
 $$
 
-:::
+:::::
 
-:::
+::::
 
 ----------
 
 
-::: {.columns}
+:::: {.columns}
 
 ### Gaussian Copula
-::: {.column width="50%"}
+::::: {.column width="50%"}
 
 * Matérn-like precision matrix $\mathbf{Q}$
 * Scaled so $\boldsymbol{\Sigma} = \mathbf{Q}^{-1}$ is correlation matrix
 * If $\mathbf{Q} = \mathbf{I}$ simplifies to independent margins
 * How to generate, scale and compute with $\mathbf{Q}$ quickly (for MCMC)?
 
-:::
+:::::
 
-::: {.column width="50%"}
+::::: {.column width="50%"}
 
 $$
 \begin{aligned}
@@ -297,9 +289,9 @@ $$
 \end{aligned}
 $$
 
-:::
+:::::
 
-:::
+::::
 
 :::
 
@@ -749,6 +741,8 @@ apply(X, 1, mean) |> hist()
 - [Finish drafting paper](https://www.bggj.is/materneigenpaper)
 - [R package](https://www.github.com/bgautijonsson/stdmatern)
 :::
+
+----------
 
 ### PhD Committee
 
