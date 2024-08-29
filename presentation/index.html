@@ -646,37 +646,37 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 <div style="font-size:60%">
 <p><span class="math inline">\(\mathbf Q\)</span> defined as Kronecker sum of two AR(1) precision matrices</p>
 <p><span class="math display">\[
-\mathbf{Q} = \left( \mathbf{Q}_{\color{red}\rho_1} \otimes \mathbf{I_{\color{blue}n_2}} + \mathbf{I_{\color{red}n_1}} \otimes \mathbf{Q}_{\color{blue}\rho_2} \right)^{\nu + 1}, \quad \nu \in \{0, 1, 2\}
+\mathbf{Q} = \left( \mathbf{Q}_{\rho_1} \otimes \mathbf{I_{n_2}} + \mathbf{I_{n_1}} \otimes \mathbf{Q}_{\rho_2} \right)^{\nu + 1}, \quad \nu \in \{0, 1, 2\}
 \]</span></p>
 <div class="columns" style="font-size:80%">
 <div class="column" style="width:50%;">
 <p><span class="math display">\[
-\mathbf{Q}_{\color{red}\rho_{1}} = \frac{1}{1-{\color{red}\rho_{1}}^2}
+\mathbf{Q}_{\rho_{1}} = \frac{1}{1-\rho_{1}^2}
 \begin{bmatrix}
-1 &amp; -{\color{red}\rho_{1}} &amp; 0 &amp; \cdots &amp; 0 \\
--{\color{red}\rho_{1}} &amp; 1+{\color{red}\rho_{1}}^2 &amp; -{\color{red}\rho_{1}} &amp; \cdots &amp; 0 \\
-0 &amp; -{\color{red}\rho_{1}} &amp; 1+{\color{red}\rho_{1}}^2 &amp; \cdots &amp; 0 \\
+1 &amp; -\rho_{1} &amp; 0 &amp; \cdots &amp; 0 \\
+-\rho_{1} &amp; 1+\rho_{1}^2 &amp; -\rho_{1} &amp; \cdots &amp; 0 \\
+0 &amp; -\rho_{1} &amp; 1+\rho_{1}^2 &amp; \cdots &amp; 0 \\
 \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
 0 &amp; 0 &amp; 0 &amp; \cdots &amp; 1
 \end{bmatrix}
 \]</span></p>
 </div><div class="column" style="width:50%;">
 <p><span class="math display">\[
-\mathbf{Q}_{\color{blue}\rho_{2}} = \frac{1}{1-{\color{blue}\rho_{2}}^2}
+\mathbf{Q}_{\rho_{2}} = \frac{1}{1-\rho_{2}^2}
 \begin{bmatrix}
-1 &amp; -{\color{blue}\rho_{2}} &amp; 0 &amp; \cdots &amp; 0 \\
--{\color{blue}\rho_{2}} &amp; 1+{\color{blue}\rho_{2}}^2 &amp; -{\color{blue}\rho_{2}} &amp; \cdots &amp; 0 \\
-0 &amp; -{\color{blue}\rho_{2}} &amp; 1+{\color{blue}\rho_{2}}^2 &amp; \cdots &amp; 0 \\
+1 &amp; -\rho_{2} &amp; 0 &amp; \cdots &amp; 0 \\
+-\rho_{2} &amp; 1+\rho_{2}^2 &amp; -\rho_{2} &amp; \cdots &amp; 0 \\
+0 &amp; -\rho_{2} &amp; 1+\rho_{2}^2 &amp; \cdots &amp; 0 \\
 \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
 0 &amp; 0 &amp; 0 &amp; \cdots &amp; 1
 \end{bmatrix}
 \]</span></p>
 </div><p><span class="math display">\[
 \mathbf Q = \begin{pmatrix}
-(1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} + \mathbf{Q_{\color{blue}\rho_2}} &amp; -{\color{red}\rho_1}\mathbf{I_{{\color{blue}n_2}}} &amp; \dots &amp; \cdots &amp; \dots \\
--{\color{red}\rho_1}\mathbf{I_{{\color{blue}n_2}}} &amp; (1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} + \mathbf{q_{\color{blue}\rho_2}} &amp; -{\color{red}\rho_1} \mathbf{I_{{\color{blue}n_2}}} &amp; \cdots &amp; \vdots  \\
+(1+\rho_1^2)\mathbf{I_{n_2}} + \mathbf{Q_{\rho_2}} &amp; -\rho_1\mathbf{I_{n_2}} &amp; \dots &amp; \cdots &amp; \dots \\
+-\rho_1\mathbf{I_{n_2}} &amp; (1+\rho_1^2)\mathbf{I_{n_2}} + \mathbf{q_{\rho_2}} &amp; -\rho_1 \mathbf{I_{n_2}} &amp; \cdots &amp; \vdots  \\
 \vdots &amp; \ddots &amp; \ddots &amp; \ddots &amp; \vdots \\
-\dots &amp; \dots &amp; \cdots &amp; -{\color{red}\rho_1} \mathbf{I_{{\color{blue}n_2}}} &amp; (1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} + \mathbf{Q_{\color{blue}\rho_2}}
+\dots &amp; \dots &amp; \cdots &amp; -\rho_1 \mathbf{I_{n_2}} &amp; (1+\rho_1^2)\mathbf{I_{n_2}} + \mathbf{Q_{\rho_2}}
 \end{pmatrix}^{\nu + 1}
 \]</span></p>
 </div>
@@ -2004,7 +2004,7 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 <span id="cb5-2"><a href=""></a>X <span class="ot">&lt;-</span> <span class="fu">rmatern_copula_folded_full</span>(<span class="at">n =</span> <span class="dv">100</span>, <span class="at">dim1 =</span> <span class="dv">160</span>, <span class="at">dim2 =</span> <span class="dv">90</span>, <span class="at">rho1 =</span> <span class="fl">0.8</span>, <span class="at">rho2 =</span> <span class="fl">0.9</span>, <span class="at">nu =</span> <span class="dv">2</span>)</span>
 <span id="cb5-3"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>0.189 sec elapsed</code></pre>
+<pre><code>0.191 sec elapsed</code></pre>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">

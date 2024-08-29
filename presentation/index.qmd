@@ -314,18 +314,18 @@ $$
 $\mathbf Q$ defined as Kronecker sum of two AR(1) precision matrices
 
 $$
-\mathbf{Q} = \left( \mathbf{Q}_{\color{red}\rho_1} \otimes \mathbf{I_{\color{blue}n_2}} + \mathbf{I_{\color{red}n_1}} \otimes \mathbf{Q}_{\color{blue}\rho_2} \right)^{\nu + 1}, \quad \nu \in \{0, 1, 2\}
+\mathbf{Q} = \left( \mathbf{Q}_{\rho_1} \otimes \mathbf{I_{n_2}} + \mathbf{I_{n_1}} \otimes \mathbf{Q}_{\rho_2} \right)^{\nu + 1}, \quad \nu \in \{0, 1, 2\}
 $$
 
 :::: {.columns style="font-size:80%"}
 
 ::: {.column width="50%"}
 $$
-\mathbf{Q}_{\color{red}\rho_{1}} = \frac{1}{1-{\color{red}\rho_{1}}^2}
+\mathbf{Q}_{\rho_{1}} = \frac{1}{1-\rho_{1}^2}
 \begin{bmatrix}
-1 & -{\color{red}\rho_{1}} & 0 & \cdots & 0 \\
--{\color{red}\rho_{1}} & 1+{\color{red}\rho_{1}}^2 & -{\color{red}\rho_{1}} & \cdots & 0 \\
-0 & -{\color{red}\rho_{1}} & 1+{\color{red}\rho_{1}}^2 & \cdots & 0 \\
+1 & -\rho_{1} & 0 & \cdots & 0 \\
+-\rho_{1} & 1+\rho_{1}^2 & -\rho_{1} & \cdots & 0 \\
+0 & -\rho_{1} & 1+\rho_{1}^2 & \cdots & 0 \\
 \vdots & \vdots & \vdots & \ddots & \vdots \\
 0 & 0 & 0 & \cdots & 1
 \end{bmatrix}
@@ -335,11 +335,11 @@ $$
 
 ::: {.column width="50%"}
 $$
-\mathbf{Q}_{\color{blue}\rho_{2}} = \frac{1}{1-{\color{blue}\rho_{2}}^2}
+\mathbf{Q}_{\rho_{2}} = \frac{1}{1-\rho_{2}^2}
 \begin{bmatrix}
-1 & -{\color{blue}\rho_{2}} & 0 & \cdots & 0 \\
--{\color{blue}\rho_{2}} & 1+{\color{blue}\rho_{2}}^2 & -{\color{blue}\rho_{2}} & \cdots & 0 \\
-0 & -{\color{blue}\rho_{2}} & 1+{\color{blue}\rho_{2}}^2 & \cdots & 0 \\
+1 & -\rho_{2} & 0 & \cdots & 0 \\
+-\rho_{2} & 1+\rho_{2}^2 & -\rho_{2} & \cdots & 0 \\
+0 & -\rho_{2} & 1+\rho_{2}^2 & \cdots & 0 \\
 \vdots & \vdots & \vdots & \ddots & \vdots \\
 0 & 0 & 0 & \cdots & 1
 \end{bmatrix}
@@ -350,10 +350,10 @@ $$
 
 $$
 \mathbf Q = \begin{pmatrix}
-(1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} + \mathbf{Q_{\color{blue}\rho_2}} & -{\color{red}\rho_1}\mathbf{I_{{\color{blue}n_2}}} & \dots & \cdots & \dots \\
--{\color{red}\rho_1}\mathbf{I_{{\color{blue}n_2}}} & (1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} + \mathbf{q_{\color{blue}\rho_2}} & -{\color{red}\rho_1} \mathbf{I_{{\color{blue}n_2}}} & \cdots & \vdots  \\
+(1+\rho_1^2)\mathbf{I_{n_2}} + \mathbf{Q_{\rho_2}} & -\rho_1\mathbf{I_{n_2}} & \dots & \cdots & \dots \\
+-\rho_1\mathbf{I_{n_2}} & (1+\rho_1^2)\mathbf{I_{n_2}} + \mathbf{q_{\rho_2}} & -\rho_1 \mathbf{I_{n_2}} & \cdots & \vdots  \\
 \vdots & \ddots & \ddots & \ddots & \vdots \\
-\dots & \dots & \cdots & -{\color{red}\rho_1} \mathbf{I_{{\color{blue}n_2}}} & (1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} + \mathbf{Q_{\color{blue}\rho_2}}
+\dots & \dots & \cdots & -\rho_1 \mathbf{I_{n_2}} & (1+\rho_1^2)\mathbf{I_{n_2}} + \mathbf{Q_{\rho_2}}
 \end{pmatrix}^{\nu + 1}
 $$
 
