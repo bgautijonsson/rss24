@@ -13,7 +13,7 @@ folded_color <- "#4daf4a"
 # Define geom_smooth parameters
 smooth_params <- list(
   se = 0,
-  span = 0.03,
+  span = 0.02,
   n = 400,
   linewidth = 0.5
 )
@@ -21,7 +21,7 @@ smooth_params <- list(
 dim <- 30
 rho <- 0.8
 nu <- 0
-n_obs <- 8000
+n_obs <- 10000
 
 
 exact <- cor(t(rmatern_copula_eigen(n_obs, dim, dim, rho, rho, 0)))[1, ]
@@ -55,6 +55,9 @@ p1 <- tibble(
       exact_color,
       circulant_color,
       folded_color
+    ),
+    guide = guide_legend(
+      override.aes = list(linewidth = 2)
     )
   ) +
   scale_fill_manual(
@@ -62,6 +65,9 @@ p1 <- tibble(
       exact_color,
       circulant_color,
       folded_color
+    ),
+    guide = guide_legend(
+      override.aes = list(linewidth = 2)
     )
   ) +
   coord_cartesian(
@@ -110,6 +116,9 @@ p2 <- tibble(
       exact_color,
       circulant_color,
       folded_color
+    ),
+    guide = guide_legend(
+      override.aes = list(linewidth = 2)
     )
   ) +
   scale_fill_manual(
@@ -117,6 +126,9 @@ p2 <- tibble(
       exact_color,
       circulant_color,
       folded_color
+    ),
+    guide = guide_legend(
+      override.aes = list(linewidth = 2)
     )
   ) +
   coord_cartesian(
@@ -165,6 +177,9 @@ p3 <- tibble(
       exact_color,
       circulant_color,
       folded_color
+    ),
+    guide = guide_legend(
+      override.aes = list(linewidth = 2)
     )
   ) +
   scale_fill_manual(
@@ -172,6 +187,9 @@ p3 <- tibble(
       exact_color,
       circulant_color,
       folded_color
+    ),
+    guide = guide_legend(
+      override.aes = list(linewidth = 2)
     )
   ) +
   coord_cartesian(
@@ -188,15 +206,15 @@ p3 <- tibble(
     legend.position = "top"
   )
 
-(p1 + labs(title = NULL, subtitle = "nu = 0")) +
-  (p2 + labs(title = NULL, subtitle = "nu = 1")) +
-  (p3 + labs(title = NULL, subtitle = "nu = 2")) +
+(p1 + labs(title = NULL, x = NULL, subtitle = NULL)) +
+  (p2 + labs(title = NULL, x = NULL, subtitle = NULL)) +
+  (p3 + labs(title = NULL, x = NULL, subtitle = NULL)) +
   plot_layout(ncol = 3, guides = "collect") +
   plot_annotation(
-    title = "Comparing the first line in the correlation matrices",
-    subtitle = "Shown for rho = 0.8 a 30x30 grid",
     theme = theme(
-      legend.position = "top"
+      legend.position = "top",
+      legend.margin = margin(0, 0, 0, 0),
+      legend.box.margin = margin(0, 0, -20, 0)
     )
   )
 

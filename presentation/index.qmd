@@ -34,7 +34,7 @@ options(width = 648)
 ## Introduction {data-name="Background"}
 ::: {.columns style="font-size:70%"}
 
-::: {.column width="50%"}
+::: {.column width="70%"}
 - UKCP Local Projections on a 5km grid over the UK (1980-2080)
 - Challenge: Modeling maximum daily precipitation in yearly blocks
   - 43,920 spatial locations on a 180 x 244 grid
@@ -43,8 +43,8 @@ options(width = 648)
   2. Data-level dependence (Copulas)
 :::
 
-::: {.column width="50%"}
-![](images/ukcp_data.png)
+::: {.column width="30%"}
+![](images/ukcp_data.png){width="100%"}
 :::
 
 :::
@@ -64,10 +64,8 @@ $$
 
 1. **Log Determinant**: $\log |\mathbf{Q}|$
    - Constant for a given precision matrix
-   - Reevaluated in every iteration of optimizer/MCMC
 2. **Quadratic Form**: $\mathbf{x}^T\mathbf{Q}\mathbf{x}$
    - Needs calculation for each density evaluation
-   - Represents Mahalanobis distance
 :::
 
 ::: {.column width="50%"}
@@ -85,8 +83,6 @@ $$
 - Some models (e.g., ICAR) avoid log determinant calculation
 - Efficient computation crucial for large-scale applications
 :::
-
-For spatial copulas we need $\boldsymbol \Sigma = \mathbf{Q}^{-1}$ to be a correlation matrix
 
 :::
 
@@ -210,14 +206,14 @@ $$
 ::: {.columns style="font-size:60%"}
 
 ::: {.column width="50%"}
-### Parameter-level Modeling
+### Parameter-level Dependence
 - Assumes conditional independence
 - Biased joint probability estimates
 - Underestimates parameter variance
 :::
 
 ::: {.column width="50%"}
-### Copula Approach
+### Copula
 - Improves joint probabilities
 - Enhances spatial risk assessment
 - Better variance estimates
@@ -347,6 +343,7 @@ $$
 
 :::
 
+Which means that
 
 $$
 \mathbf Q = \begin{pmatrix}
@@ -488,13 +485,13 @@ bench::mark(
 ```
 :::
 
-## Calculating the (unscaled) density
+## Calculating the (non-copula) density
 
 ::: {style="font-size:70%"}
 
-The Gaussian copula log pdf is
+The Gaussian log pdf is
 $$
-\log c(\mathbf{u}) = \frac{1}{2}\log|\mathbf{Q}| - \frac{1}{2}\mathbf{z}^T\mathbf{Q}\mathbf{z} + \frac{1}{2}\mathbf{z}^T\mathbf{z}
+\log f(\mathbf{u} \vert \mathbf{Q}) \propto \frac{1}{2}\left(\log|\mathbf{Q}| - \mathbf{z}^T\mathbf{Q}\mathbf{z}\right)
 $$
 
 Without scaling of $\mathbf Q$ we get
@@ -512,39 +509,11 @@ $$
 
 :::
 
-## Benchmarking
-
-::: {.columns}
-::: {.column width="50%"}
-```{r}
-read_csv(here::here("presentation", "data", "unscaled_benchmark.csv")) |> 
-  slice(c(1, 2, 3, 4, 5,6, 7, 8, 9, 10, 20)) |> 
-  gt() |> 
-    cols_label(
-      dim = "Q-size",
-      chol = "Cholesky",
-      eig = "Eigen",
-      diff = "Cholesky / Eigen"
-    ) |> 
-    tab_caption(
-      md("Benchmarking density computation, unscaled version")
-    )
-```
-:::
-::: {.column width="50%"}
-![](images/unscaled_benchmark.png)
-:::
-::: 
-
-
-
-
-
 ## Calculating the copula density
 
 ::: {style="font-size:70%"}
 
-Let $\mathbf D_{ii} = \sigma_i$, $\mathbf v = \left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j$ and $\lambda = \left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)^{\nu + 1}$. Normalise $\mathbf v$ and $\lambda$ with
+Let $\mathbf v = \left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j$ and $\lambda = \left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)^{\nu + 1}$. Normalise $\mathbf v$ and $\lambda$ with
 
 $$
 \begin{gathered}
@@ -553,10 +522,10 @@ $$
 \end{gathered}
 $$
 
-Then $\widetilde{v}$ and $\widetilde{\lambda}$ are an eigenvector/value pair of the scaled precision matrix $\mathbf{\widetilde{Q}}$. Iterate over $i$ and $j$ to calculate
+Then $\widetilde{\mathbf{v}}$ and $\widetilde{\lambda}$ are an eigenvector/value pair of the scaled precision matrix $\mathbf{\widetilde{Q}}$. Iterate over $i$ and $j$ to calculate
 
 $$
-\log c(\mathbf{u}) = \frac{1}{2}\log|\mathbf{\widetilde Q}| - \frac{1}{2}\mathbf{z}^T\mathbf{\widetilde Q}\mathbf{z} + \frac{1}{2}\mathbf{z}^T\mathbf{z}
+\log c(\mathbf{u} \vert \mathbf{\widetilde{Q}}) = \frac{1}{2}\log|\mathbf{\widetilde Q}| - \frac{1}{2}\mathbf{z}^T\mathbf{\widetilde Q}\mathbf{z} + \frac{1}{2}\mathbf{z}^T\mathbf{z}
 $$
 
 :::
@@ -639,98 +608,138 @@ $$
 
 :::
 
-## Benchmarks
+## Benchmark: Density Computations {data-name="Results"}
 
 ```{r}
-read_csv(here::here("presentation", "data", "benchmark_scaled.csv")) |> 
+read_csv(here::here("presentation", "data", "benchmark_all.csv")) |> 
+  slice(c(1:10, 20)) |> 
   gt() |> 
-    cols_label(
-      Grid = "Grid Size",
-      eig = "Time",
-      sp_1 = "Speed-up",
-      circ = "Time",
-      sp_2 = "Speed-Up",
-      fol = "Time",
-      sp_3 = "Speed-Up"
-    ) |> 
-    tab_spanner(
-      label = "Eigen",
-      columns = 3:4
-    ) |> 
-    tab_spanner(
-      label = "Circulant",
-      columns = 5:6
-    ) |> 
-    tab_spanner(
-      label = "Folded",
-      columns = 7:8
-    ) |> 
-    tab_caption(
-      md("Benchmarking density computation, copula version")
-    )
+  cols_label(
+    `Cholesky (Unscaled)` = "Cholesky",
+    `Eigen (Unscaled)` = "Eigen",
+    sp_3 = "Speed-up",
+    circ = "Time",
+    sp_1 = "Speed-Up",
+    fol = "Time",
+    sp_2 = "Speed-Up"
+  ) |> 
+  tab_spanner(
+    label = "Circulant",
+    columns = 6:7
+  ) |> 
+  tab_spanner(
+    label = "Folded",
+    columns = 8:9
+  ) |> 
+  tab_spanner(
+    label = "Unscaled",
+    2:4
+  ) |> 
+  tab_spanner(
+    label = "Scaled",
+    columns = 5:9
+  ) |> 
+  tab_caption(
+    md("Benchmarking how long it takes to evaluate the density of a Mátern($\\nu$)-like field with correlation parameter $\\rho$, either unscaled or scaled to have unit marginal variance")
+  )
 ```
 
-## Approximations {data-name="Results"}
+## Benchmark: Maximum Likelihood
+
+
+::: {.columns style="font-size:50%"}
+
+::: {.column width="65%"}
+![](images/bench_ml_bias.png)
+:::
+
+::: {.column width="35%"}
+<br>
+<br>
+
+```{r}
+read_csv(here::here("presentation", "data", "ml_bench_speed.csv")) |> 
+  rename(fold = Folded, circ = Circulant) |> 
+  gt() |> 
+  cols_hide(
+    c(circ, d_2)
+  ) |> 
+  cols_label(
+    dim = "Grid Size",
+    fold = "Time",
+    d_1 = "Speed-Up",
+    circ = "Time",
+    d_2 = "Speed-Up"
+  ) |> 
+  tab_spanner(
+    label = "Folded",
+    columns = 3:4
+  ) |> 
+  tab_caption(
+    md("Benchmarking speed of ML computations")
+  )
+```
+:::
+
+:::
+
+## Approximating the Correlation Matrix 
 
 ![](images/cors.png)
 
 ## Data Generation 
 
-:::: {.columns .r-fit-text style="font-size:70%"}
-
+:::: {.columns style="font-size:60%"}
 ```{r}
 #| echo: true
-
 tictoc::tic()
-X <- rmatern_copula_folded_full(n = 100, dim1 = 160, dim2 = 90, rho1 = 0.8, rho2 = 0.9, nu = 2)
+X <- rmatern_copula_folded_full(n = 100, dim1 = 200, dim2 = 90, rho1 = 0.8, rho2 = 0.9, nu = 2)
 tictoc::toc()
 ```
 
-::: {.column width="50%"}
-
+::: {.column width="50%;text-align:center"}
 ```{r}
 #| echo: true
-plot_matern(X[, 1], 160, 90)
+#| out-width: 80%
+plot_matern(X[, 1], 200, 90)
 ```
-
 ```{r}
 #| echo: true
-plot_matern(X[, 2], 160, 90)
+#| out-width: 80%
+plot_matern(X[, 2], 200, 90)
 ```
 :::
 
 ::: {.column width="50%"}
-
 ```{r}
 #| echo: true
+#| out-width: 80%
 apply(X, 1, var) |> hist()
 ```
-
 ```{r}
 #| echo: true
+#| out-width: 80%
 apply(X, 1, mean) |> hist()
 ```
 :::
 
 ::::
 
-## Results and Discussion 
-
-- Performance on simulated and real datasets
-- Comparison with traditional methods (including BYM2)
-- Advantages in interpretability and scalability
-- Improved modeling of spatial dependencies in extreme values
-
-
 
 ## Conclusion and Future Work {data-name="Conclusion"}
 
-- Key contributions of our approach
-- Potential applications in various fields (e.g., climate science, hydrology)
-- Future research directions
+::: {style="font-size:60%"}
 
-## Thank You
+### Key Results
 
-- Contact information: brynjolfur@hi.is
-- Website: bggj.is
-- Q&A
+- Developed Matérn-like Gaussian copula for large spatial fields
+- Folded circulant approximation to the density
+- Achieved fast density computations
+- Viable for MCMC samplers
+
+### Future Work
+
+- Investigate similar t-copulas
+- Perform simulation studies
+- Apply to other environmental and climate datasets
+:::
