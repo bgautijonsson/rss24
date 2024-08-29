@@ -31,14 +31,20 @@ options(width = 648)
 ```
 
 ## Introduction {data-name="Background"}
-::: {style="font-size:70%"}
-- Case study: UKCP Local Projections on a 5km grid over the UK (1980-2080)
+::: {.columns style="font-size:70%"}
+
+::: {.column width="50%"}
+- UKCP Local Projections on a 5km grid over the UK (1980-2080)
 - Challenge: Modeling maximum daily precipitation in yearly blocks
   - 43,920 spatial locations on a 180 x 244 grid
-- Computational complexity: Fitting GEV distributions to all locations
 - Two aspects of spatial dependence:
-  1. GEV parameters (GMRF models)
+  1. GEV parameters (ICAR models)
   2. Data-level dependence (Copulas)
+:::
+
+::: {.column width="50%"}
+![](images/ukcp_data.png)
+:::
 
 :::
 
@@ -78,6 +84,8 @@ $$
 - Some models (e.g., ICAR) avoid log determinant calculation
 - Efficient computation crucial for large-scale applications
 :::
+
+For spatial copulas we need $\boldsymbol \Sigma = \mathbf{Q}^{-1}$ to be a correlation matrix
 
 :::
 
@@ -298,36 +306,60 @@ $$
 
 :::
 
-## Computational Methods {data-name="Methods"}
+
+## The Precision Matrix {data-name="Methods"}
+
+::::: {style="font-size:60%"}
+$\mathbf Q$ defined as Kronecker sum of two AR(1) precision matrices
 
 $$
-\mathbf{Q} = \left( \mathbf{Q}_{\rho_1} \otimes \mathbf{I_{n_2}} + \mathbf{I_{n_1}} \otimes \mathbf{Q}_{\rho_2}\right)^{\nu+1}
+\mathbf{Q} = \left( \mathbf{Q}_{\color{red}\rho_1} \otimes \mathbf{I_{\color{blue}n_2}} + \mathbf{I_{\color{red}n_1}} \otimes \mathbf{Q}_{\color{blue}\rho_2} \right)^{\nu + 1}, \quad \nu \in \{0, 1, 2\}
 $$
 
-::: {.columns}
+:::: {.columns style="font-size:80%"}
+
 ::: {.column width="50%"}
-What we want
-
 $$
-\boldsymbol \Sigma_{ii} = \left(\mathbf Q^{-1} \right)_{ii} =  1
+\mathbf{Q}_{\color{red}\rho_{1}} = \frac{1}{1-{\color{red}\rho_{1}}^2}
+\begin{bmatrix}
+1 & -{\color{red}\rho_{1}} & 0 & \cdots & 0 \\
+-{\color{red}\rho_{1}} & 1+{\color{red}\rho_{1}}^2 & -{\color{red}\rho_{1}} & \cdots & 0 \\
+0 & -{\color{red}\rho_{1}} & 1+{\color{red}\rho_{1}}^2 & \cdots & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & 0 & \cdots & 1
+\end{bmatrix}
 $$
 
 :::
 
 ::: {.column width="50%"}
-
-What we get
-
 $$
-\begin{aligned}
-\mathbf{\widetilde  Q} &= \mathbf{D}\mathbf{Q}\mathbf{D} \\
-\mathbf D_{ii} &= \sqrt{\boldsymbol \Sigma_{ii}}
-\end{aligned}
+\mathbf{Q}_{\color{blue}\rho_{2}} = \frac{1}{1-{\color{blue}\rho_{2}}^2}
+\begin{bmatrix}
+1 & -{\color{blue}\rho_{2}} & 0 & \cdots & 0 \\
+-{\color{blue}\rho_{2}} & 1+{\color{blue}\rho_{2}}^2 & -{\color{blue}\rho_{2}} & \cdots & 0 \\
+0 & -{\color{blue}\rho_{2}} & 1+{\color{blue}\rho_{2}}^2 & \cdots & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & 0 & \cdots & 1
+\end{bmatrix}
 $$
 
 :::
 
-::: 
+
+$$
+\mathbf Q = \begin{pmatrix}
+(1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} + \mathbf{Q_{\color{blue}\rho_2}} & -{\color{red}\rho_1}\mathbf{I_{{\color{blue}n_2}}} & \dots & \cdots & \dots \\
+-{\color{red}\rho_1}\mathbf{I_{{\color{blue}n_2}}} & (1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} + \mathbf{q_{\color{blue}\rho_2}} & -{\color{red}\rho_1} \mathbf{I_{{\color{blue}n_2}}} & \cdots & \vdots  \\
+\vdots & \ddots & \ddots & \ddots & \vdots \\
+\dots & \dots & \cdots & -{\color{red}\rho_1} \mathbf{I_{{\color{blue}n_2}}} & (1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} + \mathbf{Q_{\color{blue}\rho_2}}
+\end{pmatrix}^{\nu + 1}
+$$
+
+::::
+
+
+:::::
 
 
 
@@ -335,39 +367,30 @@ $$
 
 ## Eigendecomposition
 
-:::: {.columns style="font-size:80%"}
-We know that
-
-::: {.column width="50%"}
 
 
-$$
-\mathbf{Q}_{\rho_1} = \mathbf{V_{\rho_1}}\boldsymbol \Lambda_{\rho_1}\mathbf{V_{\rho_1}}^T
-$$
+:::: {.columns style="font-size:65%"}
 
-:::
-
-::: {.column width="50%"}
-
+Because of how $\mathbf{Q}$ is defined, we know that
 
 $$
+\begin{aligned}
+\mathbf{Q} &= \mathbf{V}\boldsymbol{\Lambda}\mathbf{V} \\
+&= (\mathbf{V_{\rho_1}} \otimes \mathbf{V_{\rho_2}})(\boldsymbol \Lambda_{\rho_1} \otimes \mathbf{I} + \mathbf{I} \otimes \boldsymbol \Lambda_{\rho_2})^{\nu + 1}(\mathbf{V_{\rho_1}} \otimes \mathbf{V_{\rho_2}})^T
+\end{aligned}
+$$
+
+where
+
+$$
+\begin{aligned}
+\mathbf{Q}_{\rho_1} = \mathbf{V_{\rho_1}}\boldsymbol \Lambda_{\rho_1}\mathbf{V_{\rho_1}}^T \qquad \& \qquad
 \mathbf{Q}_{\rho_2} = \mathbf{V_{\rho_2}}\boldsymbol \Lambda_{\rho_2}\mathbf{V_{\rho_2}}^T
+\end{aligned}
 $$
 
-:::
 
-Which gives us
-
-$$
-\mathbf{Q} = (\mathbf{V_{\rho_1}} \otimes \mathbf{V_{\rho_2}})(\boldsymbol \Lambda_{\rho_1} \otimes \mathbf{I} + \mathbf{I} \otimes \boldsymbol \Lambda_{\rho_2})^{\nu + 1}(\mathbf{V_{\rho_1}} \otimes \mathbf{V_{\rho_2}})^T
-$$
-
-::::
-
-
-::: {.columns style="font-size:80%"}
-
-Efficiently loop over value/vector pairs of smaller matrices
+Spectral decomposition defined by value/vector pairs of smaller matrices
 
 ::: {.column width="50%"}
 
@@ -383,7 +406,10 @@ $$
 $$
 
 :::
-:::
+
+* Problem: $\boldsymbol \Sigma_{ii} = \left(\mathbf Q^{-1} \right)_{ii} \neq  1$
+* Solution: $\mathbf{\widetilde  Q} = \mathbf{D}\mathbf{Q}\mathbf{D}$, where $\mathbf D_{ii} = \sqrt{\boldsymbol \Sigma_{ii}}$
+::::
 
 ## Marginal Standard Deviations
 
@@ -484,6 +510,10 @@ $$
 $$
 
 :::
+
+## Benchmarking
+
+
 
 ## Calculating the copula density
 

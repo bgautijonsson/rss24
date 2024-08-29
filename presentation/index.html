@@ -409,21 +409,23 @@ Brynjólfur Gauti Guðrúnar Jónsson
 </section>
 <section id="introduction" class="slide level2" data-name="Background">
 <h2>Introduction</h2>
-<div style="font-size:70%">
+<div class="columns" style="font-size:70%">
+<div class="column" style="width:50%;">
 <ul>
-<li>Case study: UKCP Local Projections on a 5km grid over the UK (1980-2080)</li>
+<li>UKCP Local Projections on a 5km grid over the UK (1980-2080)</li>
 <li>Challenge: Modeling maximum daily precipitation in yearly blocks
 <ul>
 <li>43,920 spatial locations on a 180 x 244 grid</li>
 </ul></li>
-<li>Computational complexity: Fitting GEV distributions to all locations</li>
 <li>Two aspects of spatial dependence:
 <ol type="1">
-<li>GEV parameters (GMRF models)</li>
+<li>GEV parameters (ICAR models)</li>
 <li>Data-level dependence (Copulas)</li>
 </ol></li>
 </ul>
-</div>
+</div><div class="column" style="width:50%;">
+<p><img data-src="images/ukcp_data.png"></p>
+</div></div>
 </section>
 <section id="calculating-multivariate-normal-densities" class="slide level2">
 <h2>Calculating Multivariate Normal Densities</h2>
@@ -465,7 +467,8 @@ Brynjólfur Gauti Guðrúnar Jónsson
 <li>Some models (e.g., ICAR) avoid log determinant calculation</li>
 <li>Efficient computation crucial for large-scale applications</li>
 </ul>
-</div></div>
+</div><p>For spatial copulas we need <span class="math inline">\(\boldsymbol \Sigma = \mathbf{Q}^{-1}\)</span> to be a correlation matrix</p>
+</div>
 </section>
 <section id="spatial-models" class="slide level2">
 <h2>Spatial Models</h2>
@@ -585,7 +588,9 @@ f_\Delta(\Delta) = \gamma &amp;\sim \mathrm{BYM2}(\mu_\gamma, \rho_\gamma, \sigm
 </div></div>
 <div style="font-size:65%; margin-top:20px;">
 <p><strong>Sklar’s Theorem</strong>: For any multivariate distribution <span class="math inline">\(H\)</span>, there exists a unique copula <span class="math inline">\(C\)</span> such that:</p>
-<p><span class="math display">\[H(\mathbf x) = C(F_1(x_1), \dots, F_d(x_d))\]</span></p>
+<p><span class="math display">\[
+H(\mathbf x) = C(F_1(x_1), \dots, F_d(x_d))
+\]</span></p>
 <p>where <span class="math inline">\(F_i\)</span> are marginal distributions. We can also write this as a density</p>
 <p><span class="math display">\[
 h(x) = c(F_1(x_1), \dots, F_d(x_d)) \prod_{i=1}^d f_i(x_i)
@@ -636,44 +641,61 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 </div></div>
 </div>
 </section>
-<section id="computational-methods" class="slide level2" data-name="Methods">
-<h2>Computational Methods</h2>
+<section id="the-precision-matrix" class="slide level2" data-name="Methods">
+<h2>The Precision Matrix</h2>
+<div style="font-size:60%">
+<p><span class="math inline">\(\mathbf Q\)</span> defined as Kronecker sum of two AR(1) precision matrices</p>
 <p><span class="math display">\[
-\mathbf{Q} = \left( \mathbf{Q}_{\rho_1} \otimes \mathbf{I_{n_2}} + \mathbf{I_{n_1}} \otimes \mathbf{Q}_{\rho_2}\right)^{\nu+1}
+\mathbf{Q} = \left( \mathbf{Q}_{\color{red}\rho_1} \otimes \mathbf{I_{\color{blue}n_2}} + \mathbf{I_{\color{red}n_1}} \otimes \mathbf{Q}_{\color{blue}\rho_2} \right)^{\nu + 1}, \quad \nu \in \{0, 1, 2\}
 \]</span></p>
-<div class="columns">
+<div class="columns" style="font-size:80%">
 <div class="column" style="width:50%;">
-<p>What we want</p>
 <p><span class="math display">\[
-\boldsymbol \Sigma_{ii} = \left(\mathbf Q^{-1} \right)_{ii} =  1
+\mathbf{Q}_{\color{red}\rho_{1}} = \frac{1}{1-{\color{red}\rho_{1}}^2}
+\begin{bmatrix}
+1 &amp; -{\color{red}\rho_{1}} &amp; 0 &amp; \cdots &amp; 0 \\
+-{\color{red}\rho_{1}} &amp; 1+{\color{red}\rho_{1}}^2 &amp; -{\color{red}\rho_{1}} &amp; \cdots &amp; 0 \\
+0 &amp; -{\color{red}\rho_{1}} &amp; 1+{\color{red}\rho_{1}}^2 &amp; \cdots &amp; 0 \\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+0 &amp; 0 &amp; 0 &amp; \cdots &amp; 1
+\end{bmatrix}
 \]</span></p>
 </div><div class="column" style="width:50%;">
-<p>What we get</p>
 <p><span class="math display">\[
-\begin{aligned}
-\mathbf{\widetilde  Q} &amp;= \mathbf{D}\mathbf{Q}\mathbf{D} \\
-\mathbf D_{ii} &amp;= \sqrt{\boldsymbol \Sigma_{ii}}
-\end{aligned}
+\mathbf{Q}_{\color{blue}\rho_{2}} = \frac{1}{1-{\color{blue}\rho_{2}}^2}
+\begin{bmatrix}
+1 &amp; -{\color{blue}\rho_{2}} &amp; 0 &amp; \cdots &amp; 0 \\
+-{\color{blue}\rho_{2}} &amp; 1+{\color{blue}\rho_{2}}^2 &amp; -{\color{blue}\rho_{2}} &amp; \cdots &amp; 0 \\
+0 &amp; -{\color{blue}\rho_{2}} &amp; 1+{\color{blue}\rho_{2}}^2 &amp; \cdots &amp; 0 \\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+0 &amp; 0 &amp; 0 &amp; \cdots &amp; 1
+\end{bmatrix}
 \]</span></p>
-</div></div>
+</div><p><span class="math display">\[
+\mathbf Q = \begin{pmatrix}
+(1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} + \mathbf{Q_{\color{blue}\rho_2}} &amp; -{\color{red}\rho_1}\mathbf{I_{{\color{blue}n_2}}} &amp; \dots &amp; \cdots &amp; \dots \\
+-{\color{red}\rho_1}\mathbf{I_{{\color{blue}n_2}}} &amp; (1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} + \mathbf{q_{\color{blue}\rho_2}} &amp; -{\color{red}\rho_1} \mathbf{I_{{\color{blue}n_2}}} &amp; \cdots &amp; \vdots  \\
+\vdots &amp; \ddots &amp; \ddots &amp; \ddots &amp; \vdots \\
+\dots &amp; \dots &amp; \cdots &amp; -{\color{red}\rho_1} \mathbf{I_{{\color{blue}n_2}}} &amp; (1+{\color{red}\rho_1}^2)\mathbf{I_{{\color{blue}n_2}}} + \mathbf{Q_{\color{blue}\rho_2}}
+\end{pmatrix}^{\nu + 1}
+\]</span></p>
+</div>
+</div>
 </section>
 <section id="eigendecomposition" class="slide level2">
 <h2>Eigendecomposition</h2>
-<div class="columns" style="font-size:80%">
-<p>We know that</p><div class="column" style="width:50%;">
-<p><span class="math display">\[
-\mathbf{Q}_{\rho_1} = \mathbf{V_{\rho_1}}\boldsymbol \Lambda_{\rho_1}\mathbf{V_{\rho_1}}^T
-\]</span></p>
-</div><div class="column" style="width:50%;">
-<p><span class="math display">\[
+<div class="columns" style="font-size:65%">
+<p>Because of how <span class="math inline">\(\mathbf{Q}\)</span> is defined, we know that</p><p><span class="math display">\[
+\begin{aligned}
+\mathbf{Q} &amp;= \mathbf{V}\boldsymbol{\Lambda}\mathbf{V} \\
+&amp;= (\mathbf{V_{\rho_1}} \otimes \mathbf{V_{\rho_2}})(\boldsymbol \Lambda_{\rho_1} \otimes \mathbf{I} + \mathbf{I} \otimes \boldsymbol \Lambda_{\rho_2})^{\nu + 1}(\mathbf{V_{\rho_1}} \otimes \mathbf{V_{\rho_2}})^T
+\end{aligned}
+\]</span></p><p>where</p><p><span class="math display">\[
+\begin{aligned}
+\mathbf{Q}_{\rho_1} = \mathbf{V_{\rho_1}}\boldsymbol \Lambda_{\rho_1}\mathbf{V_{\rho_1}}^T \qquad \&amp; \qquad
 \mathbf{Q}_{\rho_2} = \mathbf{V_{\rho_2}}\boldsymbol \Lambda_{\rho_2}\mathbf{V_{\rho_2}}^T
-\]</span></p>
-</div><p>Which gives us</p><p><span class="math display">\[
-\mathbf{Q} = (\mathbf{V_{\rho_1}} \otimes \mathbf{V_{\rho_2}})(\boldsymbol \Lambda_{\rho_1} \otimes \mathbf{I} + \mathbf{I} \otimes \boldsymbol \Lambda_{\rho_2})^{\nu + 1}(\mathbf{V_{\rho_1}} \otimes \mathbf{V_{\rho_2}})^T
-\]</span></p>
-</div>
-<div class="columns" style="font-size:80%">
-<p>Efficiently loop over value/vector pairs of smaller matrices</p><div class="column" style="width:50%;">
+\end{aligned}
+\]</span></p><p>Spectral decomposition defined by value/vector pairs of smaller matrices</p><div class="column" style="width:50%;">
 <p><span class="math display">\[
 \left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j
 \]</span></p>
@@ -681,7 +703,11 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 <p><span class="math display">\[
 \left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j
 \]</span></p>
-</div></div>
+</div><ul>
+<li>Problem: <span class="math inline">\(\boldsymbol \Sigma_{ii} = \left(\mathbf Q^{-1} \right)_{ii} \neq  1\)</span></li>
+<li>Solution: <span class="math inline">\(\mathbf{\widetilde  Q} = \mathbf{D}\mathbf{Q}\mathbf{D}\)</span>, where <span class="math inline">\(\mathbf D_{ii} = \sqrt{\boldsymbol \Sigma_{ii}}\)</span></li>
+</ul>
+</div>
 </section>
 <section id="marginal-standard-deviations" class="slide level2">
 <h2>Marginal Standard Deviations</h2>
@@ -859,7 +885,7 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 <span id="cb5-2"><a href=""></a>X <span class="ot">&lt;-</span> <span class="fu">rmatern_copula_folded_full</span>(<span class="at">n =</span> <span class="dv">100</span>, <span class="at">dim1 =</span> <span class="dv">160</span>, <span class="at">dim2 =</span> <span class="dv">90</span>, <span class="at">rho1 =</span> <span class="fl">0.8</span>, <span class="at">rho2 =</span> <span class="fl">0.9</span>, <span class="at">nu =</span> <span class="dv">2</span>)</span>
 <span id="cb5-3"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>0.211 sec elapsed</code></pre>
+<pre><code>0.213 sec elapsed</code></pre>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
