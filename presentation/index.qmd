@@ -728,7 +728,9 @@ apply(X, 1, mean) |> hist()
 
 ## Conclusion and Future Work {data-name="Conclusion"}
 
-::: {style="font-size:60%"}
+::: {.columns style="font-size:60%"}
+
+::: {.column width="50%"}
 
 ### Key Results
 
@@ -737,9 +739,22 @@ apply(X, 1, mean) |> hist()
 - Achieved fast density computations
 - Viable for MCMC samplers
 
+:::
+::: {.column width="50%"}
+
 ### Future Work
 
-- Investigate similar t-copulas
-- Perform simulation studies
+- Implement t-copulas
 - Apply to other environmental and climate datasets
+- [Finish drafting paper](https://www.bggj.is/materneigenpaper)
+- [R package](https://www.github.com/bgautijonsson/stdmatern)
+:::
+
+### PhD Committee
+
+My thanks to my advisor and committee
+
+* Birgir Hrafnkelsson (PI)
+* Raphaël Huser
+* Stefan Siegert
 :::

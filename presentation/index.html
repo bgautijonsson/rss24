@@ -2013,7 +2013,7 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 <span id="cb5-2"><a href=""></a>X <span class="ot">&lt;-</span> <span class="fu">rmatern_copula_folded_full</span>(<span class="at">n =</span> <span class="dv">100</span>, <span class="at">dim1 =</span> <span class="dv">200</span>, <span class="at">dim2 =</span> <span class="dv">90</span>, <span class="at">rho1 =</span> <span class="fl">0.8</span>, <span class="at">rho2 =</span> <span class="fl">0.9</span>, <span class="at">nu =</span> <span class="dv">2</span>)</span>
 <span id="cb5-3"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>0.24 sec elapsed</code></pre>
+<pre><code>0.252 sec elapsed</code></pre>
 </div>
 </div><div class="column" style="width:50%;text-align:center;">
 <div class="cell">
@@ -2061,7 +2061,8 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 </section>
 <section id="conclusion-and-future-work" class="slide level2" data-name="Conclusion">
 <h2>Conclusion and Future Work</h2>
-<div style="font-size:60%">
+<div class="columns" style="font-size:60%">
+<div class="column" style="width:50%;">
 <h3 id="key-results">Key Results</h3>
 <ul>
 <li>Developed Matérn-like Gaussian copula for large spatial fields</li>
@@ -2069,11 +2070,20 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 <li>Achieved fast density computations</li>
 <li>Viable for MCMC samplers</li>
 </ul>
+</div><div class="column" style="width:50%;">
 <h3 id="future-work">Future Work</h3>
 <ul>
-<li>Investigate similar t-copulas</li>
-<li>Perform simulation studies</li>
+<li>Implement t-copulas</li>
 <li>Apply to other environmental and climate datasets</li>
+<li><a href="https://www.bggj.is/materneigenpaper">Finish drafting paper</a></li>
+<li><a href="https://www.github.com/bgautijonsson/stdmatern">R package</a></li>
+</ul>
+</div><h3 id="phd-committee">PhD Committee</h3>
+<p>My thanks to my advisor and committee</p>
+<ul>
+<li>Birgir Hrafnkelsson (PI)</li>
+<li>Raphaël Huser</li>
+<li>Stefan Siegert</li>
 </ul>
 </div>
 <div class="quarto-auto-generated-content">
