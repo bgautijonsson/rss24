@@ -17,14 +17,14 @@ about:
 
 ## Overview
 
-This repository contains materials for my RSSConf24 talk on applying Gaussian Markov Random Field (GMRF) copulas to model data-level spatial dependence in multivariate Generalized Extreme Value (GEV) distributions. The talk is [scheduled between 09:00 - 10:00 on Thursday](https://virtual.oxfordabstracts.com/#/event/6693/program?session=92696&s=0)
+This repository contains materials for my RSSConf24 talk on applying Gaussian Markov Random Field (GMRF) copulas to model data-level spatial dependence in multivariate Generalized Extreme Value (GEV) distributions. The talk is [scheduled between 09:00 - 10:00 on Thursday](https://virtual.oxfordabstracts.com/#/event/6693/program?session=92696&s=0){target="_blank"}
 
 If you see me, please feel free to come and chat about statistics, music, books or anything at all!
 
 ## Resources
 
 - [Presentation Slides](/presentation/)
-- [GitHub Repository](https://github.com/yourusername/your-repo-name)
+- [GitHub Repository](https://github.com/bgautijonsson/rss24)
 - [Manuscript](https://bggj.is/materneigenpaper/)
 
 ## Contact

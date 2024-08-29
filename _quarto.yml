@@ -3,15 +3,22 @@ project:
   output-dir: docs
 
 website:
-  title: "Home"
   navbar:
     left:
+      - href: index.qmd
+        text: Home
       - href: presentation/index.qmd
         text: Presentation Slides
-
+      - href: https://bggj.is/materneigenpaper
+        text: Paper
+      - href: https://github.com/bgautijonsson/stdmatern
+        text: R Package
+    right: 
+      - href: https://github.com/bgautijonsson/rss24
+        icon: github
 format:
   html:
-    theme: cosmo
+    theme: [theme.scss, cosmo]
     toc: true
 
 execute:
