@@ -27,6 +27,7 @@ revealjs-plugins:
 library(stdmatern)
 library(INLA)
 library(gt)
+library(tidyverse)
 options(width = 648)
 ```
 
@@ -513,6 +514,30 @@ $$
 
 ## Benchmarking
 
+::: {.columns}
+::: {.column width="50%"}
+```{r}
+read_csv(here::here("presentation", "data", "unscaled_benchmark.csv")) |> 
+  slice(c(1, 2, 3, 4, 5,6, 7, 8, 9, 10, 20)) |> 
+  gt() |> 
+    cols_label(
+      dim = "Q-size",
+      chol = "Cholesky",
+      eig = "Eigen",
+      diff = "Cholesky / Eigen"
+    ) |> 
+    tab_caption(
+      md("Benchmarking density computation, unscaled version")
+    )
+```
+:::
+::: {.column width="50%"}
+![](images/unscaled_benchmark.png)
+:::
+::: 
+
+
+
 
 
 ## Calculating the copula density
@@ -614,15 +639,42 @@ $$
 
 :::
 
-## Results and Discussion {data-name="Results"}
+## Benchmarks
 
-- Performance on simulated and real datasets
-- Comparison with traditional methods (including BYM2)
-- Advantages in interpretability and scalability
-- Improved modeling of spatial dependencies in extreme values
+```{r}
+read_csv(here::here("presentation", "data", "benchmark_scaled.csv")) |> 
+  gt() |> 
+    cols_label(
+      Grid = "Grid Size",
+      eig = "Time",
+      sp_1 = "Speed-up",
+      circ = "Time",
+      sp_2 = "Speed-Up",
+      fol = "Time",
+      sp_3 = "Speed-Up"
+    ) |> 
+    tab_spanner(
+      label = "Eigen",
+      columns = 3:4
+    ) |> 
+    tab_spanner(
+      label = "Circulant",
+      columns = 5:6
+    ) |> 
+    tab_spanner(
+      label = "Folded",
+      columns = 7:8
+    ) |> 
+    tab_caption(
+      md("Benchmarking density computation, copula version")
+    )
+```
 
-## Data Generation
+## Approximations {data-name="Results"}
 
+![](images/cors.png)
+
+## Data Generation 
 
 :::: {.columns .r-fit-text style="font-size:70%"}
 
@@ -661,6 +713,15 @@ apply(X, 1, mean) |> hist()
 :::
 
 ::::
+
+## Results and Discussion 
+
+- Performance on simulated and real datasets
+- Comparison with traditional methods (including BYM2)
+- Advantages in interpretability and scalability
+- Improved modeling of spatial dependencies in extreme values
+
+
 
 ## Conclusion and Future Work {data-name="Conclusion"}
 

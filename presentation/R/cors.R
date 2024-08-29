@@ -5,6 +5,19 @@ library(scales)
 library(patchwork)
 theme_set(bggjphd::theme_bggj())
 
+# Define colors
+exact_color <- "#e41a1c"
+circulant_color <- "#969696"
+folded_color <- "#4daf4a"
+
+# Define geom_smooth parameters
+smooth_params <- list(
+  se = 0,
+  span = 0.03,
+  n = 400,
+  linewidth = 0.5
+)
+
 dim <- 30
 rho <- 0.8
 nu <- 0
@@ -19,20 +32,16 @@ p1 <- tibble(
   Exact = exact,
   Circulant = circulant,
   Folded = folded
-) |> 
+) |>
   mutate(
     index = row_number()
-  ) |> 
-  pivot_longer(c(-index)) |> 
+  ) |>
+  pivot_longer(c(-index)) |>
   mutate(
     name = fct_relevel(name, "Exact")
-  ) |> 
+  ) |>
   ggplot(aes(index, value, col = name)) +
-  geom_smooth(
-    se = 0,
-    span = 0.03,
-    n = 400
-  ) +
+  do.call(geom_smooth, smooth_params) +
   scale_x_continuous(
     guide = guide_axis_truncated(),
     breaks = breaks_extended(9)
@@ -43,16 +52,16 @@ p1 <- tibble(
   ) +
   scale_colour_manual(
     values = c(
-      "#525252",
-      "#e41a1c",
-      "#377eb8"
+      exact_color,
+      circulant_color,
+      folded_color
     )
   ) +
   scale_fill_manual(
     values = c(
-      "#525252",
-      "#e41a1c",
-      "#377eb8"
+      exact_color,
+      circulant_color,
+      folded_color
     )
   ) +
   coord_cartesian(
@@ -78,20 +87,16 @@ p2 <- tibble(
   Exact = exact,
   Circulant = circulant,
   Folded = folded
-) |> 
+) |>
   mutate(
     index = row_number()
-  ) |> 
-  pivot_longer(c(-index)) |> 
+  ) |>
+  pivot_longer(c(-index)) |>
   mutate(
     name = fct_relevel(name, "Exact")
-  ) |> 
+  ) |>
   ggplot(aes(index, value, col = name)) +
-  geom_smooth(
-    se = 0,
-    span = 0.03,
-    n = 400
-  ) +
+  do.call(geom_smooth, smooth_params) +
   scale_x_continuous(
     guide = guide_axis_truncated(),
     breaks = breaks_extended(9)
@@ -102,16 +107,16 @@ p2 <- tibble(
   ) +
   scale_colour_manual(
     values = c(
-      "#525252",
-      "#e41a1c",
-      "#377eb8"
+      exact_color,
+      circulant_color,
+      folded_color
     )
   ) +
   scale_fill_manual(
     values = c(
-      "#525252",
-      "#e41a1c",
-      "#377eb8"
+      exact_color,
+      circulant_color,
+      folded_color
     )
   ) +
   coord_cartesian(
@@ -137,20 +142,16 @@ p3 <- tibble(
   Exact = exact,
   Circulant = circulant,
   Folded = folded
-) |> 
+) |>
   mutate(
     index = row_number()
-  ) |> 
-  pivot_longer(c(-index)) |> 
+  ) |>
+  pivot_longer(c(-index)) |>
   mutate(
     name = fct_relevel(name, "Exact")
-  ) |> 
+  ) |>
   ggplot(aes(index, value, col = name)) +
-  geom_smooth(
-    se = 0,
-    span = 0.03,
-    n = 400
-  ) +
+  do.call(geom_smooth, smooth_params) +
   scale_x_continuous(
     guide = guide_axis_truncated(),
     breaks = breaks_extended(9)
@@ -161,16 +162,16 @@ p3 <- tibble(
   ) +
   scale_colour_manual(
     values = c(
-      "#525252",
-      "#e41a1c",
-      "#377eb8"
+      exact_color,
+      circulant_color,
+      folded_color
     )
   ) +
   scale_fill_manual(
     values = c(
-      "#525252",
-      "#e41a1c",
-      "#377eb8"
+      exact_color,
+      circulant_color,
+      folded_color
     )
   ) +
   coord_cartesian(
@@ -187,12 +188,12 @@ p3 <- tibble(
     legend.position = "top"
   )
 
-(p1 + labs(title = NULL, subtitle = "nu = 0")) + 
-  (p2 + labs(title = NULL, subtitle = "nu = 1")) + 
+(p1 + labs(title = NULL, subtitle = "nu = 0")) +
+  (p2 + labs(title = NULL, subtitle = "nu = 1")) +
   (p3 + labs(title = NULL, subtitle = "nu = 2")) +
-  plot_layout(ncol = 1, guides = "collect") +
+  plot_layout(ncol = 3, guides = "collect") +
   plot_annotation(
-    title = "Comparing the first line in the correlation matrices for each method",
+    title = "Comparing the first line in the correlation matrices",
     subtitle = "Shown for rho = 0.8 a 30x30 grid",
     theme = theme(
       legend.position = "top"
@@ -201,6 +202,6 @@ p3 <- tibble(
 
 ggsave(
   filename = here::here("presentation", "images", "cors.png"),
-  scale = 1.2,
-  width = 8, height = 1.3 * 8
+  scale = 1.4,
+  width = 8, height = 0.5 * 8
 )
