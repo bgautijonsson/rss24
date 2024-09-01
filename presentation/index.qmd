@@ -256,7 +256,8 @@ $$
 
 $$
 \begin{aligned}
-\log h(\mathbf x) &= \log c(u_1, \dots, u_d) + \sum_{i=1}^d f_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i) \\
+\log h(\mathbf x) &= \log c(u_1, \dots, u_d) \\
+&+ \sum_{i=1}^d \log f_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i) \\
 u_i &= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 \end{aligned}
 $$
@@ -339,10 +340,10 @@ Which means that
 
 $$
 \mathbf Q = \begin{pmatrix}
-(1+\rho_1^2)\mathbf{I_{n_2}} + \mathbf{Q_{\rho_2}} & -\rho_1\mathbf{I_{n_2}} & \dots & \cdots & \dots \\
--\rho_1\mathbf{I_{n_2}} & (1+\rho_1^2)\mathbf{I_{n_2}} + \mathbf{q_{\rho_2}} & -\rho_1 \mathbf{I_{n_2}} & \cdots & \vdots  \\
+\frac{1}{(1-\rho_1^2)}\mathbf{I_{n_2}} + \mathbf{Q_{\rho_2}} & \frac{-\rho_1}{(1-\rho_1^2)}\mathbf{I_{n_2}} & \dots & \cdots & \dots \\
+\frac{-\rho_1}{(1-\rho_1^2)}\mathbf{I_{n_2}} & \frac{(1+\rho_1^2)}{(1-\rho_1^2)}\mathbf{I_{n_2}} + \mathbf{Q_{\rho_2}} & \frac{-\rho_1}{(1-\rho_1^2)} \mathbf{I_{n_2}} & \cdots & \vdots  \\
 \vdots & \ddots & \ddots & \ddots & \vdots \\
-\dots & \dots & \cdots & -\rho_1 \mathbf{I_{n_2}} & (1+\rho_1^2)\mathbf{I_{n_2}} + \mathbf{Q_{\rho_2}}
+\dots & \dots & \cdots & \frac{-\rho_1}{(1-\rho_1^2)} \mathbf{I_{n_2}} & \frac{1}{(1-\rho_1^2)}\mathbf{I_{n_2}} + \mathbf{Q_{\rho_2}}
 \end{pmatrix}^{\nu + 1}
 $$
 
@@ -472,7 +473,7 @@ bench::mark(
   "inla.qinv" = inla.qinv(Q) |> diag() |> sqrt() |> sort(),
   "marginal_sd_eigen" = msd(Q1, Q2),
   iterations = 10,
-  filter_gc = FALSE
+  filter_gc = FALSE 
 )
 ```
 :::
