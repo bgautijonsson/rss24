@@ -336,21 +336,20 @@ $$
 
 :::
 
-Which means that
-
 $$
-\mathbf Q = \begin{pmatrix}
+\mathbf Q = \begin{bmatrix}
 \frac{1}{(1-\rho_1^2)}\mathbf{I_{n_2}} + \mathbf{Q_{\rho_2}} & \frac{-\rho_1}{(1-\rho_1^2)}\mathbf{I_{n_2}} & \dots & \cdots & \dots \\
 \frac{-\rho_1}{(1-\rho_1^2)}\mathbf{I_{n_2}} & \frac{(1+\rho_1^2)}{(1-\rho_1^2)}\mathbf{I_{n_2}} + \mathbf{Q_{\rho_2}} & \frac{-\rho_1}{(1-\rho_1^2)} \mathbf{I_{n_2}} & \cdots & \vdots  \\
 \vdots & \ddots & \ddots & \ddots & \vdots \\
 \dots & \dots & \cdots & \frac{-\rho_1}{(1-\rho_1^2)} \mathbf{I_{n_2}} & \frac{1}{(1-\rho_1^2)}\mathbf{I_{n_2}} + \mathbf{Q_{\rho_2}}
-\end{pmatrix}^{\nu + 1}
+\end{bmatrix}^{\nu + 1}
 $$
 
 ::::
 
 
 :::::
+
 
 
 

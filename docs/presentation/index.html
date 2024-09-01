@@ -671,13 +671,13 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 0 &amp; 0 &amp; 0 &amp; \cdots &amp; 1
 \end{bmatrix}
 \]</span></p>
-</div><p>Which means that</p><p><span class="math display">\[
-\mathbf Q = \begin{pmatrix}
+</div><p><span class="math display">\[
+\mathbf Q = \begin{bmatrix}
 \frac{1}{(1-\rho_1^2)}\mathbf{I_{n_2}} + \mathbf{Q_{\rho_2}} &amp; \frac{-\rho_1}{(1-\rho_1^2)}\mathbf{I_{n_2}} &amp; \dots &amp; \cdots &amp; \dots \\
 \frac{-\rho_1}{(1-\rho_1^2)}\mathbf{I_{n_2}} &amp; \frac{(1+\rho_1^2)}{(1-\rho_1^2)}\mathbf{I_{n_2}} + \mathbf{Q_{\rho_2}} &amp; \frac{-\rho_1}{(1-\rho_1^2)} \mathbf{I_{n_2}} &amp; \cdots &amp; \vdots  \\
 \vdots &amp; \ddots &amp; \ddots &amp; \ddots &amp; \vdots \\
 \dots &amp; \dots &amp; \cdots &amp; \frac{-\rho_1}{(1-\rho_1^2)} \mathbf{I_{n_2}} &amp; \frac{1}{(1-\rho_1^2)}\mathbf{I_{n_2}} + \mathbf{Q_{\rho_2}}
-\end{pmatrix}^{\nu + 1}
+\end{bmatrix}^{\nu + 1}
 \]</span></p>
 </div>
 </div>
@@ -2016,7 +2016,7 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 <span id="cb5-2"><a></a>X <span class="ot">&lt;-</span> <span class="fu">rmatern_copula_folded_full</span>(<span class="at">n =</span> <span class="dv">100</span>, <span class="at">dim1 =</span> <span class="dv">200</span>, <span class="at">dim2 =</span> <span class="dv">90</span>, <span class="at">rho1 =</span> <span class="fl">0.8</span>, <span class="at">rho2 =</span> <span class="fl">0.9</span>, <span class="at">nu =</span> <span class="dv">2</span>)</span>
 <span id="cb5-3"><a></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>0.247 sec elapsed</code></pre>
+<pre><code>0.27 sec elapsed</code></pre>
 </div>
 </div><div class="column" style="width:50%;text-align:center;">
 <div class="cell">
