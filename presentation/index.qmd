@@ -11,12 +11,14 @@ format:
       flat: false
       barhtml:
         header: "<div class='menubar mb-10'><ul class='menu'></ul><div>"
-        footer: "<div class='footer footer-default' style='display: block;'> <a href='https://bggj.is/rss24' target='_blank'>bggj.is/rss24</a>  <img src='images/hi-audkenni_28-raunsvisd.png' class='slide-logo r-stretch'></div>"
+        footer: "<div class='footer footer-default' style='display: block;'> <a href='https://bggj.is/rss24' target='_blank'>bggj.is/rss24</a>  <img src='hi-audkenni_28-raunsvisd.png' class='slide-logo r-stretch'></div>"
 html-math-method:
   method: mathjax
   url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
 revealjs-plugins:
   - simplemenu
+bibliography: references.bib
+csl: cambridge-university-press-numeric.csl
 ---
 
 ```{r setup}
@@ -28,110 +30,103 @@ options(width = 648)
 ```
 
 ## Introduction {data-name="Background"}
-::: {.columns style="font-size:70%"}
 
-:::: {.column width="70%"}
-- UKCP Local Projections on a 5km grid over the UK (1980-2080)
-- Challenge: Modeling maximum daily precipitation in yearly blocks
-  - 43,920 spatial locations on a 180 x 244 grid
-- Two aspects of spatial dependence:
-  1. GEV parameters (ICAR models)
-  2. Data-level dependence (Copulas)
-::::
-
-:::: {.column width="30%"}
-![](images/ukcp_data.png){width="100%"}
-::::
-
+::::: {.columns style="font-size:70%"}
+::: {.column width="70%"}
+-   UKCP Local Projections on a 5km grid over the UK (1980-2080) [@metoffi]
+-   Challenge: Modeling maximum daily precipitation in yearly blocks
+    -   43,920 spatial locations on a 180 x 244 grid
+    -   Four parameters per location as in [@johannesson2021]
+        -   Location, Trend, Scale, Shape
+-   Two aspects of spatial dependence:
+    1.  GEV parameters (ICAR models)
+    2.  Data-level dependence (Copulas)
 :::
+
+::: {.column width="30%"}
+![](images/ukcp_data.png){width="100%"}
+:::
+:::::
 
 ## Calculating Multivariate Normal Densities
 
-::: {.columns style="font-size:50%"}
-
-:::: {.column width="50%"}
-### Log Density Formula
-
+::::: {.columns style="font-size:60%"}
 $$
 \log f(\mathbf{x}) \propto \frac{1}{2}\left(\log |\mathbf{Q}| - \mathbf{x}^T\mathbf{Q}\mathbf{x}\right)
 $$
 
-### Key Components
+::: {.column width="50%"}
 
-1. **Log Determinant**: $\log |\mathbf{Q}|$
-  - Constant for a given precision matrix
-2. **Quadratic Form**: $\mathbf{x}^T\mathbf{Q}\mathbf{x}$
-  - Needs calculation for each density evaluation
-::::
+### Computational challenges
+1.  **Log Determinant**: $\log |\mathbf{Q}|$
+    - Constant for a given precision matrix
+2.  **Quadratic Form**: $\mathbf{x}^T\mathbf{Q}\mathbf{x}$
+    - Needs calculation for each density evaluation
+:::
 
-:::: {.column width="50%"}
-### Computational Challenges
-
-- Log determinant calculation
-  - Time complexity: $O(n^3)$ for naive methods
-  - Memory complexity: $O(n^2)$
-- Quadratic form calculation
-  - Time complexity: $O(n^2)$
-  - Critical for performance in large spatial fields
+::: {.column width="50%"}
 
 ### Spatial Model Considerations
 
-- Some models (e.g., ICAR) avoid log determinant calculation
-- Efficient computation crucial for large-scale applications
-::::
+* Some models (e.g., ICAR) avoid log determinant calculation
+* Efficient computation crucial for large-scale applications
+* Fast algorithms when $\mathbf{Q}$ is sparse [@rue2001; @rue2005]
 
 :::
+:::::
 
 ## Spatial Models
 
-::: {style="font-size:40%"}
+::::::::::::::: {style="font-size:50%"}
+#### Conditional Autoregression (CAR) [@besag1974]
 
-#### Conditional Autoregression (CAR)
-:::: {.columns}
-::::: {.column width="50%"}
-* $\mathbf{D}$ is a diagonal matrix with $D_{ii} = n_i$, the number of neighbours of $i$
-* $\mathbf{A}$ is the adjacency matrix with $A_{ij} = A_{ji} = 1$ if $i \sim j$
-* $\tau$ models overall precision
-:::::
-::::: {.column width="50%"}
+::::: columns
+::: {.column width="50%"}
+-   $\mathbf{D}$ is a diagonal matrix with $D_{ii} = n_i$, the number of neighbours of $i$
+-   $\mathbf{A}$ is the adjacency matrix with $A_{ij} = A_{ji} = 1$ if $i \sim j$
+:::
+
+::: {.column width="50%"}
 $$
 \begin{aligned}
 \mathbf{x} &\sim N(\mathbf{0}, \tau \mathbf{Q}) \\
 \mathbf{Q} &= \mathbf{D}\left(\mathbf{I} - \alpha \mathbf{A} \right)
 \end{aligned}
 $$
+:::
 :::::
-::::
 
-----------
+------------------------------------------------------------------------
 
-#### Intrinsic Conditional Autoregression (ICAR)
-:::: {.columns}
-::::: {.column width="50%"}
-* $\alpha = 1$, so $\mathbf Q$ is singular, but constant
-* Don't have to calculate $\log |\mathbf{Q}|$
-* $\tau$ is a precision parameter
-:::::
-::::: {.column width="50%"}
+
+#### Intrinsic Conditional Autoregression (ICAR) [@besag1991]
+::::: columns
+::: {.column width="50%"}
+-   $\alpha = 1$, so $\mathbf Q$ is singular, but constant
+-   Don't have to calculate $\log |\mathbf{Q}|$
+:::
+
+::: {.column width="50%"}
 $$
 \begin{aligned}
 \mathbf{x} &\sim N(\mathbf{0}, \tau \mathbf{Q}) \\
-\mathbf{Q} &= \mathbf{D} - \mathbf{W}
+\mathbf{Q} &= \mathbf{D} - \mathbf{A}
 \end{aligned}
 $$
+:::
 :::::
-::::
 
-----------
+------------------------------------------------------------------------
 
-#### BYM (Besag-York-Mollié) Model
-:::: {.columns}
-::::: {.column width="50%"}
-* $\mathbf{u}$ is the structured spatial component (Besag model)
-* $\mathbf{v}$ is the unstructured component (i.i.d. normal)
-* $\tau_u$ and $\tau_v$ are precision parameters for each component
-:::::
-::::: {.column width="50%"}
+
+::::: columns
+::: {.column width="50%"}
+#### BYM (Besag-York-Mollié) Model [@besag1991]
+-   $\mathbf{u}$ is the structured spatial component (Besag model)
+-   $\mathbf{v}$ is the unstructured component (i.i.d. normal)
+:::
+
+::: {.column width="50%"}
 $$
 \begin{aligned}
 \mathbf{x} &= \mathbf{u} + \mathbf{v} \\
@@ -139,19 +134,20 @@ $$
 \mathbf{v} &\sim N(\mathbf{0}, \tau_v^{-1})
 \end{aligned}
 $$
+:::
 :::::
-::::
 
-----------
+------------------------------------------------------------------------
 
-#### BYM2  Model
-:::: {.columns}
-::::: {.column width="50%"}
-* Rewrite the combination to get proper scaling
-* $\rho$ models how much of variance is spatial
-* $s$ is a scaling factor chosen to make $\mathrm{Var}(\mathbf u_i) \approx 1$
-:::::
-::::: {.column width="50%"}
+
+::::: columns
+::: {.column width="50%"}
+#### BYM2 Model [@riebler2016;   @simpson2015]
+-   $\rho$ models how much of variance is spatial
+-   $s$ is a scaling factor chosen to make $\mathrm{Var}(\mathbf u_i) \approx 1$
+:::
+
+::: {.column width="50%"}
 $$
 \begin{aligned}
 \mathbf{x} &= \left(\left(\sqrt{\rho/s}\right)\mathbf{u} + \left(\sqrt{1 - \rho}\right) \mathbf{v} \right)\sigma \\
@@ -159,22 +155,18 @@ $$
 \mathbf{v} &\sim N(\mathbf{0}, n)
 \end{aligned}
 $$
-:::::
-::::
-
 :::
+:::::
+:::::::::::::::
 
 ## Spatial Modeling on Parameter-level
 
-::: {.columns style="font-size:50%"}
-
-:::: {.column width="50%"}
-
-- $\mu$: location parameter
-  - $\mu = \mu_0 \left(1 + \Delta \left(t - t_0\right)\right)$
-  - Model $\mu_0$ and trend $\Delta$
-- $\sigma$: scale parameter
-- $\xi$: shape parameter
+::::: {.columns style="font-size:50%"}
+::: {.column width="45%"}
+-   $\mu$: location parameter
+    -   $\mu = \mu_0 \left(1 + \Delta \left(t - t_0\right)\right)$
+-   $\sigma$: scale parameter
+-   $\xi$: shape parameter 
 $$
 \begin{aligned}
 \log(\mu_0) = \psi &\sim \mathrm{BYM2}(\mu_\psi, \rho_\psi, \sigma_\psi) \\
@@ -182,36 +174,34 @@ $$
 f_\xi(\xi) = \phi &\sim \mathrm{BYM2}(\mu_\phi, \rho_\phi, \sigma_\phi) \\
 f_\Delta(\Delta) = \gamma &\sim \mathrm{BYM2}(\mu_\gamma, \rho_\gamma, \sigma_\gamma)
 \end{aligned}
-$$
+$$ 
 ![](images/bym_table.png)
-
-::::
-
-:::: {.column width="50%"}
-![](images/facet_constrained.png)
-::::
-
 :::
+
+::: {.column width="55%"}
+![](images/facet_constrained.png)
+:::
+:::::
 
 ## From Parameter-level to Data-level Dependence
 
-::: {.columns style="font-size:60%"}
-
-:::: {.column width="50%"}
+::::: {.columns style="font-size:60%"}
+::: {.column width="50%"}
 ### Parameter-level Dependence
-- Assumes conditional independence
-- Biased joint probability estimates
-- Underestimates parameter variance
-::::
 
-:::: {.column width="50%"}
-### Copula
-- Improves joint probabilities
-- Enhances spatial risk assessment
-- Better variance estimates
-::::
-
+-   Assumes conditional independence
+-   Biased joint probability estimates
+-   Underestimates parameter variance
 :::
+
+::: {.column width="50%"}
+### Copula
+
+-   Improves joint probabilities
+-   Enhances spatial risk assessment
+-   Better variance estimates
+:::
+:::::
 
 ::: {style="font-size:65%; margin-top:20px;"}
 **Sklar's Theorem**: For any multivariate distribution $H$, there exists a unique copula $C$ such that:
@@ -225,35 +215,28 @@ where $F_i$ are marginal distributions. We can also write this as a density
 $$
 h(x) = c(F_1(x_1), \dots, F_d(x_d)) \prod_{i=1}^d f_i(x_i)
 $$
-
 :::
 
 ## Our Approach: Matérn-like Gaussian Copula
 
-
-::: {style="font-size:55%"}
-
+::::::::: {style="font-size:55%"}
 $$
 \begin{gathered}
 \log h(\mathbf x) = \log c\left(F_1(x_1), \dots, F_d(x_d)\right) + \sum_{i=1}^d \log f_i(x_i)
 \end{gathered}
 $$
 
-----------
+------------------------------------------------------------------------
 
-:::: {.columns}
-
+::::: columns
 ### Marginal CDFs
-::::: {.column width="50%"}
 
-* $F_i(x_i)$ is $\mathrm{GEV}(\mu_i, \sigma_i, \xi_i)$
-* Can model parameter dependence with BYM2
+::: {.column width="50%"}
+-   $F_i(x_i)$ is $\mathrm{GEV}(\mu_i, \sigma_i, \xi_i)$
+-   Can model parameter dependence with BYM2
+:::
 
-
-:::::
-
-::::: {.column width="50%"}
-
+::: {.column width="50%"}
 $$
 \begin{aligned}
 \log h(\mathbf x) &= \log c(u_1, \dots, u_d) \\
@@ -261,53 +244,42 @@ $$
 u_i &= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 \end{aligned}
 $$
-
+:::
 :::::
 
-::::
+------------------------------------------------------------------------
 
-----------
-
-
-:::: {.columns}
-
+::::: columns
 ### Gaussian Copula
-::::: {.column width="50%"}
 
-* Matérn-like precision matrix $\mathbf{Q}$
-* Scaled so $\boldsymbol{\Sigma} = \mathbf{Q}^{-1}$ is correlation matrix
-* If $\mathbf{Q} = \mathbf{I}$ simplifies to independent margins
-* How to generate, scale and compute with $\mathbf{Q}$ quickly (for MCMC)?
+::: {.column width="50%"}
+-   Matérn-like precision matrix $\mathbf{Q}$ [@lindgren2011]
+-   Scaled so $\boldsymbol{\Sigma} = \mathbf{Q}^{-1}$ is correlation matrix
+-   If $\mathbf{Q} = \mathbf{I}$ simplifies to independent margins
+-   How to generate, scale and compute with $\mathbf{Q}$ quickly (for MCMC)?
+:::
 
-:::::
-
-::::: {.column width="50%"}
-
+::: {.column width="50%"}
 $$
 \begin{aligned}
 \log c(\mathbf u) &\propto \frac{1}{2}\left(\log |\mathbf{Q}| - \mathbf{z}^T\mathbf{Q}\mathbf{z} + \mathbf{z}^T\mathbf{z}\right) \\
 \mathbf{z} &= \Phi^{-1}(\mathbf u)
 \end{aligned}
 $$
-
-:::::
-
-::::
-
 :::
-
+:::::
+:::::::::
 
 ## The Precision Matrix {data-name="Methods"}
 
-::::: {style="font-size:60%"}
-$\mathbf Q$ defined as Kronecker sum of two AR(1) precision matrices
+:::::: {style="font-size:60%"}
+$\mathbf Q$ defined as Kronecker sum of two AR(1) precision matrices, similar to [@lindgren2011]
 
 $$
 \mathbf{Q} = \left( \mathbf{Q}_{\rho_1} \otimes \mathbf{I_{n_2}} + \mathbf{I_{n_1}} \otimes \mathbf{Q}_{\rho_2} \right)^{\nu + 1}, \quad \nu \in \{0, 1, 2\}
 $$
 
-:::: {.columns style="font-size:80%"}
-
+::::: {.columns style="font-size:80%"}
 ::: {.column width="50%"}
 $$
 \mathbf{Q}_{\rho_{1}} = \frac{1}{1-\rho_{1}^2}
@@ -319,7 +291,6 @@ $$
 0 & 0 & 0 & \cdots & 1
 \end{bmatrix}
 $$
-
 :::
 
 ::: {.column width="50%"}
@@ -333,7 +304,6 @@ $$
 0 & 0 & 0 & \cdots & 1
 \end{bmatrix}
 $$
-
 :::
 
 $$
@@ -344,24 +314,13 @@ $$
 \dots & \dots & \cdots & \frac{-\rho_1}{(1-\rho_1^2)} \mathbf{I_{n_2}} & \frac{1}{(1-\rho_1^2)}\mathbf{I_{n_2}} + \mathbf{Q_{\rho_2}}
 \end{bmatrix}^{\nu + 1}
 $$
-
-::::
-
-
 :::::
-
-
-
-
-
+::::::
 
 ## Eigendecomposition
 
-
-
-:::: {.columns style="font-size:65%"}
-
-Because of how $\mathbf{Q}$ is defined, we know that
+::::: {.columns style="font-size:65%"}
+Because of how $\mathbf{Q}$ is defined [@horn1991], we know that
 
 $$
 \begin{aligned}
@@ -379,32 +338,27 @@ $$
 \end{aligned}
 $$
 
-
 Spectral decomposition defined by value/vector pairs of smaller matrices
 
 ::: {.column width="50%"}
-
 $$
 \left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j
 $$
-
 :::
-::: {.column widht="50%"}
 
+::: {.column widht="50%"}
 $$
 \left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j
 $$
-
 :::
 
-* Problem: $\boldsymbol \Sigma_{ii} = \left(\mathbf Q^{-1} \right)_{ii} \neq  1$
-* Solution: $\mathbf{\widetilde  Q} = \mathbf{D}\mathbf{Q}\mathbf{D}$, where $\mathbf D_{ii} = \sqrt{\boldsymbol \Sigma_{ii}}$
-::::
+-   Problem: $\boldsymbol \Sigma_{ii} = \left(\mathbf Q^{-1} \right)_{ii} \neq  1$
+-   Solution: $\mathbf{\widetilde  Q} = \mathbf{D}\mathbf{Q}\mathbf{D}$, where $\mathbf D_{ii} = \sqrt{\boldsymbol \Sigma_{ii}}$
+:::::
 
 ## Marginal Standard Deviations
 
 ::: {style="font-size:70%"}
-
 $$
 \boldsymbol \Sigma = \mathbf Q^{-1} = (\mathbf{V}\boldsymbol\Lambda\mathbf{V}^T)^{-1} = \mathbf{V}\boldsymbol \Lambda^{-1}\mathbf{V}
 $$
@@ -420,12 +374,11 @@ Compute vector $\sigma^2$ containing all marginal variances
 $$ 
 \sigma^2 = \sum_{i = 1}^{n_1} \sum_{j=1}^{n_2} \frac{\left(\left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j\right)^{2}}{\quad\left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)^{\nu+1}}
 $$
-
 :::
 
 ## Marginal Standard Deviations
 
-:::: {.columns style="font-size:75%"}
+::::: {.columns style="font-size:75%"}
 ::: {.column width="58%"}
 ```{r}
 #| echo: true
@@ -461,7 +414,7 @@ msd <- function(Q1, Q2) {
 }
 ```
 :::
-:::: 
+:::::
 
 ::: {style="font-size:75%"}
 ```{r}
@@ -480,9 +433,7 @@ bench::mark(
 ## Calculating the (non-copula) density
 
 ::: {style="font-size:70%"}
-
-The Gaussian log pdf is
-$$
+The Gaussian log pdf is $$
 \log f(\mathbf{u} \vert \mathbf{Q}) \propto \frac{1}{2}\left(\log|\mathbf{Q}| - \mathbf{z}^T\mathbf{Q}\mathbf{z}\right)
 $$
 
@@ -498,19 +449,17 @@ $$
 \left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)
 \left[\left(\left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j\right)^T\mathbf z\right]^2
 $$
-
 :::
 
 ## Calculating the copula density
 
 ::: {style="font-size:70%"}
-
 Let $\mathbf v = \left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j$ and $\lambda = \left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)^{\nu + 1}$. Normalise $\mathbf v$ and $\lambda$ with
 
 $$
 \begin{gathered}
-\widetilde{\mathbf{v}} = \frac{D\mathbf{v}}{\vert\vert D\mathbf{v}\vert\vert_2}, \qquad
-\widetilde{\lambda} = \vert\vert D\mathbf{v}\vert\vert_2^2 \cdot \lambda
+\widetilde{\mathbf{v}} = \frac{\sigma \odot \mathbf{v}}{\vert\vert \sigma \odot\mathbf{v}\vert\vert_2}, \qquad
+\widetilde{\lambda} = \vert\vert \sigma \odot\mathbf{v}\vert\vert_2^2 \cdot \lambda
 \end{gathered}
 $$
 
@@ -519,20 +468,18 @@ Then $\widetilde{\mathbf{v}}$ and $\widetilde{\lambda}$ are an eigenvector/value
 $$
 \log c(\mathbf{u} \vert \mathbf{\widetilde{Q}}) = \frac{1}{2}\log|\mathbf{\widetilde Q}| - \frac{1}{2}\mathbf{z}^T\mathbf{\widetilde Q}\mathbf{z} + \frac{1}{2}\mathbf{z}^T\mathbf{z}
 $$
-
 :::
 
 ## Folded Circulant Approximation
 
-::: {style="font-size:40%"}
-
-::: {.columns}
+:::::::::::: {style="font-size:40%"}
+::::: columns
 ::: {.column width="40%"}
 ### AR(1) precision
 
-The exact form of $Q_{\rho}$, the precision matrix of a one-dimensional AR(1) process with correlation $\rho$ is
-
+The exact form of $Q_{\rho}$, the precision matrix of a one-dimensional AR(1) process with correlation $\rho$
 :::
+
 ::: {.column width="60%"}
 $$
 \mathbf{Q}_\rho = \frac{1}{1-\rho^2}
@@ -545,20 +492,17 @@ $$
 \end{bmatrix}
 $$
 :::
-::: 
+:::::
 
-----------
+------------------------------------------------------------------------
 
-
-
-
-::: {.columns}
+::::: columns
 ::: {.column width="40%"}
 ### Circulant Approximation
 
-This approximation treats the first and last observations as neighbors, effectively wrapping the data around a circle.
-
+This approximation treats the first and last observations as neighbors, effectively wrapping the data around a circle. Very fast computation using FFT [@rue2005]
 :::
+
 ::: {.column width="60%"}
 $$
 \mathbf{Q}_\rho^{(circ)} = \frac{1}{1-\rho^2}
@@ -571,18 +515,17 @@ $$
 \end{bmatrix}
 $$
 :::
-::: 
+:::::
 
-----------
+------------------------------------------------------------------------
 
-
-::: {.columns}
+::::: columns
 ::: {.column width="40%"}
-### Folded Circulant Approximation
+### Folded Circulant Approximation [@kent2022; @mondal2018]
 
-We double the data by reflecting it, giving us the data $x_1,  \dots, x_n, x_n, \dots, x_1$. We then model this doubled data with a $2n \times 2n$ circulant matrix. If written out as an $n \times n$ matrix, it takes the form:
-
+We double the data by reflecting it, giving us the data $x_1,  \dots, x_n, x_n, \dots, x_1$. We then model this doubled data with a $2n \times 2n$ circulant matrix. Get fast computation like in circulant case, but better boundary conditions. Quadratic form written out as an $n \times n$ matrix takes the form on the right.
 :::
+
 ::: {.column width="60%"}
 $$
 \mathbf{Q}_\rho^{(fold)} = \frac{1}{1-\rho^2}
@@ -595,25 +538,23 @@ $$
 \end{bmatrix}
 $$
 :::
-::: 
-
-
-:::
+:::::
+::::::::::::
 
 ## Benchmark: Density Computations {data-name="Results"}
 
 ```{r}
 read_csv(here::here("presentation", "data", "benchmark_all.csv")) |> 
-  slice(c(1:10, 20)) |> 
   gt() |> 
   cols_label(
     `Cholesky (Unscaled)` = "Cholesky",
-    `Eigen (Unscaled)` = "Eigen",
-    sp_3 = "Speed-up",
+    `Eigen (Unscaled)` = "Time",
+    eig = "Eigen",
+    sp_3 = "Relative",
     circ = "Time",
-    sp_1 = "Speed-Up",
+    sp_1 = "Relative",
     fol = "Time",
-    sp_2 = "Speed-Up"
+    sp_2 = "Relative"
   ) |> 
   tab_spanner(
     label = "Circulant",
@@ -622,6 +563,10 @@ read_csv(here::here("presentation", "data", "benchmark_all.csv")) |>
   tab_spanner(
     label = "Folded",
     columns = 8:9
+  ) |> 
+  tab_spanner(
+    label = "Eigen",
+    columns = 3:4
   ) |> 
   tab_spanner(
     label = "Unscaled",
@@ -638,16 +583,13 @@ read_csv(here::here("presentation", "data", "benchmark_all.csv")) |>
 
 ## Benchmark: Maximum Likelihood
 
-
-::: {.columns style="font-size:50%"}
-
+::::: {.columns style="font-size:50%"}
 ::: {.column width="65%"}
 ![](images/bench_ml_bias.png)
 :::
 
 ::: {.column width="35%"}
-<br>
-<br>
+<br> <br>
 
 ```{r}
 read_csv(here::here("presentation", "data", "ml_bench_speed.csv")) |> 
@@ -672,20 +614,20 @@ read_csv(here::here("presentation", "data", "ml_bench_speed.csv")) |>
   )
 ```
 :::
+:::::
 
-:::
-
-## Approximating the Correlation Matrix 
+## Approximating the Correlation Matrix
 
 ![](images/cors.png)
 
-## Data Generation 
+## Data Generation
 
-:::: {.columns style="font-size:60%"}
+::::: {.columns style="font-size:60%"}
 ```{r}
 #| echo: true
+#| cache: true
 tictoc::tic()
-X <- rmatern_copula_folded_full(n = 100, dim1 = 200, dim2 = 90, rho1 = 0.8, rho2 = 0.9, nu = 2)
+X <- rmatern_copula_folded_full(n = 100, dim1 = 400, dim2 = 180, rho1 = 0.8, rho2 = 0.9, nu = 2)
 tictoc::toc()
 ```
 
@@ -693,12 +635,13 @@ tictoc::toc()
 ```{r}
 #| echo: true
 #| out-width: 80%
-plot_matern(X[, 1], 200, 90)
+plot_matern(X[, 1], 400, 180)
 ```
+
 ```{r}
 #| echo: true
 #| out-width: 80%
-plot_matern(X[, 2], 200, 90)
+plot_matern(X[, 2], 400, 180)
 ```
 :::
 
@@ -708,47 +651,48 @@ plot_matern(X[, 2], 200, 90)
 #| out-width: 80%
 apply(X, 1, var) |> hist()
 ```
+
 ```{r}
 #| echo: true
 #| out-width: 80%
 apply(X, 1, mean) |> hist()
 ```
 :::
-
-::::
-
+:::::
 
 ## Conclusion and Future Work {data-name="Conclusion"}
 
-::: {.columns style="font-size:60%"}
-
+::::: {.columns style="font-size:60%"}
 ::: {.column width="50%"}
-
 ### Key Results
 
-- Developed Matérn-like Gaussian copula for large spatial fields
-- Folded circulant approximation to the density
-- Achieved fast density computations
-- Viable for MCMC samplers
-
+-   Developed Matérn-like Gaussian copula for large spatial fields
+-   Folded circulant approximation to the density
+-   Achieved fast density computations
+-   Viable for MCMC samplers
 :::
-::: {.column width="50%"}
 
+::: {.column width="50%"}
 ### Future Work
 
-- Implement t-copulas
-- Apply to other environmental and climate datasets
-- [Finish drafting paper](https://www.bggj.is/materneigenpaper)
-- [R package](https://www.github.com/bgautijonsson/stdmatern)
+-   Implement t-copulas
+-   Apply to other environmental and climate datasets
+-   [Finish drafting paper](https://www.bggj.is/materneigenpaper)
+-   [R package](https://www.github.com/bgautijonsson/stdmatern)
 :::
 
-----------
+------------------------------------------------------------------------
 
 ### PhD Committee
 
 My thanks to my advisor and committee
 
-* Birgir Hrafnkelsson (PI)
-* Raphaël Huser
-* Stefan Siegert
+-   Birgir Hrafnkelsson (PI)
+-   Raphaël Huser
+-   Stefan Siegert
+:::::
+
+# References
+
+::: {#refs style="font-size:60%"}
 :::

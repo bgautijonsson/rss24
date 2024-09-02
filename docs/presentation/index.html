@@ -94,7 +94,27 @@
     code span.va { color: #111111; } /* Variable */
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
-  </style>
+    /* CSS for citations */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+      margin-bottom: 0em;
+    }
+    .hanging-indent div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }  </style>
   <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto.css">
   <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
@@ -412,10 +432,14 @@ Brynjólfur Gauti Guðrúnar Jónsson
 <div class="columns" style="font-size:70%">
 <div class="column" style="width:70%;">
 <ul>
-<li>UKCP Local Projections on a 5km grid over the UK (1980-2080)</li>
+<li>UKCP Local Projections on a 5km grid over the UK (1980-2080) <span class="citation" data-cites="metoffi">[<a href="#/references" role="doc-biblioref" onclick="">1</a>]</span></li>
 <li>Challenge: Modeling maximum daily precipitation in yearly blocks
 <ul>
 <li>43,920 spatial locations on a 180 x 244 grid</li>
+<li>Four parameters per location as in <span class="citation" data-cites="johannesson2021">[<a href="#/references" role="doc-biblioref" onclick="">2</a>]</span>
+<ul>
+<li>Location, Trend, Scale, Shape</li>
+</ul></li>
 </ul></li>
 <li>Two aspects of spatial dependence:
 <ol type="1">
@@ -429,56 +453,39 @@ Brynjólfur Gauti Guðrúnar Jónsson
 </section>
 <section id="calculating-multivariate-normal-densities" class="slide level2">
 <h2>Calculating Multivariate Normal Densities</h2>
-<div class="columns" style="font-size:50%">
-<div class="column" style="width:50%;">
-<h3 id="log-density-formula">Log Density Formula</h3>
+<div class="columns" style="font-size:60%">
 <p><span class="math display">\[
 \log f(\mathbf{x}) \propto \frac{1}{2}\left(\log |\mathbf{Q}| - \mathbf{x}^T\mathbf{Q}\mathbf{x}\right)
-\]</span></p>
-<h3 id="key-components">Key Components</h3>
+\]</span></p><div class="column" style="width:50%;">
+<h3 id="computational-challenges">Computational challenges</h3>
 <ol type="1">
-<li><strong>Log Determinant</strong>: <span class="math inline">\(\log |\mathbf{Q}|\)</span></li>
-</ol>
+<li><strong>Log Determinant</strong>: <span class="math inline">\(\log |\mathbf{Q}|\)</span>
 <ul>
 <li>Constant for a given precision matrix</li>
-</ul>
-<ol start="2" type="1">
-<li><strong>Quadratic Form</strong>: <span class="math inline">\(\mathbf{x}^T\mathbf{Q}\mathbf{x}\)</span></li>
-</ol>
+</ul></li>
+<li><strong>Quadratic Form</strong>: <span class="math inline">\(\mathbf{x}^T\mathbf{Q}\mathbf{x}\)</span>
 <ul>
 <li>Needs calculation for each density evaluation</li>
-</ul>
+</ul></li>
+</ol>
 </div><div class="column" style="width:50%;">
-<h3 id="computational-challenges">Computational Challenges</h3>
-<ul>
-<li>Log determinant calculation
-<ul>
-<li>Time complexity: <span class="math inline">\(O(n^3)\)</span> for naive methods</li>
-<li>Memory complexity: <span class="math inline">\(O(n^2)\)</span></li>
-</ul></li>
-<li>Quadratic form calculation
-<ul>
-<li>Time complexity: <span class="math inline">\(O(n^2)\)</span></li>
-<li>Critical for performance in large spatial fields</li>
-</ul></li>
-</ul>
 <h3 id="spatial-model-considerations">Spatial Model Considerations</h3>
 <ul>
 <li>Some models (e.g., ICAR) avoid log determinant calculation</li>
 <li>Efficient computation crucial for large-scale applications</li>
+<li>Fast algorithms when <span class="math inline">\(\mathbf{Q}\)</span> is sparse <span class="citation" data-cites="rue2001 rue2005">[<a href="#/references" role="doc-biblioref" onclick="">3</a>–<a href="#/references" role="doc-biblioref" onclick="">4</a>]</span></li>
 </ul>
 </div></div>
 </section>
 <section id="spatial-models" class="slide level2">
 <h2>Spatial Models</h2>
-<div style="font-size:40%">
-<h4 id="conditional-autoregression-car">Conditional Autoregression (CAR)</h4>
+<div style="font-size:50%">
+<h4 id="conditional-autoregression-car-besag1974">Conditional Autoregression (CAR) <span class="citation" data-cites="besag1974">[<a href="#/references" role="doc-biblioref" onclick="">5</a>]</span></h4>
 <div class="columns">
 <div class="column" style="width:50%;">
 <ul>
 <li><span class="math inline">\(\mathbf{D}\)</span> is a diagonal matrix with <span class="math inline">\(D_{ii} = n_i\)</span>, the number of neighbours of <span class="math inline">\(i\)</span></li>
 <li><span class="math inline">\(\mathbf{A}\)</span> is the adjacency matrix with <span class="math inline">\(A_{ij} = A_{ji} = 1\)</span> if <span class="math inline">\(i \sim j\)</span></li>
-<li><span class="math inline">\(\tau\)</span> models overall precision</li>
 </ul>
 </div><div class="column" style="width:50%;">
 <p><span class="math display">\[
@@ -489,30 +496,28 @@ Brynjólfur Gauti Guðrúnar Jónsson
 \]</span></p>
 </div></div>
 <hr>
-<h4 id="intrinsic-conditional-autoregression-icar">Intrinsic Conditional Autoregression (ICAR)</h4>
+<h4 id="intrinsic-conditional-autoregression-icar-besag1991">Intrinsic Conditional Autoregression (ICAR) <span class="citation" data-cites="besag1991">[<a href="#/references" role="doc-biblioref" onclick="">6</a>]</span></h4>
 <div class="columns">
 <div class="column" style="width:50%;">
 <ul>
 <li><span class="math inline">\(\alpha = 1\)</span>, so <span class="math inline">\(\mathbf Q\)</span> is singular, but constant</li>
 <li>Don’t have to calculate <span class="math inline">\(\log |\mathbf{Q}|\)</span></li>
-<li><span class="math inline">\(\tau\)</span> is a precision parameter</li>
 </ul>
 </div><div class="column" style="width:50%;">
 <p><span class="math display">\[
 \begin{aligned}
 \mathbf{x} &amp;\sim N(\mathbf{0}, \tau \mathbf{Q}) \\
-\mathbf{Q} &amp;= \mathbf{D} - \mathbf{W}
+\mathbf{Q} &amp;= \mathbf{D} - \mathbf{A}
 \end{aligned}
 \]</span></p>
 </div></div>
 <hr>
-<h4 id="bym-besag-york-mollié-model">BYM (Besag-York-Mollié) Model</h4>
 <div class="columns">
 <div class="column" style="width:50%;">
+<h4 id="bym-besag-york-mollié-model-besag1991">BYM (Besag-York-Mollié) Model <span class="citation" data-cites="besag1991">[<a href="#/references" role="doc-biblioref" onclick="">6</a>]</span></h4>
 <ul>
 <li><span class="math inline">\(\mathbf{u}\)</span> is the structured spatial component (Besag model)</li>
 <li><span class="math inline">\(\mathbf{v}\)</span> is the unstructured component (i.i.d. normal)</li>
-<li><span class="math inline">\(\tau_u\)</span> and <span class="math inline">\(\tau_v\)</span> are precision parameters for each component</li>
 </ul>
 </div><div class="column" style="width:50%;">
 <p><span class="math display">\[
@@ -524,11 +529,10 @@ Brynjólfur Gauti Guðrúnar Jónsson
 \]</span></p>
 </div></div>
 <hr>
-<h4 id="bym2-model">BYM2 Model</h4>
 <div class="columns">
 <div class="column" style="width:50%;">
+<h4 id="bym2-model-riebler2016-simpson2015">BYM2 Model <span class="citation" data-cites="riebler2016 simpson2015">[<a href="#/references" role="doc-biblioref" onclick="">7</a>–&nbsp; <a href="#/references" role="doc-biblioref" onclick="">8</a>]</span></h4>
 <ul>
-<li>Rewrite the combination to get proper scaling</li>
 <li><span class="math inline">\(\rho\)</span> models how much of variance is spatial</li>
 <li><span class="math inline">\(s\)</span> is a scaling factor chosen to make <span class="math inline">\(\mathrm{Var}(\mathbf u_i) \approx 1\)</span></li>
 </ul>
@@ -546,12 +550,11 @@ Brynjólfur Gauti Guðrúnar Jónsson
 <section id="spatial-modeling-on-parameter-level" class="slide level2">
 <h2>Spatial Modeling on Parameter-level</h2>
 <div class="columns" style="font-size:50%">
-<div class="column" style="width:50%;">
+<div class="column" style="width:45%;">
 <ul>
 <li><span class="math inline">\(\mu\)</span>: location parameter
 <ul>
 <li><span class="math inline">\(\mu = \mu_0 \left(1 + \Delta \left(t - t_0\right)\right)\)</span></li>
-<li>Model <span class="math inline">\(\mu_0\)</span> and trend <span class="math inline">\(\Delta\)</span></li>
 </ul></li>
 <li><span class="math inline">\(\sigma\)</span>: scale parameter</li>
 <li><span class="math inline">\(\xi\)</span>: shape parameter <span class="math display">\[
@@ -563,7 +566,7 @@ f_\Delta(\Delta) = \gamma &amp;\sim \mathrm{BYM2}(\mu_\gamma, \rho_\gamma, \sigm
 \end{aligned}
 \]</span> <img data-src="images/bym_table.png"></li>
 </ul>
-</div><div class="column" style="width:50%;">
+</div><div class="column" style="width:55%;">
 <p><img data-src="images/facet_constrained.png"></p>
 </div></div>
 </section>
@@ -626,7 +629,7 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 <h3 id="gaussian-copula">Gaussian Copula</h3>
 <div class="column" style="width:50%;">
 <ul>
-<li>Matérn-like precision matrix <span class="math inline">\(\mathbf{Q}\)</span></li>
+<li>Matérn-like precision matrix <span class="math inline">\(\mathbf{Q}\)</span> <span class="citation" data-cites="lindgren2011">[<a href="#/references" role="doc-biblioref" onclick="">9</a>]</span></li>
 <li>Scaled so <span class="math inline">\(\boldsymbol{\Sigma} = \mathbf{Q}^{-1}\)</span> is correlation matrix</li>
 <li>If <span class="math inline">\(\mathbf{Q} = \mathbf{I}\)</span> simplifies to independent margins</li>
 <li>How to generate, scale and compute with <span class="math inline">\(\mathbf{Q}\)</span> quickly (for MCMC)?</li>
@@ -644,7 +647,7 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 <section id="the-precision-matrix" class="slide level2" data-name="Methods">
 <h2>The Precision Matrix</h2>
 <div style="font-size:60%">
-<p><span class="math inline">\(\mathbf Q\)</span> defined as Kronecker sum of two AR(1) precision matrices</p>
+<p><span class="math inline">\(\mathbf Q\)</span> defined as Kronecker sum of two AR(1) precision matrices, similar to <span class="citation" data-cites="lindgren2011">[<a href="#/references" role="doc-biblioref" onclick="">9</a>]</span></p>
 <p><span class="math display">\[
 \mathbf{Q} = \left( \mathbf{Q}_{\rho_1} \otimes \mathbf{I_{n_2}} + \mathbf{I_{n_1}} \otimes \mathbf{Q}_{\rho_2} \right)^{\nu + 1}, \quad \nu \in \{0, 1, 2\}
 \]</span></p>
@@ -685,7 +688,7 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 <section id="eigendecomposition" class="slide level2">
 <h2>Eigendecomposition</h2>
 <div class="columns" style="font-size:65%">
-<p>Because of how <span class="math inline">\(\mathbf{Q}\)</span> is defined, we know that</p><p><span class="math display">\[
+<p>Because of how <span class="math inline">\(\mathbf{Q}\)</span> is defined <span class="citation" data-cites="horn1991">[<a href="#/references" role="doc-biblioref" onclick="">10</a>]</span>, we know that</p><p><span class="math display">\[
 \begin{aligned}
 \mathbf{Q} &amp;= \mathbf{V}\boldsymbol{\Lambda}\mathbf{V} \\
 &amp;= (\mathbf{V_{\rho_1}} \otimes \mathbf{V_{\rho_2}})(\boldsymbol \Lambda_{\rho_1} \otimes \mathbf{I} + \mathbf{I} \otimes \boldsymbol \Lambda_{\rho_2})^{\nu + 1}(\mathbf{V_{\rho_1}} \otimes \mathbf{V_{\rho_2}})^T
@@ -803,8 +806,8 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 <p>Let <span class="math inline">\(\mathbf v = \left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j\)</span> and <span class="math inline">\(\lambda = \left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)^{\nu + 1}\)</span>. Normalise <span class="math inline">\(\mathbf v\)</span> and <span class="math inline">\(\lambda\)</span> with</p>
 <p><span class="math display">\[
 \begin{gathered}
-\widetilde{\mathbf{v}} = \frac{D\mathbf{v}}{\vert\vert D\mathbf{v}\vert\vert_2}, \qquad
-\widetilde{\lambda} = \vert\vert D\mathbf{v}\vert\vert_2^2 \cdot \lambda
+\widetilde{\mathbf{v}} = \frac{\sigma \odot \mathbf{v}}{\vert\vert \sigma \odot\mathbf{v}\vert\vert_2}, \qquad
+\widetilde{\lambda} = \vert\vert \sigma \odot\mathbf{v}\vert\vert_2^2 \cdot \lambda
 \end{gathered}
 \]</span></p>
 <p>Then <span class="math inline">\(\widetilde{\mathbf{v}}\)</span> and <span class="math inline">\(\widetilde{\lambda}\)</span> are an eigenvector/value pair of the scaled precision matrix <span class="math inline">\(\mathbf{\widetilde{Q}}\)</span>. Iterate over <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> to calculate</p>
@@ -819,7 +822,7 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 <div class="columns">
 <div class="column" style="width:40%;">
 <h3 id="ar1-precision">AR(1) precision</h3>
-<p>The exact form of <span class="math inline">\(Q_{\rho}\)</span>, the precision matrix of a one-dimensional AR(1) process with correlation <span class="math inline">\(\rho\)</span> is</p>
+<p>The exact form of <span class="math inline">\(Q_{\rho}\)</span>, the precision matrix of a one-dimensional AR(1) process with correlation <span class="math inline">\(\rho\)</span></p>
 </div><div class="column" style="width:60%;">
 <p><span class="math display">\[
 \mathbf{Q}_\rho = \frac{1}{1-\rho^2}
@@ -836,7 +839,7 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 <div class="columns">
 <div class="column" style="width:40%;">
 <h3 id="circulant-approximation">Circulant Approximation</h3>
-<p>This approximation treats the first and last observations as neighbors, effectively wrapping the data around a circle.</p>
+<p>This approximation treats the first and last observations as neighbors, effectively wrapping the data around a circle. Very fast computation using FFT <span class="citation" data-cites="rue2005">[<a href="#/references" role="doc-biblioref" onclick="">4</a>]</span></p>
 </div><div class="column" style="width:60%;">
 <p><span class="math display">\[
 \mathbf{Q}_\rho^{(circ)} = \frac{1}{1-\rho^2}
@@ -852,8 +855,8 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 <hr>
 <div class="columns">
 <div class="column" style="width:40%;">
-<h3 id="folded-circulant-approximation-1">Folded Circulant Approximation</h3>
-<p>We double the data by reflecting it, giving us the data <span class="math inline">\(x_1,  \dots, x_n, x_n, \dots, x_1\)</span>. We then model this doubled data with a <span class="math inline">\(2n \times 2n\)</span> circulant matrix. If written out as an <span class="math inline">\(n \times n\)</span> matrix, it takes the form:</p>
+<h3 id="folded-circulant-approximation-kent2022-mondal2018">Folded Circulant Approximation <span class="citation" data-cites="kent2022 mondal2018">[<a href="#/references" role="doc-biblioref" onclick="">11</a>–<a href="#/references" role="doc-biblioref" onclick="">12</a>]</span></h3>
+<p>We double the data by reflecting it, giving us the data <span class="math inline">\(x_1,  \dots, x_n, x_n, \dots, x_1\)</span>. We then model this doubled data with a <span class="math inline">\(2n \times 2n\)</span> circulant matrix. Get fast computation like in circulant case, but better boundary conditions. Quadratic form written out as an <span class="math inline">\(n \times n\)</span> matrix takes the form on the right.</p>
 </div><div class="column" style="width:60%;">
 <p><span class="math display">\[
 \mathbf{Q}_\rho^{(fold)} = \frac{1}{1-\rho^2}
@@ -1326,147 +1329,159 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 <caption>Benchmarking how long it takes to evaluate the density of a Mátern(<span class="math inline">\(\nu\)</span>)-like field with correlation parameter <span class="math inline">\(\rho\)</span>, either unscaled or scaled to have unit marginal variance</caption>
 <thead>
 <tr class="header gt_col_headings gt_spanner_row">
-<th colspan="4" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"></th>
+<th class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="col"></th>
+<th colspan="3" id="Unscaled" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><span class="gt_column_spanner">Unscaled</span></th>
 <th colspan="5" id="Scaled" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><span class="gt_column_spanner">Scaled</span></th>
 </tr>
 <tr class="odd gt_col_headings gt_spanner_row">
-<th rowspan="2" id="Q_size" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Q_size</th>
-<th colspan="3" id="Unscaled" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><span class="gt_column_spanner">Unscaled</span></th>
+<th rowspan="2" id="Grid" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Grid</th>
+<th rowspan="2" id="Cholesky" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Cholesky</th>
+<th colspan="2" id="Eigen" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><span class="gt_column_spanner">Eigen</span></th>
 <th rowspan="2" id="Eigen" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Eigen</th>
 <th colspan="2" id="Circulant" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><span class="gt_column_spanner">Circulant</span></th>
 <th colspan="2" id="Folded" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><span class="gt_column_spanner">Folded</span></th>
 </tr>
 <tr class="header gt_col_headings">
-<th id="Cholesky" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Cholesky</th>
-<th id="Eigen" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Eigen</th>
-<th id="Speed-up" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Speed-up</th>
 <th id="Time" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Time</th>
-<th id="Speed-Up" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Speed-Up</th>
+<th id="Relative" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Relative</th>
 <th id="Time" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Time</th>
-<th id="Speed-Up" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Speed-Up</th>
+<th id="Relative" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Relative</th>
+<th id="Time" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Time</th>
+<th id="Relative" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Relative</th>
 </tr>
 </thead>
 <tbody class="gt_table_body">
 <tr class="odd">
-<td class="gt_row gt_left" headers="Q_size">100x100</td>
-<td class="gt_row gt_left" headers="Cholesky (Unscaled)">27.22µs</td>
-<td class="gt_row gt_left" headers="Eigen (Unscaled)">107.36µs</td>
-<td class="gt_row gt_left" headers="sp_3">0.25x</td>
-<td class="gt_row gt_left" headers="Eigen">173.08µs</td>
-<td class="gt_row gt_left" headers="circ">29.03µs</td>
-<td class="gt_row gt_left" headers="sp_1">5.96x</td>
-<td class="gt_row gt_left" headers="fol">36.12µs</td>
-<td class="gt_row gt_left" headers="sp_2">4.79x</td>
+<td class="gt_row gt_left" headers="Grid">20x20</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">312.56µs</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">155.88µs</td>
+<td class="gt_row gt_right" headers="sp_3">49.9%</td>
+<td class="gt_row gt_left" headers="eig">235.59µs</td>
+<td class="gt_row gt_left" headers="circ">36.2µs</td>
+<td class="gt_row gt_right" headers="sp_1">15.4%</td>
+<td class="gt_row gt_left" headers="fol">115.09µs</td>
+<td class="gt_row gt_right" headers="sp_2">48.9%</td>
 </tr>
 <tr class="even">
-<td class="gt_row gt_left" headers="Q_size">400x400</td>
-<td class="gt_row gt_left" headers="Cholesky (Unscaled)">157.17µs</td>
-<td class="gt_row gt_left" headers="Eigen (Unscaled)">122.18µs</td>
-<td class="gt_row gt_left" headers="sp_3">1.29x</td>
-<td class="gt_row gt_left" headers="Eigen">241.8µs</td>
-<td class="gt_row gt_left" headers="circ">35.9µs</td>
-<td class="gt_row gt_left" headers="sp_1">6.74x</td>
-<td class="gt_row gt_left" headers="fol">116.09µs</td>
-<td class="gt_row gt_left" headers="sp_2">2.08x</td>
+<td class="gt_row gt_left" headers="Grid">40x40</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">1.77ms</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">543.76µs</td>
+<td class="gt_row gt_right" headers="sp_3">30.7%</td>
+<td class="gt_row gt_left" headers="eig">1.65ms</td>
+<td class="gt_row gt_left" headers="circ">115.8µs</td>
+<td class="gt_row gt_right" headers="sp_1">7.0%</td>
+<td class="gt_row gt_left" headers="fol">300.9µs</td>
+<td class="gt_row gt_right" headers="sp_2">18.3%</td>
 </tr>
 <tr class="odd">
-<td class="gt_row gt_left" headers="Q_size">900x900</td>
-<td class="gt_row gt_left" headers="Cholesky (Unscaled)">595.1µs</td>
-<td class="gt_row gt_left" headers="Eigen (Unscaled)">223.06µs</td>
-<td class="gt_row gt_left" headers="sp_3">2.67x</td>
-<td class="gt_row gt_left" headers="Eigen">486.01µs</td>
-<td class="gt_row gt_left" headers="circ">88.97µs</td>
-<td class="gt_row gt_left" headers="sp_1">5.46x</td>
-<td class="gt_row gt_left" headers="fol">177.71µs</td>
-<td class="gt_row gt_left" headers="sp_2">2.73x</td>
+<td class="gt_row gt_left" headers="Grid">60x60</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">6.33ms</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">1.8ms</td>
+<td class="gt_row gt_right" headers="sp_3">28.5%</td>
+<td class="gt_row gt_left" headers="eig">7.1ms</td>
+<td class="gt_row gt_left" headers="circ">188.48µs</td>
+<td class="gt_row gt_right" headers="sp_1">2.7%</td>
+<td class="gt_row gt_left" headers="fol">609.71µs</td>
+<td class="gt_row gt_right" headers="sp_2">8.6%</td>
 </tr>
 <tr class="even">
-<td class="gt_row gt_left" headers="Q_size">1600x1600</td>
-<td class="gt_row gt_left" headers="Cholesky (Unscaled)">1.47ms</td>
-<td class="gt_row gt_left" headers="Eigen (Unscaled)">461.82µs</td>
-<td class="gt_row gt_left" headers="sp_3">3.18x</td>
-<td class="gt_row gt_left" headers="Eigen">1.18ms</td>
-<td class="gt_row gt_left" headers="circ">109.43µs</td>
-<td class="gt_row gt_left" headers="sp_1">10.82x</td>
-<td class="gt_row gt_left" headers="fol">280.13µs</td>
-<td class="gt_row gt_left" headers="sp_2">4.23x</td>
+<td class="gt_row gt_left" headers="Grid">80x80</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">17.98ms</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">5.17ms</td>
+<td class="gt_row gt_right" headers="sp_3">28.8%</td>
+<td class="gt_row gt_left" headers="eig">21.96ms</td>
+<td class="gt_row gt_left" headers="circ">338.15µs</td>
+<td class="gt_row gt_right" headers="sp_1">1.5%</td>
+<td class="gt_row gt_left" headers="fol">1.26ms</td>
+<td class="gt_row gt_right" headers="sp_2">5.7%</td>
 </tr>
 <tr class="odd">
-<td class="gt_row gt_left" headers="Q_size">2500x2500</td>
-<td class="gt_row gt_left" headers="Cholesky (Unscaled)">3.09ms</td>
-<td class="gt_row gt_left" headers="Eigen (Unscaled)">948.64µs</td>
-<td class="gt_row gt_left" headers="sp_3">3.26x</td>
-<td class="gt_row gt_left" headers="Eigen">2.49ms</td>
-<td class="gt_row gt_left" headers="circ">143.34µs</td>
-<td class="gt_row gt_left" headers="sp_1">17.39x</td>
-<td class="gt_row gt_left" headers="fol">438.35µs</td>
-<td class="gt_row gt_left" headers="sp_2">5.69x</td>
+<td class="gt_row gt_left" headers="Grid">100x100</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">38.58ms</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">11.48ms</td>
+<td class="gt_row gt_right" headers="sp_3">29.8%</td>
+<td class="gt_row gt_left" headers="eig">48.44ms</td>
+<td class="gt_row gt_left" headers="circ">445.14µs</td>
+<td class="gt_row gt_right" headers="sp_1">0.9%</td>
+<td class="gt_row gt_left" headers="fol">2.37ms</td>
+<td class="gt_row gt_right" headers="sp_2">4.9%</td>
 </tr>
 <tr class="even">
-<td class="gt_row gt_left" headers="Q_size">3600x3600</td>
-<td class="gt_row gt_left" headers="Cholesky (Unscaled)">6.12ms</td>
-<td class="gt_row gt_left" headers="Eigen (Unscaled)">1.74ms</td>
-<td class="gt_row gt_left" headers="sp_3">3.52x</td>
-<td class="gt_row gt_left" headers="Eigen">4.89ms</td>
-<td class="gt_row gt_left" headers="circ">182.88µs</td>
-<td class="gt_row gt_left" headers="sp_1">26.76x</td>
-<td class="gt_row gt_left" headers="fol">581.81µs</td>
-<td class="gt_row gt_left" headers="sp_2">8.41x</td>
+<td class="gt_row gt_left" headers="Grid">120x120</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">81.1ms</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">22.74ms</td>
+<td class="gt_row gt_right" headers="sp_3">28.0%</td>
+<td class="gt_row gt_left" headers="eig">88.45ms</td>
+<td class="gt_row gt_left" headers="circ">719.55µs</td>
+<td class="gt_row gt_right" headers="sp_1">0.8%</td>
+<td class="gt_row gt_left" headers="fol">2.82ms</td>
+<td class="gt_row gt_right" headers="sp_2">3.2%</td>
 </tr>
 <tr class="odd">
-<td class="gt_row gt_left" headers="Q_size">4900x4900</td>
-<td class="gt_row gt_left" headers="Cholesky (Unscaled)">10.98ms</td>
-<td class="gt_row gt_left" headers="Eigen (Unscaled)">2.94ms</td>
-<td class="gt_row gt_left" headers="sp_3">3.73x</td>
-<td class="gt_row gt_left" headers="Eigen">9.29ms</td>
-<td class="gt_row gt_left" headers="circ">246.94µs</td>
-<td class="gt_row gt_left" headers="sp_1">37.6x</td>
-<td class="gt_row gt_left" headers="fol">894.78µs</td>
-<td class="gt_row gt_left" headers="sp_2">10.38x</td>
+<td class="gt_row gt_left" headers="Grid">140x140</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">145.26ms</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">32.55ms</td>
+<td class="gt_row gt_right" headers="sp_3">22.4%</td>
+<td class="gt_row gt_left" headers="eig">168.38ms</td>
+<td class="gt_row gt_left" headers="circ">965.71µs</td>
+<td class="gt_row gt_right" headers="sp_1">0.6%</td>
+<td class="gt_row gt_left" headers="fol">5.39ms</td>
+<td class="gt_row gt_right" headers="sp_2">3.2%</td>
 </tr>
 <tr class="even">
-<td class="gt_row gt_left" headers="Q_size">6400x6400</td>
-<td class="gt_row gt_left" headers="Cholesky (Unscaled)">17.11ms</td>
-<td class="gt_row gt_left" headers="Eigen (Unscaled)">4.78ms</td>
-<td class="gt_row gt_left" headers="sp_3">3.58x</td>
-<td class="gt_row gt_left" headers="Eigen">16.07ms</td>
-<td class="gt_row gt_left" headers="circ">295.4µs</td>
-<td class="gt_row gt_left" headers="sp_1">54.41x</td>
-<td class="gt_row gt_left" headers="fol">1.18ms</td>
-<td class="gt_row gt_left" headers="sp_2">13.64x</td>
+<td class="gt_row gt_left" headers="Grid">160x160</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">233.03ms</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">54.51ms</td>
+<td class="gt_row gt_right" headers="sp_3">23.4%</td>
+<td class="gt_row gt_left" headers="eig">260.7ms</td>
+<td class="gt_row gt_left" headers="circ">1.27ms</td>
+<td class="gt_row gt_right" headers="sp_1">0.5%</td>
+<td class="gt_row gt_left" headers="fol">5.33ms</td>
+<td class="gt_row gt_right" headers="sp_2">2.0%</td>
 </tr>
 <tr class="odd">
-<td class="gt_row gt_left" headers="Q_size">8100x8100</td>
-<td class="gt_row gt_left" headers="Cholesky (Unscaled)">26.15ms</td>
-<td class="gt_row gt_left" headers="Eigen (Unscaled)">7.41ms</td>
-<td class="gt_row gt_left" headers="sp_3">3.53x</td>
-<td class="gt_row gt_left" headers="Eigen">24.5ms</td>
-<td class="gt_row gt_left" headers="circ">456.94µs</td>
-<td class="gt_row gt_left" headers="sp_1">53.61x</td>
-<td class="gt_row gt_left" headers="fol">1.56ms</td>
-<td class="gt_row gt_left" headers="sp_2">15.73x</td>
+<td class="gt_row gt_left" headers="Grid">180x180</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">359.21ms</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">97.4ms</td>
+<td class="gt_row gt_right" headers="sp_3">27.1%</td>
+<td class="gt_row gt_left" headers="eig">482.93ms</td>
+<td class="gt_row gt_left" headers="circ">1.61ms</td>
+<td class="gt_row gt_right" headers="sp_1">0.3%</td>
+<td class="gt_row gt_left" headers="fol">10.22ms</td>
+<td class="gt_row gt_right" headers="sp_2">2.1%</td>
 </tr>
 <tr class="even">
-<td class="gt_row gt_left" headers="Q_size">10000x10000</td>
-<td class="gt_row gt_left" headers="Cholesky (Unscaled)">37.42ms</td>
-<td class="gt_row gt_left" headers="Eigen (Unscaled)">11ms</td>
-<td class="gt_row gt_left" headers="sp_3">3.4x</td>
-<td class="gt_row gt_left" headers="Eigen">34.89ms</td>
-<td class="gt_row gt_left" headers="circ">413.3µs</td>
-<td class="gt_row gt_left" headers="sp_1">84.41x</td>
-<td class="gt_row gt_left" headers="fol">1.76ms</td>
-<td class="gt_row gt_left" headers="sp_2">19.86x</td>
+<td class="gt_row gt_left" headers="Grid">200x200</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">567.01ms</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">147.51ms</td>
+<td class="gt_row gt_right" headers="sp_3">26.0%</td>
+<td class="gt_row gt_left" headers="eig">676.53ms</td>
+<td class="gt_row gt_left" headers="circ">1.84ms</td>
+<td class="gt_row gt_right" headers="sp_1">0.3%</td>
+<td class="gt_row gt_left" headers="fol">8.62ms</td>
+<td class="gt_row gt_right" headers="sp_2">1.3%</td>
 </tr>
 <tr class="odd">
-<td class="gt_row gt_left" headers="Q_size">40000x40000</td>
-<td class="gt_row gt_left" headers="Cholesky (Unscaled)">554.73ms</td>
-<td class="gt_row gt_left" headers="Eigen (Unscaled)">124.41ms</td>
-<td class="gt_row gt_left" headers="sp_3">4.46x</td>
-<td class="gt_row gt_left" headers="Eigen">509.18ms</td>
-<td class="gt_row gt_left" headers="circ">1.59ms</td>
-<td class="gt_row gt_left" headers="sp_1">320.18x</td>
-<td class="gt_row gt_left" headers="fol">10.72ms</td>
-<td class="gt_row gt_left" headers="sp_2">47.49x</td>
+<td class="gt_row gt_left" headers="Grid">220x220</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">791.13ms</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">206.13ms</td>
+<td class="gt_row gt_right" headers="sp_3">26.1%</td>
+<td class="gt_row gt_left" headers="eig">994.11ms</td>
+<td class="gt_row gt_left" headers="circ">2.59ms</td>
+<td class="gt_row gt_right" headers="sp_1">0.3%</td>
+<td class="gt_row gt_left" headers="fol">13.55ms</td>
+<td class="gt_row gt_right" headers="sp_2">1.4%</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Grid">240x240</td>
+<td class="gt_row gt_left" headers="Cholesky (Unscaled)">1.07s</td>
+<td class="gt_row gt_left" headers="Eigen (Unscaled)">287ms</td>
+<td class="gt_row gt_right" headers="sp_3">26.8%</td>
+<td class="gt_row gt_left" headers="eig">1.34s</td>
+<td class="gt_row gt_left" headers="circ">2.82ms</td>
+<td class="gt_row gt_right" headers="sp_1">0.2%</td>
+<td class="gt_row gt_left" headers="fol">14.77ms</td>
+<td class="gt_row gt_right" headers="sp_2">1.1%</td>
 </tr>
 </tbody>
 </table>
@@ -2013,14 +2028,14 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 <div class="columns" style="font-size:60%">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>tictoc<span class="sc">::</span><span class="fu">tic</span>()</span>
-<span id="cb5-2"><a></a>X <span class="ot">&lt;-</span> <span class="fu">rmatern_copula_folded_full</span>(<span class="at">n =</span> <span class="dv">100</span>, <span class="at">dim1 =</span> <span class="dv">200</span>, <span class="at">dim2 =</span> <span class="dv">90</span>, <span class="at">rho1 =</span> <span class="fl">0.8</span>, <span class="at">rho2 =</span> <span class="fl">0.9</span>, <span class="at">nu =</span> <span class="dv">2</span>)</span>
+<span id="cb5-2"><a></a>X <span class="ot">&lt;-</span> <span class="fu">rmatern_copula_folded_full</span>(<span class="at">n =</span> <span class="dv">100</span>, <span class="at">dim1 =</span> <span class="dv">400</span>, <span class="at">dim2 =</span> <span class="dv">180</span>, <span class="at">rho1 =</span> <span class="fl">0.8</span>, <span class="at">rho2 =</span> <span class="fl">0.9</span>, <span class="at">nu =</span> <span class="dv">2</span>)</span>
 <span id="cb5-3"><a></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>0.27 sec elapsed</code></pre>
+<pre><code>1.334 sec elapsed</code></pre>
 </div>
 </div><div class="column" style="width:50%;text-align:center;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="fu">plot_matern</span>(X[, <span class="dv">1</span>], <span class="dv">200</span>, <span class="dv">90</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="fu">plot_matern</span>(X[, <span class="dv">1</span>], <span class="dv">400</span>, <span class="dv">180</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure>
@@ -2030,7 +2045,7 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a><span class="fu">plot_matern</span>(X[, <span class="dv">2</span>], <span class="dv">200</span>, <span class="dv">90</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a><span class="fu">plot_matern</span>(X[, <span class="dv">2</span>], <span class="dv">400</span>, <span class="dv">180</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure>
@@ -2089,6 +2104,47 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 <li>Stefan Siegert</li>
 </ul>
 </div>
+</section>
+<section id="references" class="title-slide slide level1 smaller scrollable">
+<h1>References</h1>
+<div id="refs" class="references csl-bib-body" style="font-size:60%" data-entry-spacing="0" role="list">
+<div id="ref-metoffi" class="csl-entry" role="listitem">
+<div class="csl-left-margin">1. </div><div class="csl-right-inline">Centre for Environmental Data Analysis, <a href="https://catalogue.ceda.ac.uk/uuid/e304987739e04cdc960598fa5e4439d0/">Met office hadley centre (2019): UKCP local projections on a 5km grid over the UK for 1980-2080.</a> (n.d.).</div>
+</div>
+<div id="ref-johannesson2021" class="csl-entry" role="listitem">
+<div class="csl-left-margin">2. </div><div class="csl-right-inline">Á. V. Johannesson, S. Siegert, R. Huser, H. Bakka, &amp; B. Hrafnkelsson, Approximate bayesian inference for analysis of spatio-temporal flood frequency data. (2021). https://doi.org/<a href="https://doi.org/10.48550/arXiv.1907.04763">10.48550/arXiv.1907.04763</a>.</div>
+</div>
+<div id="ref-rue2001" class="csl-entry" role="listitem">
+<div class="csl-left-margin">3. </div><div class="csl-right-inline">H. Rue, Fast sampling of Gaussian Markov random fields. <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em>, <strong>63</strong> (2001) 325–338. https://doi.org/<a href="https://doi.org/10.1111/1467-9868.00288">10.1111/1467-9868.00288</a>.</div>
+</div>
+<div id="ref-rue2005" class="csl-entry" role="listitem">
+<div class="csl-left-margin">4. </div><div class="csl-right-inline">H. Rue &amp; L. Held, <em>Gaussian Markov Random Fields: Theory and Applications</em> (CRC Press, 2005).</div>
+</div>
+<div id="ref-besag1974" class="csl-entry" role="listitem">
+<div class="csl-left-margin">5. </div><div class="csl-right-inline">J. Besag, <a href="https://www.jstor.org/stable/2984812">Spatial interaction and the statistical analysis of lattice systems</a>. <em>Journal of the Royal Statistical Society. Series B (Methodological)</em>, <strong>36</strong> (1974) 192–236.</div>
+</div>
+<div id="ref-besag1991" class="csl-entry" role="listitem">
+<div class="csl-left-margin">6. </div><div class="csl-right-inline">J. Besag, J. York, &amp; A. Mollié, Bayesian image restoration, with two applications in spatial statistics. <em>Annals of the Institute of Statistical Mathematics</em>, <strong>43</strong> (1991) 1–20. https://doi.org/<a href="https://doi.org/10.1007/BF00116466">10.1007/BF00116466</a>.</div>
+</div>
+<div id="ref-riebler2016" class="csl-entry" role="listitem">
+<div class="csl-left-margin">7. </div><div class="csl-right-inline">A. Riebler, S. H. Sørbye, D. Simpson, &amp; H. Rue, <a href="https://journals.sagepub.com/doi/full/10.1177/0962280216660421">An intuitive bayesian spatial model for disease mapping that accounts for scaling</a>. (2016).</div>
+</div>
+<div id="ref-simpson2015" class="csl-entry" role="listitem">
+<div class="csl-left-margin">8. </div><div class="csl-right-inline">D. P. Simpson, H. Rue, T. G. Martins, A. Riebler, &amp; S. H. Sørbye, <a href="http://arxiv.org/abs/1403.4630">Penalising model component complexity: A principled, practical approach to constructing priors</a>. (2015).</div>
+</div>
+<div id="ref-lindgren2011" class="csl-entry" role="listitem">
+<div class="csl-left-margin">9. </div><div class="csl-right-inline">F. Lindgren, H. Rue, &amp; J. Lindström, An explicit link between Gaussian fields and Gaussian Markov random fields: the stochastic partial differential equation approach. <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em>, <strong>73</strong> (2011) 423–498. https://doi.org/<a href="https://doi.org/10.1111/j.1467-9868.2011.00777.x">10.1111/j.1467-9868.2011.00777.x</a>.</div>
+</div>
+<div id="ref-horn1991" class="csl-entry" role="listitem">
+<div class="csl-left-margin">10. </div><div class="csl-right-inline">R. A. Horn &amp; C. R. Johnson, <em><a href="https://www.cambridge.org/core/books/topics-in-matrix-analysis/B988495A235F1C3406EA484A2C477B03">Topics in matrix analysis</a></em> (Cambridge: Cambridge University Press, 1991).</div>
+</div>
+<div id="ref-kent2022" class="csl-entry" role="listitem">
+<div class="csl-left-margin">11. </div><div class="csl-right-inline">J. T. Kent &amp; K. V. Mardia, <em>Spatial Analysis</em> (John Wiley &amp; Sons, 2022).</div>
+</div>
+<div id="ref-mondal2018" class="csl-entry" role="listitem">
+<div class="csl-left-margin">12. </div><div class="csl-right-inline">D. Mondal, On edge correction of conditional and intrinsic autoregressions. <em>Biometrika</em>, <strong>105</strong> (2018) 447–454. https://doi.org/<a href="https://doi.org/10.1093/biomet/asy014">10.1093/biomet/asy014</a>.</div>
+</div>
+</div>
 
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
@@ -2128,7 +2184,7 @@ u_i &amp;= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 'autoAnimateDuration': 1,
 'autoAnimateUnmatched': true,
 'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
-'simplemenu': {"menubarclass":"menubar","menuclass":"menu","activeclass":"active","activeelement":"li","flat":false,"barhtml":{"header":"<div class='menubar mb-10'><ul class='menu'></ul><div>","footer":"<div class='footer footer-default' style='display: block;'> <a href='https://bggj.is/rss24' target='_blank'>bggj.is/rss24</a>  <img src='images/hi-audkenni_28-raunsvisd.png' class='slide-logo r-stretch'></div>"},"scale":0.67},
+'simplemenu': {"menubarclass":"menubar","menuclass":"menu","activeclass":"active","activeelement":"li","flat":false,"barhtml":{"header":"<div class='menubar mb-10'><ul class='menu'></ul><div>","footer":"<div class='footer footer-default' style='display: block;'> <a href='https://bggj.is/rss24' target='_blank'>bggj.is/rss24</a>  <img src='hi-audkenni_28-raunsvisd.png' class='slide-logo r-stretch'></div>"},"scale":0.67},
 'smaller': false,
  
         // Display controls in the bottom right corner
