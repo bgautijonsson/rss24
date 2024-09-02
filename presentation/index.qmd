@@ -219,7 +219,7 @@ $$
 
 ## Our Approach: Matérn-like Gaussian Copula
 
-::::::::: {style="font-size:55%"}
+::::: {style="font-size:55%"}
 $$
 \begin{gathered}
 \log h(\mathbf x) = \log c\left(F_1(x_1), \dots, F_d(x_d)\right) + \sum_{i=1}^d \log f_i(x_i)
@@ -228,7 +228,7 @@ $$
 
 ------------------------------------------------------------------------
 
-::::: columns
+:::: columns
 ### Marginal CDFs
 
 ::: {.column width="50%"}
@@ -245,11 +245,11 @@ u_i &= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 \end{aligned}
 $$
 :::
-:::::
+::::
 
 ------------------------------------------------------------------------
 
-::::: columns
+:::: columns
 ### Gaussian Copula
 
 ::: {.column width="50%"}
@@ -267,8 +267,8 @@ $$
 \end{aligned}
 $$
 :::
+::::
 :::::
-:::::::::
 
 ## The Precision Matrix {data-name="Methods"}
 
@@ -369,10 +369,10 @@ $$
 \boldsymbol \Sigma_{ii} = \sum_{k=1}^{n} v_{ik} \frac{1}{\lambda_k} (v^T)_{ki} = \sum_{k=1}^{n} v_{ik} \frac{1}{\lambda_k} v_{ik} = \sum_{k=1}^{n} v_{ik}^2 \frac{1}{\lambda_k}
 $$
 
-Compute vector $\sigma^2$ containing all marginal variances
+Compute vector $\boldsymbol \sigma^2$ containing all marginal variances
 
 $$ 
-\sigma^2 = \sum_{i = 1}^{n_1} \sum_{j=1}^{n_2} \frac{\left(\left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j\right)^{2}}{\quad\left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)^{\nu+1}}
+\boldsymbol \sigma^2 = \sum_{i = 1}^{n_1} \sum_{j=1}^{n_2} \frac{\left(\left\{\mathbf{v}_{\rho_1}\right\}_i \otimes \left\{\mathbf{v}_{\rho_2}\right\}_j\right)^{2}}{\quad\left(\left\{\lambda_{\rho_1}\right\}_i + \left\{\lambda_{\rho_2}\right\}_j\right)^{\nu+1}}
 $$
 :::
 
@@ -433,7 +433,8 @@ bench::mark(
 ## Calculating the (non-copula) density
 
 ::: {style="font-size:70%"}
-The Gaussian log pdf is $$
+The Gaussian log pdf is 
+$$
 \log f(\mathbf{u} \vert \mathbf{Q}) \propto \frac{1}{2}\left(\log|\mathbf{Q}| - \mathbf{z}^T\mathbf{Q}\mathbf{z}\right)
 $$
 
