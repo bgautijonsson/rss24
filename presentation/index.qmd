@@ -19,6 +19,8 @@ revealjs-plugins:
   - simplemenu
 bibliography: references.bib
 csl: cambridge-university-press-numeric.csl
+#self-contained-math: true
+#embed-resources: true
 ---
 
 ```{r setup}
@@ -26,6 +28,7 @@ library(stdmatern)
 library(INLA)
 library(gt)
 library(tidyverse)
+library(evd)
 options(width = 648)
 ```
 
@@ -56,22 +59,20 @@ $$
 $$
 
 ::: {.column width="50%"}
-
 ### Computational challenges
+
 1.  **Log Determinant**: $\log |\mathbf{Q}|$
-    - Constant for a given precision matrix
+    -   Constant for a given precision matrix
 2.  **Quadratic Form**: $\mathbf{x}^T\mathbf{Q}\mathbf{x}$
-    - Needs calculation for each density evaluation
+    -   Needs calculation for each density evaluation
 :::
 
 ::: {.column width="50%"}
-
 ### Spatial Model Considerations
 
-* Some models (e.g., ICAR) avoid log determinant calculation
-* Efficient computation crucial for large-scale applications
-* Fast algorithms when $\mathbf{Q}$ is sparse [@rue2001; @rue2005]
-
+-   Some models (e.g., ICAR) avoid log determinant calculation
+-   Efficient computation crucial for large-scale applications
+-   Fast algorithms when $\mathbf{Q}$ is sparse [@rue2001; @rue2005]
 :::
 :::::
 
@@ -98,8 +99,8 @@ $$
 
 ------------------------------------------------------------------------
 
-
 #### Intrinsic Conditional Autoregression (ICAR) [@besag1991]
+
 ::::: columns
 ::: {.column width="50%"}
 -   $\alpha = 1$, so $\mathbf Q$ is singular, but constant
@@ -118,10 +119,10 @@ $$
 
 ------------------------------------------------------------------------
 
-
 ::::: columns
 ::: {.column width="50%"}
 #### BYM (Besag-York-Mollié) Model [@besag1991]
+
 -   $\mathbf{u}$ is the structured spatial component (Besag model)
 -   $\mathbf{v}$ is the unstructured component (i.i.d. normal)
 :::
@@ -139,10 +140,10 @@ $$
 
 ------------------------------------------------------------------------
 
-
 ::::: columns
 ::: {.column width="50%"}
-#### BYM2 Model [@riebler2016;   @simpson2015]
+#### BYM2 Model [@riebler2016; @simpson2015]
+
 -   $\rho$ models how much of variance is spatial
 -   $s$ is a scaling factor chosen to make $\mathrm{Var}(\mathbf u_i) \approx 1$
 :::
@@ -219,7 +220,7 @@ $$
 
 ## Our Approach: Matérn-like Gaussian Copula
 
-::::: {style="font-size:55%"}
+::::::::: {style="font-size:55%"}
 $$
 \begin{gathered}
 \log h(\mathbf x) = \log c\left(F_1(x_1), \dots, F_d(x_d)\right) + \sum_{i=1}^d \log f_i(x_i)
@@ -228,7 +229,7 @@ $$
 
 ------------------------------------------------------------------------
 
-:::: columns
+::::: columns
 ### Marginal CDFs
 
 ::: {.column width="50%"}
@@ -245,17 +246,18 @@ u_i &= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 \end{aligned}
 $$
 :::
-::::
+:::::
 
 ------------------------------------------------------------------------
 
-:::: columns
+::::: columns
 ### Gaussian Copula
 
 ::: {.column width="50%"}
 -   Matérn-like precision matrix $\mathbf{Q}$ [@lindgren2011]
--   Scaled so $\boldsymbol{\Sigma} = \mathbf{Q}^{-1}$ is correlation matrix
 -   If $\mathbf{Q} = \mathbf{I}$ simplifies to independent margins
+-   Scaled so $\boldsymbol{\Sigma} = \mathbf{Q}^{-1}$ is correlation matrix
+-   Need to calculate marginal variances [@rue2005a; @rue2007; @rue2009]
 -   How to generate, scale and compute with $\mathbf{Q}$ quickly (for MCMC)?
 :::
 
@@ -267,8 +269,8 @@ $$
 \end{aligned}
 $$
 :::
-::::
 :::::
+:::::::::
 
 ## The Precision Matrix {data-name="Methods"}
 
@@ -542,7 +544,122 @@ $$
 :::::
 ::::::::::::
 
-## Benchmark: Density Computations {data-name="Results"}
+## Maximum Likelihood  {data-name="Results"}
+
+::::: {.columns style="font-size:50%"}
+::: {.column width="60%"}
+**Setup**
+```{r}
+#| echo: true
+library(stdmatern)
+dim1 <- 50
+dim2 <- 50
+rho1 <- 0.9
+rho2 <- 0.5
+nu <- 1
+n_obs <- 5
+Z <- rmatern_copula_eigen(n_obs, dim1, dim2, rho1, rho2, nu)
+U <- pnorm(Z)
+Y <- qgev(U, loc = 6, scale = 2, shape = 0.1)
+```
+**Log-likelihood**
+```{r}
+#| echo: true
+log_lik <- function(par, Y) {
+  mu <- exp(par[1])
+  sigma <- exp(par[2] + par[1])
+  xi <- exp(par[3])
+  rho1 <- plogis(par[4])
+  rho2 <- plogis(par[5])
+
+  u <- evd::pgev(Y, loc = mu, scale = sigma, shape = xi)
+  z <- qnorm(u)
+  
+  ll_marg <- sum(evd::dgev(Y, loc = mu, scale = sigma, shape = xi, log = TRUE))
+  ll_copula <- sum(dmatern_copula_eigen(z, dim1, dim2, rho1, rho2, nu))
+  ll_copula + ll_marg
+}
+```
+**Optimize**
+```{r}
+#| echo: true
+#| cache: true
+tictoc::tic()
+res <- optim(
+  par = c(0, 0, 0, 0, 0),
+  log_lik,
+  control = list(fnscale = -1),
+  Y = Y,
+  hessian = TRUE,
+  method = "L-BFGS-B"
+)
+tictoc::toc()
+```
+:::
+
+::: {.column width="40%"}
+<br>
+<br>
+
+**Results**
+```{r}
+#| echo: true
+se <- sqrt(diag(solve(-res$hessian)))
+ci <- res$par + c(-1.96, 1.96) * se
+```
+
+```{r}
+tibble(
+  par = c("mu_", "sigma_", "xi_", "rho_1", "rho_2"),
+  estimate = res$par,
+  se = se
+) |>
+  mutate(
+    lower = estimate - 1.96 * se,
+    upper = estimate + 1.96 * se
+  ) |>
+  select(-se) |>
+  pivot_longer(
+    cols = c(estimate, lower, upper),
+    names_to = "statistic",
+    values_to = "value"
+  ) |>
+  pivot_wider(names_from = par, values_from = value) |>
+  mutate(
+    mu_ = exp(mu_),
+    sigma_ = exp(sigma_) * mu_,
+    xi_ = exp(xi_),
+    rho_1 = plogis(rho_1),
+    rho_2 = plogis(rho_2)
+  ) |>
+  pivot_longer(cols = -statistic, names_to = "par", values_to = "value") |>
+  pivot_wider(names_from = statistic, values_from = value) |>
+  mutate(
+    par = str_c("<b>&", par, "</sub></b>") |>
+      str_replace("_", ";<sub>")
+  ) |>
+  gt() |>
+  fmt_markdown(columns = par) |>
+  fmt_number(decimals = 3) |>
+  cols_label(
+    par = "",
+    estimate = "Estimate",
+    lower = "Lower",
+    upper = "Upper"
+  ) |>
+  tab_spanner(
+    label = "95% CI",
+    columns = c(lower, upper)
+  )  |> 
+  tab_options(table.width = pct(100)) |> 
+  opt_row_striping(TRUE)
+```
+:::
+:::::
+
+
+
+## Benchmark: Density Computations
 
 ```{r}
 read_csv(here::here("presentation", "data", "benchmark_all.csv")) |> 
@@ -579,43 +696,16 @@ read_csv(here::here("presentation", "data", "benchmark_all.csv")) |>
   ) |> 
   tab_caption(
     md("Benchmarking how long it takes to evaluate the density of a Mátern($\\nu$)-like field with correlation parameter $\\rho$, either unscaled or scaled to have unit marginal variance")
-  )
+  )  |> 
+  tab_footnote(
+    md("See [https://bggj.is/materneigenpaper/](https://bggj.is/materneigenpaper/) for a description of algorithms and [https://github.com/bgautijonsson/stdmatern](https://github.com/bgautijonsson/stdmatern) for implementations")
+  ) |> 
+  opt_row_striping(TRUE)
+
 ```
 
-## Benchmark: Maximum Likelihood
 
-::::: {.columns style="font-size:50%"}
-::: {.column width="65%"}
-![](images/bench_ml_bias.png)
-:::
 
-::: {.column width="35%"}
-<br> <br>
-
-```{r}
-read_csv(here::here("presentation", "data", "ml_bench_speed.csv")) |> 
-  rename(fold = Folded, circ = Circulant) |> 
-  gt() |> 
-  cols_hide(
-    c(circ, d_2)
-  ) |> 
-  cols_label(
-    dim = "Grid Size",
-    fold = "Time",
-    d_1 = "Speed-Up",
-    circ = "Time",
-    d_2 = "Speed-Up"
-  ) |> 
-  tab_spanner(
-    label = "Folded",
-    columns = 3:4
-  ) |> 
-  tab_caption(
-    md("Benchmarking speed of ML computations")
-  )
-```
-:::
-:::::
 
 ## Approximating the Correlation Matrix
 
