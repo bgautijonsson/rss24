@@ -24,8 +24,9 @@ If you see me, please feel free to come and chat about statistics, music, books 
 ## Resources
 
 - [Presentation Slides](/presentation/)
-- [GitHub Repository](https://github.com/bgautijonsson/rss24)
+- [GitHub Repository for RSS24](https://github.com/bgautijonsson/rss24)
 - [Manuscript](https://bggj.is/materneigenpaper/)
+- [R package (in development)](https://github.com/bgautijonsson/stdmatern)
 
 ## Contact
 

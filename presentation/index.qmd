@@ -552,10 +552,8 @@ $$
 ```{r}
 #| echo: true
 library(stdmatern)
-dim1 <- 50
-dim2 <- 50
-rho1 <- 0.9
-rho2 <- 0.5
+dim1 <- 50; dim2 <- 50
+rho1 <- 0.9; rho2 <- 0.5
 nu <- 1
 n_obs <- 5
 Z <- rmatern_copula_eigen(n_obs, dim1, dim2, rho1, rho2, nu)
@@ -571,10 +569,8 @@ log_lik <- function(par, Y) {
   xi <- exp(par[3])
   rho1 <- plogis(par[4])
   rho2 <- plogis(par[5])
-
   u <- evd::pgev(Y, loc = mu, scale = sigma, shape = xi)
   z <- qnorm(u)
-  
   ll_marg <- sum(evd::dgev(Y, loc = mu, scale = sigma, shape = xi, log = TRUE))
   ll_copula <- sum(dmatern_copula_eigen(z, dim1, dim2, rho1, rho2, nu))
   ll_copula + ll_marg
