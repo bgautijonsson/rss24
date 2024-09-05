@@ -7,6 +7,8 @@ format:
   revealjs:
     theme: theme.scss
     auto-stretch: true
+    logo: hi-audkenni_28-raunsvisd.png
+    footer: "[bggj.is/rss24](https://bggj.is/rss24)"
     simplemenu:
       flat: false
       barhtml:
@@ -15,12 +17,12 @@ format:
 html-math-method:
   method: mathjax
   url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-revealjs-plugins:
-  - simplemenu
+#revealjs-plugins:
+#  - simplemenu
 bibliography: references.bib
 csl: cambridge-university-press-numeric.csl
-#self-contained-math: true
-#embed-resources: true
+self-contained-math: true
+embed-resources: true
 ---
 
 ```{r setup}
@@ -34,7 +36,7 @@ options(width = 648)
 
 ## Introduction {data-name="Background"}
 
-::::: {.columns style="font-size:70%"}
+::: {.columns style="font-size:70%"}
 ::: {.column width="70%"}
 -   UKCP Local Projections on a 5km grid over the UK (1980-2080) [@metoffi]
 -   Challenge: Modeling maximum daily precipitation in yearly blocks
@@ -49,11 +51,11 @@ options(width = 648)
 ::: {.column width="30%"}
 ![](images/ukcp_data.png){width="100%"}
 :::
-:::::
+:::
 
 ## Calculating Multivariate Normal Densities
 
-::::: {.columns style="font-size:60%"}
+::: {.columns style="font-size:60%"}
 $$
 \log f(\mathbf{x}) \propto \frac{1}{2}\left(\log |\mathbf{Q}| - \mathbf{x}^T\mathbf{Q}\mathbf{x}\right)
 $$
@@ -74,14 +76,14 @@ $$
 -   Efficient computation crucial for large-scale applications
 -   Fast algorithms when $\mathbf{Q}$ is sparse [@rue2001; @rue2005]
 :::
-:::::
+:::
 
 ## Spatial Models
 
-::::::::::::::: {style="font-size:50%"}
+::: {style="font-size:50%"}
 #### Conditional Autoregression (CAR) [@besag1974]
 
-::::: columns
+::: columns
 ::: {.column width="50%"}
 -   $\mathbf{D}$ is a diagonal matrix with $D_{ii} = n_i$, the number of neighbours of $i$
 -   $\mathbf{A}$ is the adjacency matrix with $A_{ij} = A_{ji} = 1$ if $i \sim j$
@@ -95,13 +97,13 @@ $$
 \end{aligned}
 $$
 :::
-:::::
+:::
 
 ------------------------------------------------------------------------
 
 #### Intrinsic Conditional Autoregression (ICAR) [@besag1991]
 
-::::: columns
+::: columns
 ::: {.column width="50%"}
 -   $\alpha = 1$, so $\mathbf Q$ is singular, but constant
 -   Don't have to calculate $\log |\mathbf{Q}|$
@@ -115,11 +117,11 @@ $$
 \end{aligned}
 $$
 :::
-:::::
+:::
 
 ------------------------------------------------------------------------
 
-::::: columns
+::: columns
 ::: {.column width="50%"}
 #### BYM (Besag-York-Mollié) Model [@besag1991]
 
@@ -136,11 +138,11 @@ $$
 \end{aligned}
 $$
 :::
-:::::
+:::
 
 ------------------------------------------------------------------------
 
-::::: columns
+::: columns
 ::: {.column width="50%"}
 #### BYM2 Model [@riebler2016; @simpson2015]
 
@@ -157,12 +159,12 @@ $$
 \end{aligned}
 $$
 :::
-:::::
-:::::::::::::::
+:::
+:::
 
-## Spatial Modeling on Parameter-level
+## Spatial Modeling on Parameter-level [@morris2019]
 
-::::: {.columns style="font-size:50%"}
+::: {.columns style="font-size:50%"}
 ::: {.column width="45%"}
 -   $\mu$: location parameter
     -   $\mu = \mu_0 \left(1 + \Delta \left(t - t_0\right)\right)$
@@ -182,11 +184,11 @@ $$
 ::: {.column width="55%"}
 ![](images/facet_constrained.png)
 :::
-:::::
+:::
 
 ## From Parameter-level to Data-level Dependence
 
-::::: {.columns style="font-size:60%"}
+::: {.columns style="font-size:60%"}
 ::: {.column width="50%"}
 ### Parameter-level Dependence
 
@@ -202,7 +204,7 @@ $$
 -   Enhances spatial risk assessment
 -   Better variance estimates
 :::
-:::::
+:::
 
 ::: {style="font-size:65%; margin-top:20px;"}
 **Sklar's Theorem**: For any multivariate distribution $H$, there exists a unique copula $C$ such that:
@@ -220,7 +222,7 @@ $$
 
 ## Our Approach: Matérn-like Gaussian Copula
 
-::::::::: {style="font-size:55%"}
+::: {style="font-size:55%"}
 $$
 \begin{gathered}
 \log h(\mathbf x) = \log c\left(F_1(x_1), \dots, F_d(x_d)\right) + \sum_{i=1}^d \log f_i(x_i)
@@ -229,7 +231,7 @@ $$
 
 ------------------------------------------------------------------------
 
-::::: columns
+::: columns
 ### Marginal CDFs
 
 ::: {.column width="50%"}
@@ -246,11 +248,11 @@ u_i &= F_{\mathrm{GEV}}(x_i \vert \mu_i, \sigma_i, \xi_i)
 \end{aligned}
 $$
 :::
-:::::
+:::
 
 ------------------------------------------------------------------------
 
-::::: columns
+::: columns
 ### Gaussian Copula
 
 ::: {.column width="50%"}
@@ -269,19 +271,19 @@ $$
 \end{aligned}
 $$
 :::
-:::::
-:::::::::
+:::
+:::
 
 ## The Precision Matrix {data-name="Methods"}
 
-:::::: {style="font-size:60%"}
+::: {style="font-size:60%"}
 $\mathbf Q$ defined as Kronecker sum of two AR(1) precision matrices, similar to [@lindgren2011]
 
 $$
 \mathbf{Q} = \left( \mathbf{Q}_{\rho_1} \otimes \mathbf{I_{n_2}} + \mathbf{I_{n_1}} \otimes \mathbf{Q}_{\rho_2} \right)^{\nu + 1}, \quad \nu \in \{0, 1, 2\}
 $$
 
-::::: {.columns style="font-size:80%"}
+::: {.columns style="font-size:80%"}
 ::: {.column width="50%"}
 $$
 \mathbf{Q}_{\rho_{1}} = \frac{1}{1-\rho_{1}^2}
@@ -316,12 +318,12 @@ $$
 \dots & \dots & \cdots & \frac{-\rho_1}{(1-\rho_1^2)} \mathbf{I_{n_2}} & \frac{1}{(1-\rho_1^2)}\mathbf{I_{n_2}} + \mathbf{Q_{\rho_2}}
 \end{bmatrix}^{\nu + 1}
 $$
-:::::
-::::::
+:::
+:::
 
 ## Eigendecomposition
 
-::::: {.columns style="font-size:65%"}
+::: {.columns style="font-size:65%"}
 Because of how $\mathbf{Q}$ is defined [@horn1991], we know that
 
 $$
@@ -356,7 +358,7 @@ $$
 
 -   Problem: $\boldsymbol \Sigma_{ii} = \left(\mathbf Q^{-1} \right)_{ii} \neq  1$
 -   Solution: $\mathbf{\widetilde  Q} = \mathbf{D}\mathbf{Q}\mathbf{D}$, where $\mathbf D_{ii} = \sqrt{\boldsymbol \Sigma_{ii}}$
-:::::
+:::
 
 ## Marginal Standard Deviations
 
@@ -380,7 +382,7 @@ $$
 
 ## Marginal Standard Deviations
 
-::::: {.columns style="font-size:75%"}
+::: {.columns style="font-size:75%"}
 ::: {.column width="58%"}
 ```{r}
 #| echo: true
@@ -416,7 +418,7 @@ msd <- function(Q1, Q2) {
 }
 ```
 :::
-:::::
+:::
 
 ::: {style="font-size:75%"}
 ```{r}
@@ -435,8 +437,7 @@ bench::mark(
 ## Calculating the (non-copula) density
 
 ::: {style="font-size:70%"}
-The Gaussian log pdf is 
-$$
+The Gaussian log pdf is $$
 \log f(\mathbf{u} \vert \mathbf{Q}) \propto \frac{1}{2}\left(\log|\mathbf{Q}| - \mathbf{z}^T\mathbf{Q}\mathbf{z}\right)
 $$
 
@@ -475,8 +476,8 @@ $$
 
 ## Folded Circulant Approximation
 
-:::::::::::: {style="font-size:40%"}
-::::: columns
+::: {style="font-size:40%"}
+::: columns
 ::: {.column width="40%"}
 ### AR(1) precision
 
@@ -495,11 +496,11 @@ $$
 \end{bmatrix}
 $$
 :::
-:::::
+:::
 
 ------------------------------------------------------------------------
 
-::::: columns
+::: columns
 ::: {.column width="40%"}
 ### Circulant Approximation
 
@@ -518,11 +519,11 @@ $$
 \end{bmatrix}
 $$
 :::
-:::::
+:::
 
 ------------------------------------------------------------------------
 
-::::: columns
+::: columns
 ::: {.column width="40%"}
 ### Folded Circulant Approximation [@kent2022; @mondal2018]
 
@@ -541,14 +542,15 @@ $$
 \end{bmatrix}
 $$
 :::
-:::::
-::::::::::::
+:::
+:::
 
-## Maximum Likelihood  {data-name="Results"}
+## Maximum Likelihood {data-name="Results"}
 
-::::: {.columns style="font-size:50%"}
+::: {.columns style="font-size:50%"}
 ::: {.column width="60%"}
 **Setup**
+
 ```{r}
 #| echo: true
 library(stdmatern)
@@ -560,7 +562,9 @@ Z <- rmatern_copula_eigen(n_obs, dim1, dim2, rho1, rho2, nu)
 U <- pnorm(Z)
 Y <- qgev(U, loc = 6, scale = 2, shape = 0.1)
 ```
+
 **Log-likelihood**
+
 ```{r}
 #| echo: true
 log_lik <- function(par, Y) {
@@ -576,7 +580,9 @@ log_lik <- function(par, Y) {
   ll_copula + ll_marg
 }
 ```
+
 **Optimize**
+
 ```{r}
 #| echo: true
 #| cache: true
@@ -594,10 +600,10 @@ tictoc::toc()
 :::
 
 ::: {.column width="40%"}
-<br>
-<br>
+<br> <br>
 
 **Results**
+
 ```{r}
 #| echo: true
 se <- sqrt(diag(solve(-res$hessian)))
@@ -651,9 +657,7 @@ tibble(
   opt_row_striping(TRUE)
 ```
 :::
-:::::
-
-
+:::
 
 ## Benchmark: Density Computations
 
@@ -700,16 +704,13 @@ read_csv(here::here("presentation", "data", "benchmark_all.csv")) |>
 
 ```
 
-
-
-
 ## Approximating the Correlation Matrix
 
 ![](images/cors.png)
 
 ## Data Generation
 
-::::: {.columns style="font-size:60%"}
+::: {.columns style="font-size:60%"}
 ```{r}
 #| echo: true
 #| cache: true
@@ -745,11 +746,11 @@ apply(X, 1, var) |> hist()
 apply(X, 1, mean) |> hist()
 ```
 :::
-:::::
+:::
 
 ## Conclusion and Future Work {data-name="Conclusion"}
 
-::::: {.columns style="font-size:60%"}
+::: {.columns style="font-size:60%"}
 ::: {.column width="50%"}
 ### Key Results
 
@@ -777,9 +778,9 @@ My thanks to my advisor and committee
 -   Birgir Hrafnkelsson (PI)
 -   Raphaël Huser
 -   Stefan Siegert
-:::::
+:::
 
 # References
 
-::: {#refs style="font-size:60%"}
+::: {#refs style="font-size:55%"}
 :::
